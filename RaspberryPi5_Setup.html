@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raspberry Pi 5 從安裝到伺服器部署完整教學</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #b91c1c;
+      --accent-soft: #fee2e2;
+      --border: #dbe3ef;
+      --code-bg: #0f172a;
+      --code-text: #e5eefc;
+      --ok: #065f46;
+      --warn: #92400e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #b91c1c, #111827);
+      color: #fff;
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2.15rem;
+    }
+    .hero p {
+      margin: 8px 0;
+      color: rgba(255,255,255,0.92);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      margin-bottom: 20px;
+    }
+    h2, h3 {
+      color: #111827;
+    }
+    h2 {
+      margin-top: 0;
+      border-left: 5px solid var(--accent);
+      padding-left: 12px;
+    }
+    ul, ol {
+      padding-left: 22px;
+    }
+    li + li { margin-top: 6px; }
+    code {
+      background: #eef2ff;
+      color: #312e81;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", "Consolas", monospace;
+      font-size: 0.95em;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.96rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #fef2f2; }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .note, .warning {
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin: 12px 0;
+    }
+    .note {
+      background: #ecfdf5;
+      color: var(--ok);
+      border: 1px solid #a7f3d0;
+    }
+    .warning {
+      background: #fff7ed;
+      color: var(--warn);
+      border: 1px solid #fdba74;
+    }
+    .footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.75rem; }
+      .container { padding: 20px 14px 40px; }
+      .hero, .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Raspberry Pi 5 從安裝到伺服器部署完整教學</h1>
+      <p>從燒錄系統、首次開機、SSH、套件更新，到 Nginx、Ollama、Docker、Docker Compose 與 MariaDB / phpMyAdmin / LAMP 實作。</p>
+      <p>適合大學課程、實驗課、IoT 專題前導教學，也適合作為學生的課後操作手冊。</p>
+      <div style="margin-top:16px;">
+        <span class="tag">Raspberry Pi 5</span>
+        <span class="tag">Ubuntu / Raspberry Pi OS</span>
+        <span class="tag">Docker Compose</span>
+        <span class="tag">Web 與 AI 服務部署</span>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>一、教學目標</h2>
+        <ul>
+          <li>理解 Raspberry Pi 5 的系統安裝流程</li>
+          <li>熟悉 SSH 遠端管理與基本安全設定</li>
+          <li>學會更新系統與安裝常見套件</li>
+          <li>學會部署 Nginx、Ollama、Docker</li>
+          <li>使用 Docker Compose 建立 MariaDB、phpMyAdmin 與 LAMP 環境</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>二、建議硬體</h2>
+        <ul>
+          <li>Raspberry Pi 5 主機板</li>
+          <li>官方或品質穩定的 USB-C 電源供應器</li>
+          <li>microSD 卡，建議 32GB 以上</li>
+          <li>若要長時間跑 Docker / Ollama，建議使用 SSD</li>
+          <li>散熱片或風扇</li>
+          <li>網路線或穩定 Wi-Fi</li>
+        </ul>
+        <div class="warning">若要安裝 Ollama，建議 RAM 至少 8GB，且盡量使用 SSD，否則體驗會偏慢。</div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>三、系統安裝前準備</h2>
+      <h3>1. 下載 Raspberry Pi Imager</h3>
+      <ul>
+        <li>Windows / macOS / Ubuntu 均可安裝 Raspberry Pi Imager</li>
+        <li>也可用 balenaEtcher，但 Raspberry Pi Imager 對初學者更方便</li>
+      </ul>
+
+      <h3>2. 選擇作業系統</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>系統</th>
+            <th>適合情境</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Raspberry Pi OS</td>
+            <td>入門教學、一般應用</td>
+            <td>官方支援最好，硬體相容性高</td>
+          </tr>
+          <tr>
+            <td>Ubuntu Server</td>
+            <td>伺服器課程、Docker、雲端服務</td>
+            <td>偏文字介面，適合遠端管理與部署</td>
+          </tr>
+          <tr>
+            <td>Ubuntu Desktop</td>
+            <td>需要圖形桌面教學</td>
+            <td>資源消耗較高，不一定適合長期伺服器用途</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="note">如果課程主題是 IoT、伺服器、Docker、網頁部署，我會比較推薦 Ubuntu Server 或 Raspberry Pi OS Lite。</div>
+    </section>
+
+    <section class="card">
+      <h2>四、燒錄 microSD 與進階設定</h2>
+      <ol>
+        <li>開啟 Raspberry Pi Imager</li>
+        <li>選擇裝置：<code>Raspberry Pi 5</code></li>
+        <li>選擇作業系統，例如 <code>Ubuntu Server 24.04 LTS</code> 或 <code>Raspberry Pi OS Lite</code></li>
+        <li>選擇儲存裝置：microSD 卡</li>
+        <li>按設定圖示，先做預設配置</li>
+      </ol>
+
+      <h3>建議先設定的項目</h3>
+      <ul>
+        <li>主機名稱，例如 <code>rpi5-iot</code></li>
+        <li>建立使用者帳號與密碼</li>
+        <li>設定 Wi-Fi SSID 與密碼</li>
+        <li>設定時區為 <code>Asia/Taipei</code></li>
+        <li>啟用 SSH</li>
+      </ul>
+
+      <div class="warning">若課程在教室一次配置多台樹莓派，主機名稱不要都一樣，否則區網上會很容易混淆。</div>
+    </section>
+
+    <section class="card">
+      <h2>五、首次開機後的基本檢查</h2>
+      <h3>1. 直接接螢幕與鍵盤</h3>
+      <pre><code>whoami
+hostname
+pwd
+ip a</code></pre>
+
+      <h3>2. 從另一台電腦 SSH 登入</h3>
+      <pre><code>ssh 使用者名稱@樹莓派IP位址
+
+# 例如
+ssh minhuang@192.168.1.120</code></pre>
+
+      <h3>3. 若不知道 IP 位址</h3>
+      <ul>
+        <li>在路由器管理頁面查看 DHCP 清單</li>
+        <li>或在本機掃描區網</li>
+      </ul>
+      <pre><code>ping rpi5-iot.local</code></pre>
+
+      <div class="note">若 mDNS 正常，很多情況可直接用 <code>主機名稱.local</code> 連線。</div>
+    </section>
+
+    <section class="card">
+      <h2>六、系統更新與常用工具安裝</h2>
+      <p>第一次登入後，幾乎一定要先做更新。</p>
+      <pre><code>sudo apt update
+sudo apt upgrade -y
+sudo apt full-upgrade -y
+sudo apt autoremove -y
+sudo apt autoclean</code></pre>
+
+      <h3>安裝常用工具</h3>
+      <pre><code>sudo apt install -y \
+  git curl wget vim nano htop tree unzip zip \
+  net-tools dnsutils ca-certificates gnupg lsb-release \
+  software-properties-common apt-transport-https</code></pre>
+
+      <h3>重新開機</h3>
+      <pre><code>sudo reboot</code></pre>
+
+      <div class="warning">上課時可順便說明：<code>update</code> 是更新套件清單，<code>upgrade</code> 是升級已安裝套件，兩者功能不同。</div>
+    </section>
+
+    <section class="card">
+      <h2>七、基本安全與系統設定</h2>
+      <h3>1. 變更密碼</h3>
+      <pre><code>passwd</code></pre>
+
+      <h3>2. 設定時區</h3>
+      <pre><code>timedatectl
+sudo timedatectl set-timezone Asia/Taipei</code></pre>
+
+      <h3>3. 啟用防火牆</h3>
+      <pre><code>sudo apt install -y ufw
+sudo ufw allow OpenSSH
+sudo ufw allow 80/tcp
+sudo ufw allow 443/tcp
+sudo ufw enable
+sudo ufw status</code></pre>
+
+      <h3>4. 查看系統資訊</h3>
+      <pre><code>uname -a
+cat /etc/os-release
+free -h
+df -h
+vcgencmd measure_temp</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>八、安裝與測試 Nginx</h2>
+      <h3>1. 安裝 Nginx</h3>
+      <pre><code>sudo apt install -y nginx</code></pre>
+
+      <h3>2. 啟動與開機自動執行</h3>
+      <pre><code>sudo systemctl enable nginx
+sudo systemctl start nginx
+sudo systemctl status nginx</code></pre>
+
+      <h3>3. 測試</h3>
+      <pre><code>curl http://localhost</code></pre>
+      <p>也可直接在瀏覽器輸入樹莓派 IP，例如 <code>http://192.168.1.120</code>。</p>
+
+      <h3>4. 網頁根目錄</h3>
+      <pre><code>cd /var/www/html
+ls -al</code></pre>
+
+      <h3>5. 測試自訂首頁</h3>
+      <pre><code>echo '&lt;h1&gt;Hello Raspberry Pi 5&lt;/h1&gt;' | sudo tee /var/www/html/index.html</code></pre>
+
+      <h3>6. 常見管理指令</h3>
+      <pre><code>sudo nginx -t
+sudo systemctl reload nginx
+sudo systemctl restart nginx</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>九、安裝 Docker</h2>
+      <p>雖然 Ubuntu 套件庫裡也有 docker 套件，但正式部署建議使用 Docker 官方安裝方式。</p>
+
+      <h3>1. 加入 Docker 官方 GPG key 與來源</h3>
+      <pre><code>sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+  sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+  https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo $VERSION_CODENAME) stable" | \
+  sudo tee /etc/apt/sources.list.d/docker.list > /dev/null</code></pre>
+
+      <h3>2. 安裝 Docker 相關套件</h3>
+      <pre><code>sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin</code></pre>
+
+      <h3>3. 測試 Docker</h3>
+      <pre><code>sudo docker version
+sudo docker run hello-world</code></pre>
+
+      <h3>4. 讓一般使用者可直接使用 docker</h3>
+      <pre><code>sudo usermod -aG docker $USER
+newgrp docker
+
+docker ps</code></pre>
+
+      <div class="note">加入 docker 群組後，通常重新登入一次 shell 會比較穩定。</div>
+    </section>
+
+    <section class="card">
+      <h2>十、安裝 Docker Compose 與基本觀念</h2>
+      <p>新版 Docker Compose 多半已整合為 plugin，指令是 <code>docker compose</code>，不是舊版的 <code>docker-compose</code>。</p>
+
+      <pre><code>docker compose version</code></pre>
+
+      <h3>基本流程</h3>
+      <ol>
+        <li>建立專案目錄</li>
+        <li>撰寫 <code>compose.yaml</code></li>
+        <li>執行 <code>docker compose up -d</code></li>
+        <li>用 <code>docker compose ps</code> 查看狀態</li>
+        <li>用 <code>docker compose logs -f</code> 查看日誌</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>十一、用 Docker Compose 建立 MariaDB + phpMyAdmin</h2>
+      <h3>1. 建立專案資料夾</h3>
+      <pre><code>mkdir -p ~/docker/mariadb-phpmyadmin
+cd ~/docker/mariadb-phpmyadmin</code></pre>
+
+      <h3>2. 撰寫 compose.yaml</h3>
+      <pre><code>nano compose.yaml</code></pre>
+
+      <pre><code>services:
+  mariadb:
+    image: mariadb:11
+    container_name: mariadb
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456
+      MYSQL_DATABASE: iotdb
+      MYSQL_USER: iotuser
+      MYSQL_PASSWORD: iotpass123
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mariadb
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 256M
+    ports:
+      - "8080:80"
+    depends_on:
+      - mariadb
+
+volumes:
+  mariadb_data:</code></pre>
+
+      <h3>3. 啟動服務</h3>
+      <pre><code>docker compose up -d</code></pre>
+
+      <h3>4. 檢查</h3>
+      <pre><code>docker compose ps
+docker compose logs -f</code></pre>
+
+      <h3>5. 瀏覽器測試</h3>
+      <ul>
+        <li>phpMyAdmin：<code>http://樹莓派IP:8080</code></li>
+        <li>帳號：<code>root</code></li>
+        <li>密碼：<code>root123456</code></li>
+      </ul>
+
+      <div class="warning">正式環境不要直接使用簡單密碼，課堂示範結束後請改密碼。</div>
+    </section>
+
+    <section class="card">
+      <h2>十二、用 Docker Compose 建立 Apache + PHP + MariaDB 的 LAMP 環境</h2>
+      <h3>1. 建立資料夾</h3>
+      <pre><code>mkdir -p ~/docker/lamp-stack/www
+cd ~/docker/lamp-stack</code></pre>
+
+      <h3>2. 建立首頁測試檔</h3>
+      <pre><code>cat > ~/docker/lamp-stack/www/index.php <<'EOF'
+&lt;?php
+phpinfo();
+?&gt;
+EOF</code></pre>
+
+      <h3>3. 撰寫 compose.yaml</h3>
+      <pre><code>services:
+  web:
+    image: php:8.2-apache
+    container_name: lamp-web
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    volumes:
+      - ./www:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:11
+    container_name: lamp-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456
+      MYSQL_DATABASE: lampdb
+      MYSQL_USER: lampuser
+      MYSQL_PASSWORD: lamp123456
+    volumes:
+      - lamp_db_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: lamp-pma
+    restart: unless-stopped
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+    ports:
+      - "8082:80"
+    depends_on:
+      - db
+
+volumes:
+  lamp_db_data:</code></pre>
+
+      <h3>4. 啟動服務</h3>
+      <pre><code>docker compose up -d</code></pre>
+
+      <h3>5. 測試位置</h3>
+      <ul>
+        <li>LAMP 網頁：<code>http://樹莓派IP:8081</code></li>
+        <li>phpMyAdmin：<code>http://樹莓派IP:8082</code></li>
+      </ul>
+
+      <h3>6. 若要支援 mysqli / pdo_mysql</h3>
+      <p>正式教學時可延伸到自製 Dockerfile。</p>
+      <pre><code>FROM php:8.2-apache
+RUN docker-php-ext-install mysqli pdo pdo_mysql</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十三、建立更完整的 PHP + Apache 映像檔</h2>
+      <h3>1. 建立 Dockerfile</h3>
+      <pre><code>mkdir -p ~/docker/lamp-custom/www
+cd ~/docker/lamp-custom
+nano Dockerfile</code></pre>
+
+      <pre><code>FROM php:8.2-apache
+RUN apt-get update && apt-get install -y \
+    libpng-dev libjpeg-dev libfreetype6-dev zip unzip
+RUN docker-php-ext-install mysqli pdo pdo_mysql
+RUN a2enmod rewrite</code></pre>
+
+      <h3>2. compose.yaml</h3>
+      <pre><code>services:
+  web:
+    build: .
+    container_name: custom-lamp-web
+    restart: unless-stopped
+    ports:
+      - "8083:80"
+    volumes:
+      - ./www:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:11
+    container_name: custom-lamp-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root123456
+      MYSQL_DATABASE: customdb
+      MYSQL_USER: customuser
+      MYSQL_PASSWORD: custompass123
+    volumes:
+      - custom_db_data:/var/lib/mysql
+
+volumes:
+  custom_db_data:</code></pre>
+
+      <h3>3. 啟動</h3>
+      <pre><code>docker compose up -d --build</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十四、安裝 Ollama</h2>
+      <p>Ollama 可在本機執行大型語言模型，但 Raspberry Pi 5 的速度與模型大小需審慎選擇。</p>
+
+      <h3>1. 官方腳本安裝</h3>
+      <pre><code>curl -fsSL https://ollama.com/install.sh | sh</code></pre>
+
+      <h3>2. 啟動服務</h3>
+      <pre><code>sudo systemctl enable ollama
+sudo systemctl start ollama
+sudo systemctl status ollama</code></pre>
+
+      <h3>3. 測試版本</h3>
+      <pre><code>ollama --version</code></pre>
+
+      <h3>4. 下載模型</h3>
+      <pre><code>ollama pull llama3.2
+# 或較小模型
+ollama pull qwen2.5:0.5b</code></pre>
+
+      <h3>5. 執行模型</h3>
+      <pre><code>ollama run llama3.2</code></pre>
+
+      <h3>6. API 測試</h3>
+      <pre><code>curl http://localhost:11434/api/tags</code></pre>
+
+      <div class="warning">如果樹莓派 RAM 較小，建議先從體積較小的模型開始，否則容易變慢或記憶體不足。</div>
+    </section>
+
+    <section class="card">
+      <h2>十五、Nginx 反向代理到 Docker 或 Ollama</h2>
+      <p>這部分很適合當作進階示範，讓學生理解內外網服務映射。</p>
+
+      <h3>1. 建立站台設定</h3>
+      <pre><code>sudo nano /etc/nginx/sites-available/ollama_proxy</code></pre>
+
+      <pre><code>server {
+    listen 80;
+    server_name _;
+
+    location / {
+        proxy_pass http://127.0.0.1:11434;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+}</code></pre>
+
+      <h3>2. 啟用設定</h3>
+      <pre><code>sudo ln -s /etc/nginx/sites-available/ollama_proxy /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx</code></pre>
+
+      <div class="warning">正式公開前請先做好權限管控，否則任何人都可能存取你的 Ollama API。</div>
+    </section>
+
+    <section class="card">
+      <h2>十六、常用 Docker 管理指令</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>指令</th>
+            <th>用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>docker ps</code></td><td>查看執行中的容器</td></tr>
+          <tr><td><code>docker ps -a</code></td><td>查看所有容器</td></tr>
+          <tr><td><code>docker images</code></td><td>查看本機映像檔</td></tr>
+          <tr><td><code>docker logs 容器名稱</code></td><td>查看容器日誌</td></tr>
+          <tr><td><code>docker exec -it 容器名稱 bash</code></td><td>進入容器互動操作</td></tr>
+          <tr><td><code>docker compose up -d</code></td><td>背景啟動服務</td></tr>
+          <tr><td><code>docker compose down</code></td><td>關閉 compose 服務</td></tr>
+          <tr><td><code>docker compose restart</code></td><td>重啟服務</td></tr>
+          <tr><td><code>docker compose logs -f</code></td><td>即時查看服務輸出</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>十七、課堂上很值得補充的除錯技巧</h2>
+      <h3>1. 檢查服務是否啟動</h3>
+      <pre><code>systemctl status nginx
+systemctl status ollama
+docker ps</code></pre>
+
+      <h3>2. 檢查 Port 是否被占用</h3>
+      <pre><code>sudo ss -tulpn</code></pre>
+
+      <h3>3. 檢查 Docker Compose 設定</h3>
+      <pre><code>docker compose config</code></pre>
+
+      <h3>4. 看 Nginx 是否語法正確</h3>
+      <pre><code>sudo nginx -t</code></pre>
+
+      <h3>5. 看系統資源</h3>
+      <pre><code>htop
+free -h
+df -h</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十八、教學建議流程</h2>
+      <ol>
+        <li>先讓學生了解 Raspberry Pi 5 的硬體定位</li>
+        <li>示範燒錄作業系統與首次開機</li>
+        <li>示範 SSH 登入與系統更新</li>
+        <li>示範安裝 Nginx，讓學生看到第一個網站</li>
+        <li>示範安裝 Docker，讓學生理解容器化觀念</li>
+        <li>示範 Docker Compose 啟動 MariaDB 與 phpMyAdmin</li>
+        <li>進一步部署 LAMP</li>
+        <li>最後再示範 Ollama，讓學生感受本地 AI 推論服務</li>
+      </ol>
+      <div class="note">這個流程非常適合切成 2 到 4 次實作課，每次聚焦一個主題，學生吸收會更完整。</div>
+    </section>
+
+    <section class="card">
+      <h2>十九、作業或實驗題目建議</h2>
+      <ol>
+        <li>自行完成 Raspberry Pi 5 作業系統安裝與 SSH 登入</li>
+        <li>完成 Nginx 網頁部署，首頁顯示學號與姓名</li>
+        <li>完成 Docker 安裝並成功執行 hello-world</li>
+        <li>用 Docker Compose 啟動 MariaDB 與 phpMyAdmin</li>
+        <li>完成一個可執行 <code>phpinfo()</code> 的 LAMP 環境</li>
+        <li>進階題：讓 Nginx 反向代理到另一個容器服務</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>二十、結語</h2>
+      <p>只要完成這份教學內容，學生基本上已經掌握從單板電腦安裝、Linux 伺服器管理、Web 服務部署、容器化與本地 AI 服務的完整入門路徑。</p>
+      <p>這不只是 Raspberry Pi 教學，也是一條很好的現代 IoT 與邊緣運算課程起點。</p>
+    </section>
+
+    <div class="footer">
+      RaspberryPi5_Setup.html, Raspberry Pi 5 從安裝到伺服器部署完整教學
+    </div>
+  </div>
+</body>
+</html>
