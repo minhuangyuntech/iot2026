@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IoT 2026 課程教材首頁</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #1d4ed8;
+      --accent2: #0f766e;
+      --border: #dbe3ef;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #1d4ed8, #0f172a);
+      color: white;
+      border-radius: 22px;
+      padding: 38px 32px;
+      margin-bottom: 26px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+    }
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 2.2rem;
+    }
+    .hero p {
+      margin: 6px 0;
+      color: rgba(255,255,255,0.92);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+    }
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+    .card p {
+      color: var(--muted);
+      min-height: 66px;
+    }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      margin-right: 8px;
+      margin-bottom: 10px;
+      background: #dbeafe;
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 10px;
+      text-decoration: none;
+      background: var(--accent);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+    .btn.alt {
+      background: var(--accent2);
+    }
+    .footer {
+      margin-top: 32px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.75rem; }
+      .container { padding: 20px 14px 40px; }
+      .hero, .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>IoT 2026 課程教材首頁</h1>
+      <p>這裡整理本學期可直接開啟授課的 HTML 教材。</p>
+      <p>適合課堂展示、學生自學、實作課逐步操作。</p>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <span class="tag">Linux</span>
+        <h2>Ubuntu 必學指令教學</h2>
+        <p>包含終端機基本概念、常用指令、檔案管理、權限、系統管理、IoT 與電子系常用操作。</p>
+        <a class="btn" href="Linux_CMD.html">開啟教材</a>
+      </section>
+
+      <section class="card">
+        <span class="tag">Raspberry Pi 5</span>
+        <h2>Raspberry Pi 5 從安裝到伺服器部署</h2>
+        <p>從系統燒錄、SSH、更新套件，到 Nginx、Docker、Ollama、MariaDB、phpMyAdmin、LAMP 的完整教學。</p>
+        <a class="btn" href="RaspberryPi5_Setup.html">開啟教材</a>
+      </section>
+
+      <section class="card">
+        <span class="tag">MQTT</span>
+        <h2>MQTT, Pico W 與 ESP32 實作教學</h2>
+        <p>從 MQTT 概念、Mosquitto Broker、Python Subscriber，到 Raspberry Pi Pico W 與 ESP32 傳送訊息範例。</p>
+        <a class="btn" href="MQTT_Teaching.html">開啟教材</a>
+      </section>
+
+      <section class="card">
+        <span class="tag">Node-RED</span>
+        <h2>Node-RED + MQTT 儀表板教學</h2>
+        <p>從 Node-RED 安裝、MQTT 節點連接，到建立儀表板、即時顯示感測器資料與控制元件。</p>
+        <a class="btn alt" href="NodeRED_MQTT_Dashboard.html">開啟教材</a>
+      </section>
+    </div>
+
+    <div class="footer">
+      index.html, IoT 2026 教材導覽首頁
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Node-RED + MQTT 儀表板教學</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #d97706;
+      --accent-soft: #ffedd5;
+      --border: #dbe3ef;
+      --code-bg: #0f172a;
+      --code-text: #e5eefc;
+      --ok: #065f46;
+      --warn: #92400e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #d97706, #111827);
+      color: #fff;
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2.15rem;
+    }
+    .hero p {
+      margin: 8px 0;
+      color: rgba(255,255,255,0.92);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      margin-bottom: 20px;
+    }
+    h2, h3 {
+      color: #111827;
+    }
+    h2 {
+      margin-top: 0;
+      border-left: 5px solid var(--accent);
+      padding-left: 12px;
+    }
+    ul, ol {
+      padding-left: 22px;
+    }
+    li + li { margin-top: 6px; }
+    code {
+      background: #eef2ff;
+      color: #312e81;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", "Consolas", monospace;
+      font-size: 0.95em;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.96rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #fff7ed; }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .note, .warning {
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin: 12px 0;
+    }
+    .note {
+      background: #ecfdf5;
+      color: var(--ok);
+      border: 1px solid #a7f3d0;
+    }
+    .warning {
+      background: #fff7ed;
+      color: var(--warn);
+      border: 1px solid #fdba74;
+    }
+    .footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.75rem; }
+      .container { padding: 20px 14px 40px; }
+      .hero, .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Node-RED + MQTT 儀表板教學</h1>
+      <p>從 Node-RED 安裝、MQTT 節點串接，到建立即時儀表板，將 Raspberry Pi、ESP32、Pico W 的資料視覺化。</p>
+      <p>很適合搭配 MQTT 課程，讓學生從通訊協定一路看到應用層展示。</p>
+      <div style="margin-top:16px;">
+        <span class="tag">Node-RED</span>
+        <span class="tag">MQTT</span>
+        <span class="tag">Dashboard</span>
+        <span class="tag">IoT 視覺化</span>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>一、教學目標</h2>
+        <ul>
+          <li>理解 Node-RED 在 IoT 系統中的角色</li>
+          <li>學會在 Raspberry Pi 或 Ubuntu 安裝 Node-RED</li>
+          <li>學會訂閱 MQTT 訊息並顯示在流程中</li>
+          <li>學會建立 Dashboard 儀表板</li>
+          <li>學會讓按鈕控制 LED 或其他裝置</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>二、Node-RED 是什麼</h2>
+        <ul>
+          <li>Node-RED 是一個以流程圖方式開發的低程式碼平台</li>
+          <li>很適合 IoT、感測器資料處理、自動化與視覺化</li>
+          <li>每個節點代表一個功能，例如輸入、處理、輸出</li>
+          <li>非常適合教學，因為學生可以直觀看到資料流動</li>
+        </ul>
+        <div class="note">如果 MQTT 是通訊層，Node-RED 很適合作為應用層與展示層。</div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>三、安裝 Node-RED</h2>
+      <h3>方式一，在 Raspberry Pi OS 上安裝</h3>
+      <pre><code>bash <(curl -sL https://raw.githubusercontent.com/node-red/linux-installers/master/deb/update-nodejs-and-nodered)</code></pre>
+
+      <h3>方式二，在 Ubuntu 上安裝 Node.js 後再裝 Node-RED</h3>
+      <pre><code>sudo apt update
+sudo apt install -y nodejs npm
+sudo npm install -g --unsafe-perm node-red</code></pre>
+
+      <h3>啟動 Node-RED</h3>
+      <pre><code>node-red</code></pre>
+
+      <p>開啟瀏覽器：</p>
+      <pre><code>http://樹莓派IP:1880</code></pre>
+
+      <h3>設成系統服務</h3>
+      <pre><code>sudo systemctl enable nodered.service
+sudo systemctl start nodered.service
+sudo systemctl status nodered.service</code></pre>
+
+      <div class="warning">不同系統環境安裝方式略有差異，上課時建議統一一種平台，避免學生步驟不一致。</div>
+    </section>
+
+    <section class="card">
+      <h2>四、先確認 MQTT Broker 已可用</h2>
+      <p>Node-RED 常搭配 Mosquitto 使用。若先前已在 Raspberry Pi 安裝 Mosquitto，可先測試：</p>
+      <pre><code>mosquitto_sub -h localhost -t iot/ece2026/test
+mosquitto_pub -h localhost -t iot/ece2026/test -m "hello from mosquitto"</code></pre>
+
+      <p>若 Broker 在另一台機器，請把 <code>localhost</code> 改成該 Broker IP。</p>
+    </section>
+
+    <section class="card">
+      <h2>五、Node-RED 基本介面介紹</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>區域</th>
+            <th>用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>左側節點區</td><td>拖拉各類功能節點</td></tr>
+          <tr><td>中央工作區</td><td>建立流程圖</td></tr>
+          <tr><td>右側 debug 區</td><td>查看訊息輸出與除錯資訊</td></tr>
+          <tr><td>Deploy 按鈕</td><td>部署目前流程</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>六、建立第一個 MQTT 接收流程</h2>
+      <h3>流程目標</h3>
+      <p>接收來自 Pico W 或 ESP32 的資料，然後在 debug 視窗顯示。</p>
+
+      <h3>需要的節點</h3>
+      <ul>
+        <li><code>mqtt in</code></li>
+        <li><code>debug</code></li>
+      </ul>
+
+      <h3>設定方式</h3>
+      <ol>
+        <li>拖拉 <code>mqtt in</code> 節點到工作區</li>
+        <li>雙擊節點，設定 Broker 位址，例如 <code>192.168.1.120</code></li>
+        <li>Port 設為 <code>1883</code></li>
+        <li>Topic 設為 <code>iot/ece2026/#</code></li>
+        <li>再拖一個 <code>debug</code> 節點，連接到 <code>mqtt in</code></li>
+        <li>按 Deploy</li>
+      </ol>
+
+      <div class="note">只要 topic 用 <code>#</code> 萬用字元，就可以一次接收整個課堂主題底下的訊息。</div>
+    </section>
+
+    <section class="card">
+      <h2>七、建立 Dashboard 前先安裝 dashboard 節點</h2>
+      <p>新版 Node-RED 儀表板可使用 <code>node-red-dashboard</code> 或新版 dashboard 套件。教學上可先用經典版。</p>
+
+      <h3>方式一，使用管理介面安裝</h3>
+      <ol>
+        <li>點右上角選單</li>
+        <li>選 <code>Manage palette</code></li>
+        <li>選 <code>Install</code></li>
+        <li>搜尋 <code>node-red-dashboard</code></li>
+        <li>按 Install</li>
+      </ol>
+
+      <h3>方式二，用指令安裝</h3>
+      <pre><code>cd ~/.node-red
+npm install node-red-dashboard</code></pre>
+
+      <h3>重新啟動</h3>
+      <pre><code>node-red-restart
+# 或
+sudo systemctl restart nodered.service</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>八、建立溫度即時顯示儀表板</h2>
+      <h3>目標</h3>
+      <p>接收例如 <code>iot/ece2026/picow/temp</code> 的資料，並顯示在儀表板中。</p>
+
+      <h3>需要節點</h3>
+      <ul>
+        <li><code>mqtt in</code></li>
+        <li><code>json</code> 或 <code>function</code></li>
+        <li><code>ui_gauge</code></li>
+        <li><code>ui_chart</code></li>
+        <li><code>debug</code></li>
+      </ul>
+
+      <h3>若裝置送出純文字數字</h3>
+      <p>可直接接到儀表板元件。</p>
+
+      <h3>若裝置送出 JSON，例如：</h3>
+      <pre><code>{"temp": 27.5, "humidity": 61}</code></pre>
+
+      <h3>Function 節點範例</h3>
+      <pre><code>let data = JSON.parse(msg.payload);
+msg.payload = data.temp;
+return msg;</code></pre>
+
+      <h3>完成後可透過以下網址查看</h3>
+      <pre><code>http://樹莓派IP:1880/ui</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>九、建立濕度與多感測器儀表板</h2>
+      <p>可建立多個群組，例如：</p>
+      <ul>
+        <li>Group 1: 溫度</li>
+        <li>Group 2: 濕度</li>
+        <li>Group 3: 裝置狀態</li>
+      </ul>
+
+      <h3>建議元件</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>元件</th>
+            <th>用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>ui_gauge</code></td><td>顯示溫度、濕度等單一數值</td></tr>
+          <tr><td><code>ui_chart</code></td><td>顯示時間序列變化</td></tr>
+          <tr><td><code>ui_text</code></td><td>顯示狀態字串</td></tr>
+          <tr><td><code>ui_switch</code></td><td>發送開關控制訊號</td></tr>
+          <tr><td><code>ui_button</code></td><td>按鈕控制</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>十、從 Node-RED 發送 MQTT 指令控制裝置</h2>
+      <p>這個範例很適合做 LED 開關控制。</p>
+
+      <h3>流程目標</h3>
+      <ul>
+        <li>在 Dashboard 上按一個按鈕</li>
+        <li>Node-RED 發送 MQTT 訊息到特定 topic</li>
+        <li>Pico W 或 ESP32 收到後控制 LED</li>
+      </ul>
+
+      <h3>需要節點</h3>
+      <ul>
+        <li><code>ui_switch</code> 或 <code>ui_button</code></li>
+        <li><code>change</code> 或 <code>function</code></li>
+        <li><code>mqtt out</code></li>
+      </ul>
+
+      <h3>控制 topic 範例</h3>
+      <pre><code>iot/ece2026/picow/led</code></pre>
+
+      <h3>送出的訊息範例</h3>
+      <pre><code>ON
+OFF</code></pre>
+
+      <h3>Function 節點範例</h3>
+      <pre><code>if (msg.payload === true) {
+    msg.payload = "ON";
+} else {
+    msg.payload = "OFF";
+}
+return msg;</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十一、Pico W / ESP32 接收控制訊息的概念</h2>
+      <p>裝置端只要訂閱控制 topic，例如：</p>
+      <pre><code>iot/ece2026/picow/led
+iot/ece2026/esp32/led</code></pre>
+
+      <p>收到 <code>ON</code> 時點亮 LED，收到 <code>OFF</code> 時熄滅 LED。</p>
+      <div class="note">這樣學生可以很直觀地看到 Node-RED 不只是看資料，也能反向控制裝置。</div>
+    </section>
+
+    <section class="card">
+      <h2>十二、範例流程設計 1, 只看資料</h2>
+      <ol>
+        <li><code>mqtt in</code> 訂閱 <code>iot/ece2026/picow/temp</code></li>
+        <li>接到 <code>ui_gauge</code> 顯示溫度</li>
+        <li>同時接到 <code>ui_chart</code> 畫趨勢</li>
+        <li>再接一個 <code>debug</code> 方便除錯</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>十三、範例流程設計 2, 看資料加控制</h2>
+      <ol>
+        <li>接收溫度資料顯示在 Dashboard</li>
+        <li>再加入 <code>ui_switch</code></li>
+        <li>用 <code>mqtt out</code> 把控制訊息送到 LED topic</li>
+        <li>由 Pico W 或 ESP32 根據訊息切換 LED 狀態</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>十四、Node-RED 匯入流程 JSON 範例</h2>
+      <p>以下是一個簡化示意，可在 Node-RED 用 Import 匯入後再修改 Broker 與 Dashboard 設定。</p>
+      <pre><code>[
+  {
+    "id": "mqtt_in_temp",
+    "type": "mqtt in",
+    "topic": "iot/ece2026/picow/temp",
+    "broker": "broker_1",
+    "x": 180,
+    "y": 100,
+    "wires": [["debug_1", "gauge_1"]]
+  },
+  {
+    "id": "debug_1",
+    "type": "debug",
+    "x": 430,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "gauge_1",
+    "type": "ui_gauge",
+    "name": "Temperature",
+    "group": "group_1",
+    "order": 1,
+    "x": 430,
+    "y": 130,
+    "wires": []
+  }
+]</code></pre>
+
+      <div class="warning">這段是教學示意，不一定能直接用在所有版本，實際上還需要補 broker、tab、group 等設定節點。</div>
+    </section>
+
+    <section class="card">
+      <h2>十五、進階教學, 把 JSON 分拆成多個欄位</h2>
+      <p>若裝置送出：</p>
+      <pre><code>{"temp":28.2,"humidity":64,"light":731}</code></pre>
+
+      <p>可用 function 節點拆出不同欄位：</p>
+      <pre><code>let data = JSON.parse(msg.payload);
+return [
+  { payload: data.temp },
+  { payload: data.humidity },
+  { payload: data.light }
+];</code></pre>
+
+      <p>然後連接到 3 個不同的 Dashboard 元件。</p>
+    </section>
+
+    <section class="card">
+      <h2>十六、如果要把資料存檔或寫入資料庫</h2>
+      <ul>
+        <li>可接 <code>file</code> 節點寫到 CSV</li>
+        <li>可接 MariaDB / MySQL 節點</li>
+        <li>可接 InfluxDB 節點做時序資料儲存</li>
+        <li>可接 HTTP request 節點送到 Web API</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>十七、常見問題與除錯</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>問題</th>
+            <th>原因</th>
+            <th>建議</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Node-RED 無法連到 MQTT Broker</td><td>IP 或 Port 錯誤</td><td>確認 Broker 設定與網路連線</td></tr>
+          <tr><td>Dashboard 沒資料</td><td>Topic 不一致</td><td>確認裝置端與 Node-RED 使用同一 topic</td></tr>
+          <tr><td>ui 元件沒出現</td><td>尚未安裝 dashboard 套件</td><td>安裝 <code>node-red-dashboard</code></td></tr>
+          <tr><td>Deploy 後無反應</td><td>流程未正確連線</td><td>檢查節點是否已連接並查看 debug 視窗</td></tr>
+          <tr><td>控制 LED 無效</td><td>裝置未訂閱控制 topic</td><td>檢查 Pico W / ESP32 的 subscriber 程式</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>十八、課堂建議流程</h2>
+      <ol>
+        <li>先講 MQTT 基礎與 Broker</li>
+        <li>讓學生用 Python 或裝置成功 publish / subscribe</li>
+        <li>再安裝 Node-RED</li>
+        <li>做第一個 MQTT 接收流程</li>
+        <li>做 Dashboard 視覺化</li>
+        <li>最後用按鈕控制 LED，完成雙向互動</li>
+      </ol>
+      <div class="note">這種流程很有成就感，因為學生能從看訊息，進展到看到圖表，再進展到控制實體裝置。</div>
+    </section>
+
+    <section class="card">
+      <h2>十九、作業建議</h2>
+      <ol>
+        <li>完成一個顯示溫度的儀表板</li>
+        <li>完成一個顯示濕度的折線圖</li>
+        <li>完成一個按鈕控制 LED 的 MQTT 流程</li>
+        <li>使用 ESP32 或 Pico W 傳送 JSON 資料</li>
+        <li>進階題，加入資料存檔功能</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>二十、結語</h2>
+      <p>Node-RED 很適合做為 IoT 課程中的「看得見成果」平台，讓抽象的網路通訊變成學生能操作、能觀察、能除錯的完整系統。</p>
+      <p>搭配 MQTT、Pico W、ESP32，幾乎就能構成一套非常完整的物聯網教學鏈。</p>
+    </section>
+
+    <div class="footer">
+      NodeRED_MQTT_Dashboard.html, Node-RED + MQTT 儀表板教學
+    </div>
+  </div>
+</body>
+</html>
