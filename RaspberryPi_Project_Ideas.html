@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raspberry Pi 常見課堂專題 20 選</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #0f766e;
+      --accent-soft: #ccfbf1;
+      --border: #dbe3ef;
+      --code-bg: #0f172a;
+      --code-text: #e5eefc;
+      --ok: #065f46;
+      --warn: #92400e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0f766e, #111827);
+      color: #fff;
+      border-radius: 22px;
+      padding: 38px 32px;
+      margin-bottom: 26px;
+      box-shadow: 0 18px 45px rgba(15,23,42,0.18);
+    }
+    .hero h1 { margin: 0 0 10px; font-size: 2.2rem; }
+    .hero p { margin: 6px 0; color: rgba(255,255,255,0.92); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 22px rgba(15,23,42,0.06);
+      margin-bottom: 20px;
+    }
+    h2 { margin-top: 0; border-left: 5px solid var(--accent); padding-left: 12px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 18px;
+    }
+    .project {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 20px rgba(15,23,42,0.05);
+    }
+    .project h3 { margin-top: 0; font-size: 1.08rem; }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      margin-right: 6px;
+      margin-bottom: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+    }
+    ul { padding-left: 22px; }
+    .note, .warning {
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin: 12px 0;
+    }
+    .note {
+      background: #ecfdf5;
+      color: var(--ok);
+      border: 1px solid #a7f3d0;
+    }
+    .warning {
+      background: #fff7ed;
+      color: var(--warn);
+      border: 1px solid #fdba74;
+    }
+    .footer { margin-top: 30px; text-align: center; color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Raspberry Pi 常見課堂專題 20 選</h1>
+      <p>依據目前課程材料整理，包含 Raspberry Pi 5、Python、GPIO、MQTT、Node-RED、Web、資料庫，以及 1080p Web CAM。</p>
+      <p>以下專題綜合了樹莓派常見教學方向與網路上高頻出現的專題類型，整理成適合課堂使用的版本。</p>
+    </section>
+
+    <section class="card">
+      <h2>材料與課程能力對應</h2>
+      <ul>
+        <li><strong>Pi 5</strong>：主機平台、Linux、Python、Web、Docker</li>
+        <li><strong>1080p Web CAM</strong>：影像擷取、串流、監控、影像辨識</li>
+        <li><strong>GPIO</strong>：LED、按鈕、蜂鳴器、感測器整合</li>
+        <li><strong>MQTT / Node-RED</strong>：IoT 訊息傳輸與視覺化</li>
+        <li><strong>MariaDB / Flask / Django</strong>：後台網站與資料儲存</li>
+      </ul>
+      <div class="note">我有刻意挑選「能在課堂中完成原型」且「能延伸成專題」的題目，而不是只列很炫但不適合教學的案子。</div>
+    </section>
+
+    <section class="card">
+      <h2>20 個常見且適合課堂的 Raspberry Pi 專題</h2>
+      <div class="grid">
+        <section class="project"><h3>1. 網頁版即時 Webcam 監看系統</h3><span class="tag">Web CAM</span><span class="tag">Nginx</span><span class="tag">Python</span><p>讓 Pi 5 接上 1080p Webcam，透過網頁顯示即時影像，是非常經典的樹莓派入門專題。</p></section>
+        <section class="project"><h3>2. 動態偵測監視器</h3><span class="tag">Camera</span><span class="tag">Motion Detection</span><p>利用攝影機與影像差異檢測，當畫面有變化時拍照或錄影。</p></section>
+        <section class="project"><h3>3. 智慧門鈴或訪客拍照系統</h3><span class="tag">Web CAM</span><span class="tag">GPIO</span><p>按鈕觸發攝影機拍照，再把照片存檔或上傳到網頁後台。</p></section>
+        <section class="project"><h3>4. MQTT 攝影機事件發布系統</h3><span class="tag">MQTT</span><span class="tag">Camera</span><p>影像偵測或按鈕觸發後，透過 MQTT 發送事件通知，適合和 Node-RED 整合。</p></section>
+        <section class="project"><h3>5. 人臉偵測或物件辨識入門系統</h3><span class="tag">OpenCV</span><span class="tag">AI</span><p>以 Webcam 做即時辨識，是結合 AI 與樹莓派的熱門專題方向。</p></section>
+        <section class="project"><h3>6. 溫濕度監控系統</h3><span class="tag">Sensors</span><span class="tag">Python</span><p>讀取 DHT 感測器資料，顯示於終端機、網站或儀表板。</p></section>
+        <section class="project"><h3>7. 光線自動照明系統</h3><span class="tag">GPIO</span><span class="tag">Light Sensor</span><p>光線不足時自動亮 LED 或控制繼電器。</p></section>
+        <section class="project"><h3>8. PIR 人體移動偵測警報器</h3><span class="tag">PIR</span><span class="tag">Buzzer</span><p>感測有人移動時觸發蜂鳴器或傳送警報訊息。</p></section>
+        <section class="project"><h3>9. 智慧教室出入偵測系統</h3><span class="tag">PIR</span><span class="tag">MQTT</span><p>用人體感測器偵測教室是否有人，進一步搭配儀表板顯示狀態。</p></section>
+        <section class="project"><h3>10. GPIO 遠端控制平台</h3><span class="tag">Flask</span><span class="tag">GPIO</span><p>用 Web 頁面控制 LED、蜂鳴器或其他輸出裝置。</p></section>
+        <section class="project"><h3>11. Node-RED 智慧家居控制面板</h3><span class="tag">Node-RED</span><span class="tag">Dashboard</span><p>透過儀表板控制 GPIO 與查看感測資料，非常適合課堂展示。</p></section>
+        <section class="project"><h3>12. MQTT 感測器資料收集站</h3><span class="tag">MQTT</span><span class="tag">Python</span><p>由多個裝置送資料到 Pi，再統一儲存或顯示。</p></section>
+        <section class="project"><h3>13. IoT 資料儀表板</h3><span class="tag">Node-RED</span><span class="tag">MariaDB</span><p>將感測資料存入資料庫，再以儀表板顯示歷史變化。</p></section>
+        <section class="project"><h3>14. 環境監測網站</h3><span class="tag">Django</span><span class="tag">Database</span><p>以 Django 建立後台網站，管理感測器資料與紀錄。</p></section>
+        <section class="project"><h3>15. Flask API 感測資料服務</h3><span class="tag">Flask</span><span class="tag">API</span><p>將 GPIO 或感測資料封裝成 REST API，供前端或其他系統使用。</p></section>
+        <section class="project"><h3>16. 樹莓派迷你 Web Server</h3><span class="tag">Nginx</span><span class="tag">Linux</span><p>部署靜態網站或教學首頁，是 Web 與 Linux 的基礎專題。</p></section>
+        <section class="project"><h3>17. 智慧相簿 / 縮時攝影系統</h3><span class="tag">Camera</span><span class="tag">Storage</span><p>定時拍照，產生影像紀錄或縮時影片。</p></section>
+        <section class="project"><h3>18. 線上點名或影像打卡原型</h3><span class="tag">Camera</span><span class="tag">Web</span><p>結合攝影機、Web 後台與資料儲存，適合作為進階專題發想。</p></section>
+        <section class="project"><h3>19. 多介面感測器匯流排展示平台</h3><span class="tag">I2C</span><span class="tag">SPI</span><span class="tag">UART</span><p>將不同介面的感測器接到 Pi 上，展示通訊差異與驅動方式。</p></section>
+        <section class="project"><h3>20. 本地 AI 影像監測雛形</h3><span class="tag">Ollama</span><span class="tag">Camera</span><span class="tag">AI</span><p>用樹莓派作為邊緣運算節點，結合影像資料與本地模型，做智慧監測雛形。</p></section>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>依課堂難度分級建議</h2>
+      <ul>
+        <li><strong>初階：</strong> LED 控制、按鈕、Web Server、溫濕度監控、MQTT 收發</li>
+        <li><strong>中階：</strong> Node-RED 儀表板、Flask GPIO 控制、MariaDB 感測資料儲存、PIR 警報</li>
+        <li><strong>進階：</strong> Django 後台、攝影機串流、動態偵測、AI 影像分析、本地部署整合</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>我最推薦的課堂專題方向</h2>
+      <p>如果依你現在已有的教材與材料，我最推薦以下 5 題，因為完成度高、教學連貫、學生成就感也強：</p>
+      <ol>
+        <li>Node-RED + MQTT 感測器儀表板</li>
+        <li>Web CAM 即時串流與動態偵測</li>
+        <li>Flask / Django GPIO 控制平台</li>
+        <li>MariaDB 感測資料紀錄網站</li>
+        <li>GPIO + 感測器 + 網頁後台的整合型 IoT 專題</li>
+      </ol>
+      <div class="note">簡單說，你現在的器材組合很適合做「從硬體到網頁」的一條龍教學，這比單做某一顆感測器更有課程價值。</div>
+    </section>
+
+    <section class="card">
+      <h2>參考方向來源</h2>
+      <ul>
+        <li>Raspberry Pi Foundation 教學資源與教學主題整理</li>
+        <li>Raspberry Pi Webcam / Camera project 類型教學文章</li>
+        <li>MQTT + Raspberry Pi project 類型文章</li>
+        <li>感測器、Web Server、Node-RED、IoT Dashboard 等常見樹莓派專題類型整理</li>
+      </ul>
+      <p>本頁不是逐篇翻譯外部文章，而是依常見專題方向與你目前課程材料重新整理成更適合教學使用的版本。</p>
+    </section>
+
+    <div class="footer">RaspberryPi_Project_Ideas.html, Raspberry Pi 常見課堂專題 20 選</div>
+  </div>
+</body>
+</html>

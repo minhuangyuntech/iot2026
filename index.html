@@ -6,42 +6,60 @@
   <title>IoT 2026 課程教材入口</title>
   <style>
     :root {
-      --bg: #f4f7fb;
+      --bg: #eef4fb;
       --card: #ffffff;
       --text: #1f2937;
       --muted: #6b7280;
       --accent: #1d4ed8;
+      --accent2: #0f766e;
+      --accent3: #7c3aed;
       --border: #dbe3ef;
-      --shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+      --shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
-      background: var(--bg);
+      background: linear-gradient(180deg, #eef4fb 0%, #f8fbff 100%);
       color: var(--text);
       line-height: 1.7;
     }
     .container {
-      max-width: 1180px;
+      max-width: 1240px;
       margin: 0 auto;
       padding: 32px 20px 64px;
     }
     .hero {
       background: linear-gradient(135deg, #1d4ed8, #0f172a);
       color: #fff;
-      border-radius: 22px;
-      padding: 40px 34px;
+      border-radius: 24px;
+      padding: 42px 36px;
       margin-bottom: 28px;
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+      box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18);
     }
     .hero h1 {
       margin: 0 0 10px;
-      font-size: 2.3rem;
+      font-size: 2.4rem;
     }
     .hero p {
-      margin: 6px 0;
+      margin: 8px 0;
       color: rgba(255,255,255,0.92);
+      max-width: 900px;
+    }
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 18px;
+    }
+    .pill {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.92rem;
+      font-weight: 700;
     }
     .toc {
       background: #ffffff;
@@ -63,13 +81,25 @@
       font-size: 0.95rem;
     }
     .section {
-      margin-bottom: 30px;
+      margin-bottom: 34px;
+    }
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
     }
     .section h2 {
-      margin: 0 0 16px;
-      font-size: 1.5rem;
+      margin: 0;
+      font-size: 1.55rem;
       padding-left: 12px;
       border-left: 6px solid var(--accent);
+    }
+    .section small {
+      color: var(--muted);
+      font-size: 0.95rem;
     }
     .grid {
       display: grid;
@@ -82,6 +112,11 @@
       border-radius: 18px;
       padding: 22px;
       box-shadow: var(--shadow);
+      transition: transform 0.18s ease, box-shadow 0.18s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 18px 34px rgba(15, 23, 42, 0.12);
     }
     .card h3 {
       margin-top: 0;
@@ -113,14 +148,18 @@
       border-radius: 10px;
       font-weight: 700;
     }
+    .highlight {
+      background: linear-gradient(135deg, #ecfeff, #eff6ff);
+      border: 1px solid #c7d2fe;
+    }
     .footer {
-      margin-top: 36px;
+      margin-top: 38px;
       text-align: center;
       color: var(--muted);
       font-size: 0.95rem;
     }
     @media (max-width: 640px) {
-      .hero h1 { font-size: 1.8rem; }
+      .hero h1 { font-size: 1.85rem; }
       .container { padding: 20px 14px 40px; }
       .hero, .toc, .card { padding: 20px; }
       .card p { min-height: auto; }
@@ -131,8 +170,13 @@
   <div class="container">
     <section class="hero">
       <h1>IoT 2026 課程教材入口</h1>
-      <p>這裡整理本學期所有可直接授課的 HTML 教材。</p>
-      <p>已依主題分類成 Linux、Python、硬體控制、IoT 通訊、Web 與資料庫，方便教學時快速切換。</p>
+      <p>這裡整理本學期所有可直接授課的 HTML 教材，已依主題分類成基礎能力、硬體控制、IoT 通訊、Web 開發與資料庫。</p>
+      <p>目前課程材料包含 Raspberry Pi 5、1080p Web CAM、Python、GPIO、MQTT、Node-RED、Flask、Django 與 MariaDB，已足夠構成完整的課堂與專題教學路線。</p>
+      <div class="stats">
+        <span class="pill">教材頁面 12+</span>
+        <span class="pill">涵蓋 Linux / Python / GPIO / MQTT / Web</span>
+        <span class="pill">含 Raspberry Pi 專題題庫</span>
+      </div>
     </section>
 
     <section class="toc">
@@ -142,10 +186,11 @@
       <a href="#iot">IoT 與通訊</a>
       <a href="#web">Web 開發與部署</a>
       <a href="#database">資料庫</a>
+      <a href="#projects">課堂專題與延伸</a>
     </section>
 
     <section class="section" id="foundation">
-      <h2>基礎能力</h2>
+      <div class="section-head"><h2>基礎能力</h2><small>先建立 Linux 與 Python 基礎，後續進入 IoT 與 Web 會更順。</small></div>
       <div class="grid">
         <section class="card">
           <span class="tag">Linux</span>
@@ -153,7 +198,6 @@
           <p>整理 Linux 與 Ubuntu 入門最重要的終端機指令、檔案管理、權限概念與常用操作。</p>
           <a class="btn" href="Linux_CMD.html">開啟教材</a>
         </section>
-
         <section class="card">
           <span class="tag">Python</span>
           <h3>Python 基本語法與常用指令教材</h3>
@@ -164,7 +208,7 @@
     </section>
 
     <section class="section" id="hardware">
-      <h2>硬體控制與 Raspberry Pi</h2>
+      <div class="section-head"><h2>硬體控制與 Raspberry Pi</h2><small>從系統安裝、GPIO、感測器到 Pi 5 的完整實作。</small></div>
       <div class="grid">
         <section class="card">
           <span class="tag">Raspberry Pi 5</span>
@@ -172,14 +216,12 @@
           <p>從系統燒錄、SSH、套件更新，到 Nginx、Docker、Ollama、MariaDB、phpMyAdmin 與 LAMP 環境建置。</p>
           <a class="btn" href="RaspberryPi5_Setup.html">開啟教材</a>
         </section>
-
         <section class="card">
           <span class="tag">GPIO</span>
           <h3>Raspberry Pi 使用 Python 操作 GPIO 教材</h3>
           <p>介紹 GPIO 腳位、LED、按鈕、PWM、蜂鳴器與數位輸入等實作，適合硬體控制入門。</p>
           <a class="btn" href="RaspberryPi_GPIO_Python.html">開啟教材</a>
         </section>
-
         <section class="card">
           <span class="tag">Sensors</span>
           <h3>Raspberry Pi 感測器整合教材</h3>
@@ -190,7 +232,7 @@
     </section>
 
     <section class="section" id="iot">
-      <h2>IoT 與通訊</h2>
+      <div class="section-head"><h2>IoT 與通訊</h2><small>適合搭配 Raspberry Pi、Pico W、ESP32、Web CAM 與感測器做整合專題。</small></div>
       <div class="grid">
         <section class="card">
           <span class="tag">MQTT</span>
@@ -198,14 +240,12 @@
           <p>從 MQTT 基本觀念、Mosquitto Broker、Python Subscriber，到 Pico W 與 ESP32 訊息收發範例。</p>
           <a class="btn" href="MQTT_Teaching.html">開啟教材</a>
         </section>
-
         <section class="card">
           <span class="tag">Node-RED</span>
           <h3>Node-RED + MQTT 儀表板教學</h3>
           <p>介紹 Node-RED 與 MQTT 整合、儀表板建立、感測資料顯示與裝置控制的基本流程。</p>
           <a class="btn" href="NodeRED_MQTT_Dashboard.html">開啟教材</a>
         </section>
-
         <section class="card">
           <span class="tag">Interfaces</span>
           <h3>常見介面 I2C, SPI, UART 教材</h3>
@@ -216,7 +256,7 @@
     </section>
 
     <section class="section" id="web">
-      <h2>Web 開發與部署</h2>
+      <div class="section-head"><h2>Web 開發與部署</h2><small>從輕量 Flask 到完整 Django，涵蓋網站開發與正式部署。</small></div>
       <div class="grid">
         <section class="card">
           <span class="tag">Flask</span>
@@ -224,7 +264,6 @@
           <p>介紹 Flask 安裝、路由、模板與初學者適合的網站與 API 入門流程。</p>
           <a class="btn" href="Flask_Basics.html">開啟教材</a>
         </section>
-
         <section class="card">
           <span class="tag">Django</span>
           <h3>Django 與 Gunicorn + Nginx 部署教材</h3>
@@ -235,7 +274,7 @@
     </section>
 
     <section class="section" id="database">
-      <h2>資料庫</h2>
+      <div class="section-head"><h2>資料庫</h2><small>適合搭配 Flask、Django、感測器資料與 IoT 系統後台。</small></div>
       <div class="grid">
         <section class="card">
           <span class="tag">SQL</span>
@@ -246,8 +285,20 @@
       </div>
     </section>
 
+    <section class="section" id="projects">
+      <div class="section-head"><h2>課堂專題與延伸</h2><small>結合 Pi 5 與 1080p Web CAM 的教學延伸題庫。</small></div>
+      <div class="grid">
+        <section class="card highlight">
+          <span class="tag">Projects</span>
+          <h3>Raspberry Pi 常見課堂專題 20 選</h3>
+          <p>整理至少 20 個適合課堂的 Raspberry Pi 專題，涵蓋 Web CAM、感測器、MQTT、Web 控制、資料庫與 AI 延伸。</p>
+          <a class="btn" href="RaspberryPi_Project_Ideas.html">開啟教材</a>
+        </section>
+      </div>
+    </section>
+
     <div class="footer">
-      index.html, IoT 2026 分類式課程教材入口
+      index.html, IoT 2026 升級版分類式課程教材入口
     </div>
   </div>
 </body>
