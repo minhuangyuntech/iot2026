@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>MariaDB 與 SQL 基礎教材</title><style>:root{--bg:#f6f8fb;--card:#fff;--text:#1f2937;--muted:#6b7280;--accent:#1d4ed8;--accent-soft:#dbeafe;--border:#dbe3ef;--code-bg:#0f172a;--code-text:#e5eefc}*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.75}.container{max-width:1180px;margin:0 auto;padding:32px 20px 64px}.hero{background:linear-gradient(135deg,#1d4ed8,#111827);color:#fff;border-radius:20px;padding:36px 32px;margin-bottom:24px}.hero h1{margin:0 0 8px;font-size:2.15rem}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:20px}h2{margin-top:0;border-left:5px solid var(--accent);padding-left:12px}code{background:#eef2ff;color:#312e81;padding:2px 6px;border-radius:6px}pre{background:var(--code-bg);color:var(--code-text);padding:16px;border-radius:14px;overflow-x:auto}.tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:.85rem;margin-right:8px;background:var(--accent-soft);color:var(--accent);font-weight:600}.footer{text-align:center;color:var(--muted)}</style></head><body><div class="container"><section class="hero"><h1>MariaDB 與 SQL 基礎教材</h1><p>介紹資料庫基本概念、MariaDB 安裝、資料表建立與基本 SQL 指令。</p><div><span class="tag">MariaDB</span><span class="tag">SQL</span><span class="tag">資料庫</span></div></section><section class="card"><h2>一、資料庫基本概念</h2><ul><li>Database 是資料集合</li><li>Table 是資料表</li><li>Row 是資料列</li><li>Column 是欄位</li></ul></section><section class="card"><h2>二、安裝 MariaDB</h2><pre><code>sudo apt update
+sudo apt install -y mariadb-server mariadb-client</code></pre></section><section class="card"><h2>三、登入 MariaDB</h2><pre><code>sudo mysql -u root -p</code></pre></section><section class="card"><h2>四、常見 SQL 指令</h2><pre><code>CREATE DATABASE school;
+USE school;
+CREATE TABLE students (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(50),
+  score INT
+);
+INSERT INTO students (name, score) VALUES ('Tom', 85);
+SELECT * FROM students;
+UPDATE students SET score = 90 WHERE name='Tom';
+DELETE FROM students WHERE name='Tom';</code></pre></section><section class="card"><h2>五、適合教學延伸</h2><ul><li>與 phpMyAdmin 搭配</li><li>與 Python 連線</li><li>與 Flask / Django 結合</li></ul></section><div class="footer">MariaDB_SQL_Basics.html, MariaDB 與 SQL 基礎教材</div></div></body></html>

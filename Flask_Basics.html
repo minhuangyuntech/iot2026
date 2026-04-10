@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Flask 網站基礎教材</title><style>:root{--bg:#f6f8fb;--card:#fff;--text:#1f2937;--muted:#6b7280;--accent:#dc2626;--accent-soft:#fee2e2;--border:#dbe3ef;--code-bg:#0f172a;--code-text:#e5eefc}*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.75}.container{max-width:1180px;margin:0 auto;padding:32px 20px 64px}.hero{background:linear-gradient(135deg,#dc2626,#111827);color:#fff;border-radius:20px;padding:36px 32px;margin-bottom:24px}.hero h1{margin:0 0 8px;font-size:2.15rem}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:20px}h2{margin-top:0;border-left:5px solid var(--accent);padding-left:12px}code{background:#eef2ff;color:#312e81;padding:2px 6px;border-radius:6px}pre{background:var(--code-bg);color:var(--code-text);padding:16px;border-radius:14px;overflow-x:auto}.tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:.85rem;margin-right:8px;background:var(--accent-soft);color:var(--accent);font-weight:600}.footer{text-align:center;color:var(--muted)}</style></head><body><div class="container"><section class="hero"><h1>Flask 網站基礎教材</h1><p>介紹 Flask 基本概念、建立網站、路由、模板與簡單部署方式。</p><div><span class="tag">Flask</span><span class="tag">Python Web</span><span class="tag">入門</span></div></section><section class="card"><h2>一、Flask 是什麼</h2><p>Flask 是 Python 的輕量級 Web Framework，適合初學者快速建立網站與 API。</p></section><section class="card"><h2>二、安裝 Flask</h2><pre><code>python3 -m venv venv
+source venv/bin/activate
+pip install flask</code></pre></section><section class="card"><h2>三、第一個 Flask 網站</h2><pre><code>from flask import Flask
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return 'Hello Flask'
+
+app.run(host='0.0.0.0', port=5000)</code></pre></section><section class="card"><h2>四、模板範例</h2><pre><code>from flask import render_template
+
+@app.route('/hello')
+def hello():
+    return render_template('index.html')</code></pre></section><section class="card"><h2>五、適合教學的方向</h2><ul><li>表單處理</li><li>簡易 API</li><li>感測器資料展示</li><li>與 MQTT 或資料庫結合</li></ul></section><div class="footer">Flask_Basics.html, Flask 網站基礎教材</div></div></body></html>

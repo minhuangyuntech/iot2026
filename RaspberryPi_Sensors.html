@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raspberry Pi 感測器整合教材</title>
+  <style>
+    :root { --bg:#f6f8fb; --card:#fff; --text:#1f2937; --muted:#6b7280; --accent:#0f766e; --accent-soft:#ccfbf1; --border:#dbe3ef; --code-bg:#0f172a; --code-text:#e5eefc; --ok:#065f46; --warn:#92400e; }
+    *{box-sizing:border-box} body{margin:0;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.75}
+    .container{max-width:1180px;margin:0 auto;padding:32px 20px 64px}.hero{background:linear-gradient(135deg,#0f766e,#111827);color:#fff;border-radius:20px;padding:36px 32px;box-shadow:0 18px 45px rgba(15,23,42,.18);margin-bottom:24px}.hero h1{margin:0 0 8px;font-size:2.15rem}.hero p{margin:8px 0;color:rgba(255,255,255,.92)}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;margin-bottom:24px}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 8px 22px rgba(15,23,42,.06);margin-bottom:20px}h2,h3{color:#111827}h2{margin-top:0;border-left:5px solid var(--accent);padding-left:12px}ul,ol{padding-left:22px}code{background:#eef2ff;color:#312e81;padding:2px 6px;border-radius:6px;font-family:Consolas,monospace}pre{background:var(--code-bg);color:var(--code-text);padding:16px;border-radius:14px;overflow-x:auto}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top}th{background:#ecfeff}.tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:.85rem;margin-right:8px;margin-bottom:8px;background:var(--accent-soft);color:var(--accent);font-weight:600}.note,.warning{padding:14px 16px;border-radius:14px;margin:12px 0}.note{background:#ecfdf5;color:var(--ok);border:1px solid #a7f3d0}.warning{background:#fff7ed;color:var(--warn);border:1px solid #fdba74}.footer{margin-top:28px;color:var(--muted);font-size:.95rem;text-align:center}
+  </style>
+</head>
+<body><div class="container"><section class="hero"><h1>Raspberry Pi 感測器整合教材</h1><p>介紹 Raspberry Pi 與常見感測器模組整合方式，包含溫濕度、光敏、超音波、PIR 人體感測等。</p><p>適合 IoT、感測器介接、智慧裝置與 Python 控制課程。</p><div><span class="tag">Raspberry Pi</span><span class="tag">感測器</span><span class="tag">Python</span><span class="tag">IoT</span></div></section>
+<section class="card"><h2>一、教學目標</h2><ul><li>理解感測器與 Raspberry Pi 的整合概念</li><li>學會基本接線與安全注意事項</li><li>能使用 Python 讀取常見感測器資料</li><li>理解如何將感測資料應用於 IoT 系統</li></ul></section>
+<section class="card"><h2>二、常見感測器</h2><table><thead><tr><th>感測器</th><th>用途</th><th>介面</th></tr></thead><tbody><tr><td>DHT11 / DHT22</td><td>溫濕度</td><td>數位</td></tr><tr><td>LDR 光敏電阻</td><td>光線強弱</td><td>類比模組或數位模組</td></tr><tr><td>HC-SR04</td><td>距離量測</td><td>Trig / Echo</td></tr><tr><td>PIR</td><td>人體移動偵測</td><td>數位</td></tr><tr><td>MQ 系列</td><td>氣體偵測</td><td>模組化輸出</td></tr></tbody></table></section>
+<section class="card"><h2>三、DHT11 / DHT22 範例</h2><pre><code>import Adafruit_DHT
+sensor = Adafruit_DHT.DHT11
+pin = 4
+humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
+print("Temp:", temperature)
+print("Humidity:", humidity)</code></pre><div class="warning">不同系統環境的 DHT 套件可能不同，教學前建議先確認實機可用版本。</div></section>
+<section class="card"><h2>四、PIR 人體感測範例</h2><pre><code>from gpiozero import MotionSensor
+from signal import pause
+pir = MotionSensor(17)
+pir.when_motion = lambda: print("偵測到人體移動")
+pir.when_no_motion = lambda: print("沒有移動")
+pause()</code></pre></section>
+<section class="card"><h2>五、超音波感測器概念</h2><p>HC-SR04 常用來量測距離，但 Echo 端為 5V，不能直接接 Raspberry Pi GPIO，需分壓或使用保護電路。</p><div class="warning">這是上課一定要強調的點，不然很容易燒板。</div></section>
+<section class="card"><h2>六、感測資料應用</h2><ul><li>顯示在終端機</li><li>上傳到 MQTT Broker</li><li>顯示在 Node-RED 儀表板</li><li>寫入資料庫</li><li>透過 Flask / Django 顯示成網站</li></ul></section>
+<section class="card"><h2>七、教學建議</h2><ol><li>先從 GPIO 入門</li><li>選一個感測器實作</li><li>讓學生把資料印出來</li><li>再延伸到 MQTT 或 Web 顯示</li></ol></section><div class="footer">RaspberryPi_Sensors.html, Raspberry Pi 感測器整合教材</div></div></body></html>
