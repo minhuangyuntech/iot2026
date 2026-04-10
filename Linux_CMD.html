@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ubuntu 必學指令教學</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --border: #dbe3ef;
+      --code-bg: #0f172a;
+      --code-text: #e5eefc;
+      --ok: #065f46;
+      --warn: #92400e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #1d4ed8, #0f172a);
+      color: #fff;
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2.2rem;
+    }
+    .hero p {
+      margin: 8px 0;
+      color: rgba(255,255,255,0.9);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+    }
+    h2, h3 {
+      color: #111827;
+    }
+    h2 {
+      margin-top: 0;
+      border-left: 5px solid var(--accent);
+      padding-left: 12px;
+    }
+    ul, ol {
+      padding-left: 22px;
+    }
+    li + li {
+      margin-top: 6px;
+    }
+    code {
+      background: #eef2ff;
+      color: #312e81;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", "Consolas", monospace;
+      font-size: 0.95em;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.96rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #eff6ff;
+    }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .note, .warning {
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin: 12px 0;
+    }
+    .note {
+      background: #ecfdf5;
+      color: var(--ok);
+      border: 1px solid #a7f3d0;
+    }
+    .warning {
+      background: #fff7ed;
+      color: var(--warn);
+      border: 1px solid #fdba74;
+    }
+    .footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.75rem; }
+      .container { padding: 20px 14px 40px; }
+      .hero, .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Ubuntu 必學指令教學</h1>
+      <p>適合課堂投影片補充、實機操作示範、以及學生課後自學。</p>
+      <p>主軸是「看得懂、打得出來、知道何時用」。</p>
+      <div style="margin-top:16px;">
+        <span class="tag">Linux 基礎</span>
+        <span class="tag">Ubuntu 實作</span>
+        <span class="tag">終端機教學</span>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>一、先建立觀念</h2>
+        <ul>
+          <li><strong>終端機 Terminal</strong> 是文字介面的操作環境。</li>
+          <li><strong>Shell</strong> 是負責解讀指令的程式，Ubuntu 常見為 <code>bash</code>。</li>
+          <li><strong>路徑</strong> 分成絕對路徑與相對路徑，例如 <code>/home/user</code> 與 <code>../</code>。</li>
+          <li><strong>權限</strong> 是 Linux 很重要的概念，常見搭配 <code>sudo</code> 使用。</li>
+        </ul>
+        <div class="note">建議上課時先讓學生理解：圖形介面是方便，指令列才是 Linux 的核心控制方式。</div>
+      </section>
+
+      <section class="card">
+        <h2>二、最常用快捷規則</h2>
+        <ul>
+          <li><code>Tab</code> 自動補齊檔名或指令</li>
+          <li><code>↑ / ↓</code> 叫出歷史指令</li>
+          <li><code>Ctrl + C</code> 中斷目前執行中的程式</li>
+          <li><code>Ctrl + L</code> 清空畫面</li>
+          <li><code>pwd</code> 查看目前所在目錄</li>
+        </ul>
+        <div class="warning">提醒學生，不要隨便執行自己不理解的指令，特別是含有 <code>sudo</code>、<code>rm</code>、<code>chmod</code> 的命令。</div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>三、Ubuntu 必學指令總表</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>分類</th>
+            <th>指令</th>
+            <th>用途</th>
+            <th>範例</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>目前位置</td><td><code>pwd</code></td><td>顯示目前所在目錄</td><td><code>pwd</code></td></tr>
+          <tr><td>列出檔案</td><td><code>ls</code></td><td>查看目錄內容</td><td><code>ls -al</code></td></tr>
+          <tr><td>切換目錄</td><td><code>cd</code></td><td>移動到指定資料夾</td><td><code>cd /home/minhuang</code></td></tr>
+          <tr><td>建立資料夾</td><td><code>mkdir</code></td><td>建立新目錄</td><td><code>mkdir lab01</code></td></tr>
+          <tr><td>建立空檔</td><td><code>touch</code></td><td>建立檔案</td><td><code>touch note.txt</code></td></tr>
+          <tr><td>複製</td><td><code>cp</code></td><td>複製檔案或資料夾</td><td><code>cp a.txt backup/a.txt</code></td></tr>
+          <tr><td>搬移/重新命名</td><td><code>mv</code></td><td>移動檔案或改名</td><td><code>mv old.txt new.txt</code></td></tr>
+          <tr><td>刪除</td><td><code>rm</code></td><td>刪除檔案</td><td><code>rm test.txt</code></td></tr>
+          <tr><td>刪除資料夾</td><td><code>rm -r</code></td><td>遞迴刪除資料夾</td><td><code>rm -r old_dir</code></td></tr>
+          <tr><td>查看內容</td><td><code>cat</code></td><td>直接顯示文字檔內容</td><td><code>cat README.md</code></td></tr>
+          <tr><td>分頁閱讀</td><td><code>less</code></td><td>逐頁查看長檔案</td><td><code>less /var/log/syslog</code></td></tr>
+          <tr><td>編輯器</td><td><code>nano</code></td><td>文字模式編輯檔案</td><td><code>nano report.txt</code></td></tr>
+          <tr><td>搜尋文字</td><td><code>grep</code></td><td>搜尋關鍵字</td><td><code>grep "error" app.log</code></td></tr>
+          <tr><td>搜尋檔案</td><td><code>find</code></td><td>依名稱或條件找檔案</td><td><code>find . -name "*.c"</code></td></tr>
+          <tr><td>權限</td><td><code>chmod</code></td><td>修改檔案權限</td><td><code>chmod +x run.sh</code></td></tr>
+          <tr><td>擁有者</td><td><code>chown</code></td><td>修改檔案擁有者</td><td><code>sudo chown user:user file.txt</code></td></tr>
+          <tr><td>系統管理</td><td><code>sudo</code></td><td>以管理者權限執行</td><td><code>sudo apt update</code></td></tr>
+          <tr><td>套件管理</td><td><code>apt</code></td><td>安裝、更新、移除套件</td><td><code>sudo apt install git</code></td></tr>
+          <tr><td>網路測試</td><td><code>ping</code></td><td>測試網路連線</td><td><code>ping 8.8.8.8</code></td></tr>
+          <tr><td>顯示程序</td><td><code>ps</code></td><td>查看執行中的程序</td><td><code>ps aux</code></td></tr>
+          <tr><td>即時監看</td><td><code>top</code></td><td>查看 CPU/記憶體使用</td><td><code>top</code></td></tr>
+          <tr><td>終止程序</td><td><code>kill</code></td><td>結束指定程序</td><td><code>kill 1234</code></td></tr>
+          <tr><td>磁碟空間</td><td><code>df -h</code></td><td>查看磁碟剩餘空間</td><td><code>df -h</code></td></tr>
+          <tr><td>目錄大小</td><td><code>du -sh</code></td><td>查看資料夾大小</td><td><code>du -sh ./data</code></td></tr>
+          <tr><td>下載檔案</td><td><code>wget</code></td><td>從網址下載檔案</td><td><code>wget https://example.com/a.zip</code></td></tr>
+          <tr><td>版本控制</td><td><code>git</code></td><td>管理程式碼版本</td><td><code>git status</code></td></tr>
+          <tr><td>遠端連線</td><td><code>ssh</code></td><td>連到其他主機</td><td><code>ssh user@192.168.1.10</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>四、最適合課堂示範的基礎操作</h2>
+      <ol>
+        <li>查看目前目錄與內容
+          <pre><code>pwd
+ls
+ls -al</code></pre>
+        </li>
+        <li>建立資料夾與檔案
+          <pre><code>mkdir demo_linux
+cd demo_linux
+touch hello.txt
+ls</code></pre>
+        </li>
+        <li>寫入與查看檔案
+          <pre><code>echo "Hello Ubuntu" > hello.txt
+cat hello.txt</code></pre>
+        </li>
+        <li>複製、搬移與刪除
+          <pre><code>cp hello.txt hello_backup.txt
+mv hello_backup.txt backup.txt
+rm backup.txt</code></pre>
+        </li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>五、教學上一定要講的觀念</h2>
+      <h3>1. 絕對路徑與相對路徑</h3>
+      <ul>
+        <li><code>/home/student/file.txt</code> 是絕對路徑</li>
+        <li><code>./file.txt</code> 是相對路徑</li>
+        <li><code>..</code> 代表上一層目錄</li>
+      </ul>
+
+      <h3>2. Linux 區分大小寫</h3>
+      <ul>
+        <li><code>Report.txt</code> 與 <code>report.txt</code> 是不同檔案</li>
+      </ul>
+
+      <h3>3. 不要濫用 sudo</h3>
+      <ul>
+        <li>只有真的需要系統權限時才用 <code>sudo</code></li>
+        <li>養成先用一般使用者測試的習慣</li>
+      </ul>
+
+      <h3>4. 指令可以串接</h3>
+      <pre><code>cat file.txt | grep error</code></pre>
+      <p>這代表先顯示檔案，再把結果交給 <code>grep</code> 搜尋。</p>
+    </section>
+
+    <section class="card">
+      <h2>六、IoT 與電子系學生特別實用的指令</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>情境</th>
+            <th>指令</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>檢查 USB 裝置</td><td><code>lsusb</code></td><td>查看開發板、轉接器、USB 裝置</td></tr>
+          <tr><td>檢查序列埠</td><td><code>ls /dev/tty*</code></td><td>確認 Arduino、ESP32、USB-UART 埠</td></tr>
+          <tr><td>查看網路介面</td><td><code>ip a</code></td><td>查詢 IP 與網卡狀態</td></tr>
+          <tr><td>查看路由</td><td><code>ip route</code></td><td>理解封包走向</td></tr>
+          <tr><td>測試連到樹莓派</td><td><code>ssh pi@192.168.x.x</code></td><td>遠端登入裝置</td></tr>
+          <tr><td>安裝開發工具</td><td><code>sudo apt install build-essential</code></td><td>安裝 gcc、g++、make</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>七、課堂練習建議</h2>
+      <ol>
+        <li>建立自己的學號資料夾</li>
+        <li>在資料夾中建立三個文字檔</li>
+        <li>把其中一個檔案重新命名</li>
+        <li>用 <code>cat</code> 顯示內容</li>
+        <li>用 <code>grep</code> 搜尋指定文字</li>
+        <li>用 <code>find</code> 找出副檔名為 <code>.txt</code> 的檔案</li>
+      </ol>
+      <div class="note">如果要做 50 分鐘課程，這份內容很夠。如果要做 90 分鐘課程，可以加上 shell script、pipe、redirect、權限八進位表示法。</div>
+    </section>
+
+    <section class="card">
+      <h2>八、結語</h2>
+      <p>學生只要先熟練這些指令，就已經具備 Ubuntu 入門操作能力，後續再銜接 C/C++ 開發、Python、自動化腳本、Git、SSH、樹莓派與 IoT 開發都會順很多。</p>
+    </section>
+
+    <div class="footer">
+      Linux_CMD.html, Ubuntu 必學指令教學講義
+    </div>
+  </div>
+</body>
+</html>
