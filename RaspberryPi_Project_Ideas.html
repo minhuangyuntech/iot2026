@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Raspberry Pi 常見課堂專題 20 選</title>
+  <title>Raspberry Pi 常見課堂專題分級整理</title>
   <style>
     :root {
       --bg: #f6f8fb;
@@ -11,12 +11,10 @@
       --text: #1f2937;
       --muted: #6b7280;
       --accent: #0f766e;
-      --accent-soft: #ccfbf1;
       --border: #dbe3ef;
-      --code-bg: #0f172a;
-      --code-text: #e5eefc;
-      --ok: #065f46;
-      --warn: #92400e;
+      --beginner: #dbeafe;
+      --intermediate: #fef3c7;
+      --advanced: #fee2e2;
     }
     * { box-sizing: border-box; }
     body {
@@ -49,7 +47,11 @@
       box-shadow: 0 8px 22px rgba(15,23,42,0.06);
       margin-bottom: 20px;
     }
-    h2 { margin-top: 0; border-left: 5px solid var(--accent); padding-left: 12px; }
+    h2 {
+      margin-top: 0;
+      border-left: 5px solid var(--accent);
+      padding-left: 12px;
+    }
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -70,25 +72,24 @@
       font-size: 0.82rem;
       margin-right: 6px;
       margin-bottom: 8px;
-      background: var(--accent-soft);
-      color: var(--accent);
       font-weight: 700;
     }
-    ul { padding-left: 22px; }
-    .note, .warning {
+    .b { background: var(--beginner); color: #1d4ed8; }
+    .i { background: var(--intermediate); color: #92400e; }
+    .a { background: var(--advanced); color: #b91c1c; }
+    .source a {
+      color: #0f766e;
+      text-decoration: none;
+      word-break: break-word;
+    }
+    ul, ol { padding-left: 22px; }
+    .note {
       padding: 14px 16px;
       border-radius: 14px;
       margin: 12px 0;
-    }
-    .note {
       background: #ecfdf5;
-      color: var(--ok);
+      color: #065f46;
       border: 1px solid #a7f3d0;
-    }
-    .warning {
-      background: #fff7ed;
-      color: var(--warn);
-      border: 1px solid #fdba74;
     }
     .footer { margin-top: 30px; text-align: center; color: var(--muted); }
   </style>
@@ -96,83 +97,70 @@
 <body>
   <div class="container">
     <section class="hero">
-      <h1>Raspberry Pi 常見課堂專題 20 選</h1>
-      <p>依據目前課程材料整理，包含 Raspberry Pi 5、Python、GPIO、MQTT、Node-RED、Web、資料庫，以及 1080p Web CAM。</p>
-      <p>以下專題綜合了樹莓派常見教學方向與網路上高頻出現的專題類型，整理成適合課堂使用的版本。</p>
+      <h1>Raspberry Pi 常見課堂專題分級整理</h1>
+      <p>依據目前課程材料整理，包含 Raspberry Pi 5、1080p Web CAM、Python、GPIO、MQTT、Node-RED、Flask、Django 與 MariaDB。</p>
+      <p>以下將常見樹莓派專題細分成初階、中階、高階，並加上摘要與推薦參考來源，方便直接規劃課堂或專題分組。</p>
     </section>
 
     <section class="card">
-      <h2>材料與課程能力對應</h2>
+      <h2>使用方式建議</h2>
       <ul>
-        <li><strong>Pi 5</strong>：主機平台、Linux、Python、Web、Docker</li>
-        <li><strong>1080p Web CAM</strong>：影像擷取、串流、監控、影像辨識</li>
-        <li><strong>GPIO</strong>：LED、按鈕、蜂鳴器、感測器整合</li>
-        <li><strong>MQTT / Node-RED</strong>：IoT 訊息傳輸與視覺化</li>
-        <li><strong>MariaDB / Flask / Django</strong>：後台網站與資料儲存</li>
+        <li><strong>初階</strong> 適合單週實作或前半學期入門</li>
+        <li><strong>中階</strong> 適合期中前後的小型整合專題</li>
+        <li><strong>高階</strong> 適合學期末分組專題或專題競賽發想</li>
       </ul>
-      <div class="note">我有刻意挑選「能在課堂中完成原型」且「能延伸成專題」的題目，而不是只列很炫但不適合教學的案子。</div>
+      <div class="note">我建議課程安排可以採用「前 6 週打基礎，中間 4 週做整合，最後 4 到 6 週做分級專題」。</div>
     </section>
 
     <section class="card">
-      <h2>20 個常見且適合課堂的 Raspberry Pi 專題</h2>
+      <h2>初階專題</h2>
       <div class="grid">
-        <section class="project"><h3>1. 網頁版即時 Webcam 監看系統</h3><span class="tag">Web CAM</span><span class="tag">Nginx</span><span class="tag">Python</span><p>讓 Pi 5 接上 1080p Webcam，透過網頁顯示即時影像，是非常經典的樹莓派入門專題。</p></section>
-        <section class="project"><h3>2. 動態偵測監視器</h3><span class="tag">Camera</span><span class="tag">Motion Detection</span><p>利用攝影機與影像差異檢測，當畫面有變化時拍照或錄影。</p></section>
-        <section class="project"><h3>3. 智慧門鈴或訪客拍照系統</h3><span class="tag">Web CAM</span><span class="tag">GPIO</span><p>按鈕觸發攝影機拍照，再把照片存檔或上傳到網頁後台。</p></section>
-        <section class="project"><h3>4. MQTT 攝影機事件發布系統</h3><span class="tag">MQTT</span><span class="tag">Camera</span><p>影像偵測或按鈕觸發後，透過 MQTT 發送事件通知，適合和 Node-RED 整合。</p></section>
-        <section class="project"><h3>5. 人臉偵測或物件辨識入門系統</h3><span class="tag">OpenCV</span><span class="tag">AI</span><p>以 Webcam 做即時辨識，是結合 AI 與樹莓派的熱門專題方向。</p></section>
-        <section class="project"><h3>6. 溫濕度監控系統</h3><span class="tag">Sensors</span><span class="tag">Python</span><p>讀取 DHT 感測器資料，顯示於終端機、網站或儀表板。</p></section>
-        <section class="project"><h3>7. 光線自動照明系統</h3><span class="tag">GPIO</span><span class="tag">Light Sensor</span><p>光線不足時自動亮 LED 或控制繼電器。</p></section>
-        <section class="project"><h3>8. PIR 人體移動偵測警報器</h3><span class="tag">PIR</span><span class="tag">Buzzer</span><p>感測有人移動時觸發蜂鳴器或傳送警報訊息。</p></section>
-        <section class="project"><h3>9. 智慧教室出入偵測系統</h3><span class="tag">PIR</span><span class="tag">MQTT</span><p>用人體感測器偵測教室是否有人，進一步搭配儀表板顯示狀態。</p></section>
-        <section class="project"><h3>10. GPIO 遠端控制平台</h3><span class="tag">Flask</span><span class="tag">GPIO</span><p>用 Web 頁面控制 LED、蜂鳴器或其他輸出裝置。</p></section>
-        <section class="project"><h3>11. Node-RED 智慧家居控制面板</h3><span class="tag">Node-RED</span><span class="tag">Dashboard</span><p>透過儀表板控制 GPIO 與查看感測資料，非常適合課堂展示。</p></section>
-        <section class="project"><h3>12. MQTT 感測器資料收集站</h3><span class="tag">MQTT</span><span class="tag">Python</span><p>由多個裝置送資料到 Pi，再統一儲存或顯示。</p></section>
-        <section class="project"><h3>13. IoT 資料儀表板</h3><span class="tag">Node-RED</span><span class="tag">MariaDB</span><p>將感測資料存入資料庫，再以儀表板顯示歷史變化。</p></section>
-        <section class="project"><h3>14. 環境監測網站</h3><span class="tag">Django</span><span class="tag">Database</span><p>以 Django 建立後台網站，管理感測器資料與紀錄。</p></section>
-        <section class="project"><h3>15. Flask API 感測資料服務</h3><span class="tag">Flask</span><span class="tag">API</span><p>將 GPIO 或感測資料封裝成 REST API，供前端或其他系統使用。</p></section>
-        <section class="project"><h3>16. 樹莓派迷你 Web Server</h3><span class="tag">Nginx</span><span class="tag">Linux</span><p>部署靜態網站或教學首頁，是 Web 與 Linux 的基礎專題。</p></section>
-        <section class="project"><h3>17. 智慧相簿 / 縮時攝影系統</h3><span class="tag">Camera</span><span class="tag">Storage</span><p>定時拍照，產生影像紀錄或縮時影片。</p></section>
-        <section class="project"><h3>18. 線上點名或影像打卡原型</h3><span class="tag">Camera</span><span class="tag">Web</span><p>結合攝影機、Web 後台與資料儲存，適合作為進階專題發想。</p></section>
-        <section class="project"><h3>19. 多介面感測器匯流排展示平台</h3><span class="tag">I2C</span><span class="tag">SPI</span><span class="tag">UART</span><p>將不同介面的感測器接到 Pi 上，展示通訊差異與驅動方式。</p></section>
-        <section class="project"><h3>20. 本地 AI 影像監測雛形</h3><span class="tag">Ollama</span><span class="tag">Camera</span><span class="tag">AI</span><p>用樹莓派作為邊緣運算節點，結合影像資料與本地模型，做智慧監測雛形。</p></section>
+        <section class="project"><h3>1. LED 與按鈕互動控制</h3><span class="tag b">初階</span><p><strong>摘要：</strong>最經典的 GPIO 入門題，讓學生理解輸入與輸出的關係。</p><p class="source"><strong>參考：</strong><a href="https://gpiozero.readthedocs.io/" target="_blank">gpiozero Documentation</a></p></section>
+        <section class="project"><h3>2. 溫濕度監測站</h3><span class="tag b">初階</span><p><strong>摘要：</strong>使用 DHT11 / DHT22 讀取環境資料並顯示於終端機。</p><p class="source"><strong>參考：</strong><a href="https://randomnerdtutorials.com/" target="_blank">Random Nerd Tutorials</a></p></section>
+        <section class="project"><h3>3. 光線感測自動照明</h3><span class="tag b">初階</span><p><strong>摘要：</strong>光線不足時亮燈，適合介紹感測與控制邏輯。</p><p class="source"><strong>參考：</strong><a href="https://www.makeuseof.com/useful-raspberry-pi-sensor-projects/" target="_blank">MUO Sensor Projects</a></p></section>
+        <section class="project"><h3>4. PIR 人體感測警報器</h3><span class="tag b">初階</span><p><strong>摘要：</strong>結合 PIR 與蜂鳴器或 LED，建立簡單警示系統。</p><p class="source"><strong>參考：</strong><a href="https://projects.raspberrypi.org/" target="_blank">Raspberry Pi Projects</a></p></section>
+        <section class="project"><h3>5. Raspberry Pi 迷你 Web Server</h3><span class="tag b">初階</span><p><strong>摘要：</strong>部署簡單網站，讓學生理解伺服器的基本概念。</p><p class="source"><strong>參考：</strong><a href="https://www.xda-developers.com/raspberry-pi-projects-for-students-that-actually-make-sense/" target="_blank">XDA Raspberry Pi student projects</a></p></section>
+        <section class="project"><h3>6. Webcam 即時影像顯示</h3><span class="tag b">初階</span><p><strong>摘要：</strong>接上 1080p Web CAM，建立最基本的影像擷取與網頁顯示。</p><p class="source"><strong>參考：</strong><a href="https://pimylifeup.com/raspberry-pi-webcam-server/" target="_blank">Pi My Life Up Webcam Server</a></p></section>
+        <section class="project"><h3>7. MQTT 訊息收發練習</h3><span class="tag b">初階</span><p><strong>摘要：</strong>用 Raspberry Pi 作為 Broker 或 Client，進行文字訊息傳遞。</p><p class="source"><strong>參考：</strong><a href="https://bytesizedpi.com/python-mqtt-projects-for-raspberry-pi-top-ideas-guide.html" target="_blank">ByteSizedPi MQTT Projects</a></p></section>
       </div>
     </section>
 
     <section class="card">
-      <h2>依課堂難度分級建議</h2>
-      <ul>
-        <li><strong>初階：</strong> LED 控制、按鈕、Web Server、溫濕度監控、MQTT 收發</li>
-        <li><strong>中階：</strong> Node-RED 儀表板、Flask GPIO 控制、MariaDB 感測資料儲存、PIR 警報</li>
-        <li><strong>進階：</strong> Django 後台、攝影機串流、動態偵測、AI 影像分析、本地部署整合</li>
-      </ul>
+      <h2>中階專題</h2>
+      <div class="grid">
+        <section class="project"><h3>8. Node-RED 感測器儀表板</h3><span class="tag i">中階</span><p><strong>摘要：</strong>將感測器資料透過 MQTT 或 Python 輸入到 Node-RED 並做視覺化。</p><p class="source"><strong>參考：</strong><a href="https://nodered.org/" target="_blank">Node-RED Official</a></p></section>
+        <section class="project"><h3>9. Flask GPIO 控制網站</h3><span class="tag i">中階</span><p><strong>摘要：</strong>透過網頁控制 LED、蜂鳴器或其他輸出元件，建立基本 IoT 控制頁。</p><p class="source"><strong>參考：</strong><a href="https://flask.palletsprojects.com/" target="_blank">Flask Documentation</a></p></section>
+        <section class="project"><h3>10. MariaDB 感測資料記錄平台</h3><span class="tag i">中階</span><p><strong>摘要：</strong>把溫濕度或其他感測資料寫入資料庫，供後續查詢與分析。</p><p class="source"><strong>參考：</strong><a href="https://mariadb.org/" target="_blank">MariaDB Official</a></p></section>
+        <section class="project"><h3>11. Webcam 動態偵測系統</h3><span class="tag i">中階</span><p><strong>摘要：</strong>利用影像變化偵測是否有活動，適合資訊與影像基礎整合。</p><p class="source"><strong>參考：</strong><a href="https://www.instructables.com/Raspberry-Pi-Motion-Detection-Security-Camera/" target="_blank">Instructables Motion Camera</a></p></section>
+        <section class="project"><h3>12. MQTT + GPIO 遠端控制平台</h3><span class="tag i">中階</span><p><strong>摘要：</strong>用 MQTT 發送控制指令，遠端開關燈或控制設備。</p><p class="source"><strong>參考：</strong><a href="http://www.steves-internet-guide.com/mqtt-raspberry-pi-gpio/" target="_blank">MQTT GPIO Guide</a></p></section>
+        <section class="project"><h3>13. 智慧教室狀態監測看板</h3><span class="tag i">中階</span><p><strong>摘要：</strong>整合 PIR、光線、溫度等資訊，在網站或儀表板顯示教室狀態。</p><p class="source"><strong>參考：</strong><a href="https://www.weareteachers.com/raspberry-pi-projects/" target="_blank">We Are Teachers Raspberry Pi ideas</a></p></section>
+        <section class="project"><h3>14. 智慧門鈴拍照通知系統</h3><span class="tag i">中階</span><p><strong>摘要：</strong>按鈕觸發拍照，再存檔或推送到後台，是攝影機與 GPIO 的代表性專題。</p><p class="source"><strong>參考：</strong><a href="https://raspberrytips.com/raspberry-pi-camera-projects-ideas/" target="_blank">Raspberry Pi Camera Project Ideas</a></p></section>
+      </div>
     </section>
 
     <section class="card">
-      <h2>我最推薦的課堂專題方向</h2>
-      <p>如果依你現在已有的教材與材料，我最推薦以下 5 題，因為完成度高、教學連貫、學生成就感也強：</p>
+      <h2>高階專題</h2>
+      <div class="grid">
+        <section class="project"><h3>15. Django 感測器後台管理平台</h3><span class="tag a">高階</span><p><strong>摘要：</strong>以 Django 建立資料後台，整合裝置狀態、感測資料、管理者介面。</p><p class="source"><strong>參考：</strong><a href="https://www.djangoproject.com/" target="_blank">Django Official</a></p></section>
+        <section class="project"><h3>16. 多裝置 MQTT 感測器資料整合系統</h3><span class="tag a">高階</span><p><strong>摘要：</strong>整合 Raspberry Pi、Pico W、ESP32 的資料流，建立中央收集與視覺化平台。</p><p class="source"><strong>參考：</strong><a href="https://github.com/mario-gellrich-zhaw/python_mqtt_raspberrypi/" target="_blank">Python MQTT Raspberry Pi Example</a></p></section>
+        <section class="project"><h3>17. 攝影機串流與事件通知平台</h3><span class="tag a">高階</span><p><strong>摘要：</strong>將 Webcam 串流與事件偵測整合，並發布到網頁或 MQTT 儀表板。</p><p class="source"><strong>參考：</strong><a href="https://mqtt-ble.com/resources/camera-widget-raspberry-pi" target="_blank">Camera Stream to MQTT Dashboard</a></p></section>
+        <section class="project"><h3>18. 影像辨識智慧監控雛形</h3><span class="tag a">高階</span><p><strong>摘要：</strong>加入 OpenCV 或輕量 AI 模型，做人物、物件或事件辨識。</p><p class="source"><strong>參考：</strong><a href="https://www.viam.com/post/best-raspberry-pi-camera-projects-2024" target="_blank">Viam Camera Projects</a></p></section>
+        <section class="project"><h3>19. 多介面感測器整合展示平台</h3><span class="tag a">高階</span><p><strong>摘要：</strong>整合 I2C、SPI、UART 不同模組，展示介面驅動與資料整合能力。</p><p class="source"><strong>參考：</strong><a href="https://randomnerdtutorials.com/projects-raspberry-pi/" target="_blank">Random Nerd Tutorials Raspberry Pi Projects</a></p></section>
+        <section class="project"><h3>20. 邊緣 AI 智慧教室專題</h3><span class="tag a">高階</span><p><strong>摘要：</strong>結合攝影機、感測器、Web 平台與本地 AI，做智慧監測與分析雛形。</p><p class="source"><strong>參考：</strong><a href="https://www.raspberrypi.com/resources/teach/" target="_blank">Raspberry Pi Teaching Resources</a></p></section>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>我對課程安排的建議</h2>
       <ol>
-        <li>Node-RED + MQTT 感測器儀表板</li>
-        <li>Web CAM 即時串流與動態偵測</li>
-        <li>Flask / Django GPIO 控制平台</li>
-        <li>MariaDB 感測資料紀錄網站</li>
-        <li>GPIO + 感測器 + 網頁後台的整合型 IoT 專題</li>
+        <li>先用初階題目建立成功經驗，例如 LED、感測器、MQTT</li>
+        <li>中段用 Node-RED、Flask、MariaDB 做整合</li>
+        <li>後段讓學生分組選擇高階專題，例如攝影機串流、Django 後台、AI 監控</li>
       </ol>
-      <div class="note">簡單說，你現在的器材組合很適合做「從硬體到網頁」的一條龍教學，這比單做某一顆感測器更有課程價值。</div>
+      <div class="note">如果你有 1080p Web CAM，我真的很推薦把「攝影機串流 + 動態偵測 + 網頁後台」當成學期末明星專題，展示效果會很好。</div>
     </section>
 
-    <section class="card">
-      <h2>參考方向來源</h2>
-      <ul>
-        <li>Raspberry Pi Foundation 教學資源與教學主題整理</li>
-        <li>Raspberry Pi Webcam / Camera project 類型教學文章</li>
-        <li>MQTT + Raspberry Pi project 類型文章</li>
-        <li>感測器、Web Server、Node-RED、IoT Dashboard 等常見樹莓派專題類型整理</li>
-      </ul>
-      <p>本頁不是逐篇翻譯外部文章，而是依常見專題方向與你目前課程材料重新整理成更適合教學使用的版本。</p>
-    </section>
-
-    <div class="footer">RaspberryPi_Project_Ideas.html, Raspberry Pi 常見課堂專題 20 選</div>
+    <div class="footer">RaspberryPi_Project_Ideas.html, Raspberry Pi 常見課堂專題分級整理</div>
   </div>
 </body>
 </html>
