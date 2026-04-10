@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raspberry Pi 使用 Python 操作 GPIO 教材</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #7c3aed;
+      --accent-soft: #ede9fe;
+      --border: #dbe3ef;
+      --code-bg: #0f172a;
+      --code-text: #e5eefc;
+      --ok: #065f46;
+      --warn: #92400e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #7c3aed, #111827);
+      color: #fff;
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2.15rem;
+    }
+    .hero p {
+      margin: 8px 0;
+      color: rgba(255,255,255,0.92);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      margin-bottom: 20px;
+    }
+    h2, h3 {
+      color: #111827;
+    }
+    h2 {
+      margin-top: 0;
+      border-left: 5px solid var(--accent);
+      padding-left: 12px;
+    }
+    ul, ol {
+      padding-left: 22px;
+    }
+    li + li { margin-top: 6px; }
+    code {
+      background: #eef2ff;
+      color: #312e81;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", "Consolas", monospace;
+      font-size: 0.95em;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.96rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f5f3ff; }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .note, .warning {
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin: 12px 0;
+    }
+    .note {
+      background: #ecfdf5;
+      color: var(--ok);
+      border: 1px solid #a7f3d0;
+    }
+    .warning {
+      background: #fff7ed;
+      color: var(--warn);
+      border: 1px solid #fdba74;
+    }
+    .footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.75rem; }
+      .container { padding: 20px 14px 40px; }
+      .hero, .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Raspberry Pi 使用 Python 操作 GPIO 教材</h1>
+      <p>從 GPIO 基本觀念、腳位模式、輸入輸出控制，到 LED、按鈕、PWM 與感測器入門，建立 Raspberry Pi 實作基礎。</p>
+      <p>適合電子系、IoT、嵌入式系統、智慧控制等課程。</p>
+      <div style="margin-top:16px;">
+        <span class="tag">Raspberry Pi</span>
+        <span class="tag">GPIO</span>
+        <span class="tag">Python</span>
+        <span class="tag">硬體控制</span>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>一、教學目標</h2>
+        <ul>
+          <li>理解 Raspberry Pi GPIO 的用途</li>
+          <li>熟悉腳位編號方式</li>
+          <li>學會用 Python 控制 LED 與讀取按鈕</li>
+          <li>理解 PWM 的基本概念</li>
+          <li>具備接感測器與控制元件的入門能力</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>二、GPIO 是什麼</h2>
+        <ul>
+          <li>GPIO 是 General Purpose Input/Output</li>
+          <li>可讓 Raspberry Pi 與外部硬體互動</li>
+          <li>可用來讀取感測器、控制 LED、蜂鳴器、繼電器等元件</li>
+          <li>是實作 IoT 與硬體控制的重要基礎</li>
+        </ul>
+        <div class="warning">Raspberry Pi GPIO 為 3.3V 邏輯，不能直接接 5V 訊號，否則可能損壞主板。</div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>三、安裝前準備</h2>
+      <h3>建議材料</h3>
+      <ul>
+        <li>Raspberry Pi</li>
+        <li>麵包板</li>
+        <li>LED</li>
+        <li>220Ω 或 330Ω 電阻</li>
+        <li>按鈕開關</li>
+        <li>杜邦線</li>
+      </ul>
+
+      <h3>建議系統確認</h3>
+      <pre><code>python3 --version
+uname -a</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>四、安裝 Python GPIO 套件</h2>
+      <p>傳統常見為 <code>RPi.GPIO</code>，較新也可使用 <code>gpiozero</code>。教學上建議兩者都介紹，但入門可先從 <code>gpiozero</code> 開始。</p>
+
+      <h3>安裝方式</h3>
+      <pre><code>sudo apt update
+sudo apt install -y python3-gpiozero python3-rpi.gpio</code></pre>
+
+      <h3>若要額外用 pip 安裝</h3>
+      <pre><code>python3 -m pip install gpiozero</code></pre>
+
+      <div class="note">如果是教學入門，我會偏好先教 <code>gpiozero</code>，因為語法更直觀。</div>
+    </section>
+
+    <section class="card">
+      <h2>五、GPIO 腳位編號方式</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>模式</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>BOARD</td><td>以實體針腳位置編號</td></tr>
+          <tr><td>BCM</td><td>以 Broadcom GPIO 編號</td></tr>
+        </tbody>
+      </table>
+
+      <p>例如：</p>
+      <ul>
+        <li>實體腳位 pin 11 對應 BCM 17</li>
+        <li>實體腳位 pin 13 對應 BCM 27</li>
+      </ul>
+
+      <div class="warning">上課時一定要強調編號模式不能混用，這是初學者最常出錯的地方之一。</div>
+    </section>
+
+    <section class="card">
+      <h2>六、第一個範例, 讓 LED 閃爍</h2>
+      <h3>接線建議</h3>
+      <ul>
+        <li>GPIO17 接 LED 正極</li>
+        <li>LED 負極串接電阻後接 GND</li>
+      </ul>
+
+      <h3>gpiozero 範例</h3>
+      <pre><code>from gpiozero import LED
+from time import sleep
+
+led = LED(17)
+
+while True:
+    led.on()
+    sleep(1)
+    led.off()
+    sleep(1)</code></pre>
+
+      <h3>執行</h3>
+      <pre><code>python3 led_blink.py</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>七、使用 RPi.GPIO 控制 LED</h2>
+      <pre><code>import RPi.GPIO as GPIO
+import time
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(17, GPIO.OUT)
+
+try:
+    while True:
+        GPIO.output(17, GPIO.HIGH)
+        time.sleep(1)
+        GPIO.output(17, GPIO.LOW)
+        time.sleep(1)
+except KeyboardInterrupt:
+    print("程式結束")
+finally:
+    GPIO.cleanup()</code></pre>
+
+      <div class="note">`GPIO.cleanup()` 很重要，能在程式結束時釋放腳位狀態。</div>
+    </section>
+
+    <section class="card">
+      <h2>八、按鈕輸入範例</h2>
+      <h3>接線概念</h3>
+      <ul>
+        <li>按鈕一端接 GPIO</li>
+        <li>另一端接 GND</li>
+        <li>可搭配 internal pull-up</li>
+      </ul>
+
+      <h3>gpiozero 範例</h3>
+      <pre><code>from gpiozero import Button
+from signal import pause
+
+button = Button(18)
+
+button.when_pressed = lambda: print("按鈕被按下")
+button.when_released = lambda: print("按鈕放開")
+
+pause()</code></pre>
+
+      <h3>RPi.GPIO 範例</h3>
+      <pre><code>import RPi.GPIO as GPIO
+import time
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+try:
+    while True:
+        if GPIO.input(18) == GPIO.LOW:
+            print("Button Pressed")
+        time.sleep(0.1)
+except KeyboardInterrupt:
+    pass
+finally:
+    GPIO.cleanup()</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>九、按鈕控制 LED</h2>
+      <pre><code>from gpiozero import LED, Button
+from signal import pause
+
+led = LED(17)
+button = Button(18)
+
+button.when_pressed = led.on
+button.when_released = led.off
+
+pause()</code></pre>
+
+      <div class="note">這個範例很適合課堂現場展示，因為輸入與輸出會立刻產生可見互動。</div>
+    </section>
+
+    <section class="card">
+      <h2>十、PWM, 控制 LED 亮度</h2>
+      <p>PWM 是 Pulse Width Modulation，可用來模擬類比輸出效果，例如調整 LED 亮度。</p>
+
+      <h3>gpiozero 範例</h3>
+      <pre><code>from gpiozero import PWMLED
+from time import sleep
+
+led = PWMLED(17)
+
+while True:
+    led.value = 0.2
+    sleep(1)
+    led.value = 0.5
+    sleep(1)
+    led.value = 1.0
+    sleep(1)</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十一、蜂鳴器控制範例</h2>
+      <pre><code>from gpiozero import Buzzer
+from time import sleep
+
+buzzer = Buzzer(22)
+
+while True:
+    buzzer.on()
+    sleep(0.5)
+    buzzer.off()
+    sleep(0.5)</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十二、讀取簡單數位感測器概念</h2>
+      <p>若感測器輸出為高低電位，例如紅外線避障模組、傾倒感測器、震動開關等，可直接當作數位輸入讀取。</p>
+
+      <pre><code>from gpiozero import DigitalInputDevice
+from signal import pause
+
+sensor = DigitalInputDevice(23)
+
+sensor.when_activated = lambda: print("偵測到訊號")
+sensor.when_deactivated = lambda: print("訊號消失")
+
+pause()</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十三、建立一個簡單的警報系統</h2>
+      <p>按鈕按下時，LED 亮起且蜂鳴器響。</p>
+
+      <pre><code>from gpiozero import LED, Button, Buzzer
+from signal import pause
+
+led = LED(17)
+button = Button(18)
+buzzer = Buzzer(22)
+
+
+def alarm_on():
+    led.on()
+    buzzer.on()
+
+
+def alarm_off():
+    led.off()
+    buzzer.off()
+
+button.when_pressed = alarm_on
+button.when_released = alarm_off
+
+pause()</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十四、常用指令與檢查方式</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>指令</th>
+            <th>用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>python3 檔名.py</code></td><td>執行 Python GPIO 程式</td></tr>
+          <tr><td><code>gpio readall</code></td><td>查看 GPIO 狀態，部分系統才有</td></tr>
+          <tr><td><code>pinout</code></td><td>顯示 Raspberry Pi 腳位圖</td></tr>
+          <tr><td><code>python3 --version</code></td><td>查看 Python 版本</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">`pinout` 很好用，教學時可以讓學生快速理解實體腳位與 BCM 腳位對應。</div>
+    </section>
+
+    <section class="card">
+      <h2>十五、常見錯誤與排除</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>問題</th>
+            <th>可能原因</th>
+            <th>解法</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>LED 不亮</td><td>接線錯誤、腳位號碼錯誤、極性接反</td><td>重新檢查接線與程式腳位</td></tr>
+          <tr><td>按鈕沒反應</td><td>pull-up / pull-down 設定錯誤</td><td>確認輸入模式與接線邏輯</td></tr>
+          <tr><td>Permission denied</td><td>權限不足</td><td>確認執行環境與系統設定</td></tr>
+          <tr><td>腳位被占用</td><td>其他程式尚未釋放 GPIO</td><td>重開機或確認 <code>cleanup()</code> 是否執行</td></tr>
+          <tr><td>板子異常發熱</td><td>短路或 5V 誤接 GPIO</td><td>立即斷電檢查電路</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>十六、課堂建議流程</h2>
+      <ol>
+        <li>先講 GPIO 與 3.3V 安全概念</li>
+        <li>示範腳位編號模式</li>
+        <li>先做 LED 閃爍</li>
+        <li>再做按鈕輸入</li>
+        <li>再做按鈕控制 LED</li>
+        <li>最後加入蜂鳴器或感測器</li>
+      </ol>
+      <div class="note">這樣的教學節奏很順，學生能從最簡單的輸出，逐步理解輸入與互動控制。</div>
+    </section>
+
+    <section class="card">
+      <h2>十七、作業與實驗題目建議</h2>
+      <ol>
+        <li>完成 LED 閃爍程式</li>
+        <li>完成按鈕輸入偵測</li>
+        <li>完成按鈕控制 LED</li>
+        <li>完成 PWM 亮度控制</li>
+        <li>進階題，設計一個警報或門鈴系統</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>十八、延伸方向</h2>
+      <ul>
+        <li>結合 MQTT，把 GPIO 狀態傳到 Broker</li>
+        <li>結合 Flask / Django 製作 Web 控制頁面</li>
+        <li>加入 DHT11、超音波感測器、光敏電阻模組</li>
+        <li>用 Node-RED 顯示 GPIO 讀值</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>十九、結語</h2>
+      <p>Raspberry Pi 的 GPIO 是 Python 與硬體世界連接的第一步。只要學生把 LED、按鈕、PWM 這些基本操作學會，後續延伸到感測器、IoT、網頁控制與自動化就會非常自然。</p>
+    </section>
+
+    <div class="footer">
+      RaspberryPi_GPIO_Python.html, Raspberry Pi 使用 Python 操作 GPIO 教材
+    </div>
+  </div>
+</body>
+</html>
