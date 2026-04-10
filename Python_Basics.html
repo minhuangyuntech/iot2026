@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python 基本語法與常用指令教材</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-soft: #dbeafe;
+      --border: #dbe3ef;
+      --code-bg: #0f172a;
+      --code-text: #e5eefc;
+      --ok: #065f46;
+      --warn: #92400e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #2563eb, #111827);
+      color: #fff;
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2.15rem;
+    }
+    .hero p {
+      margin: 8px 0;
+      color: rgba(255,255,255,0.92);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      margin-bottom: 20px;
+    }
+    h2, h3 {
+      color: #111827;
+    }
+    h2 {
+      margin-top: 0;
+      border-left: 5px solid var(--accent);
+      padding-left: 12px;
+    }
+    ul, ol {
+      padding-left: 22px;
+    }
+    li + li { margin-top: 6px; }
+    code {
+      background: #eef2ff;
+      color: #312e81;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", "Consolas", monospace;
+      font-size: 0.95em;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.96rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #eff6ff; }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .note, .warning {
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin: 12px 0;
+    }
+    .note {
+      background: #ecfdf5;
+      color: var(--ok);
+      border: 1px solid #a7f3d0;
+    }
+    .warning {
+      background: #fff7ed;
+      color: var(--warn);
+      border: 1px solid #fdba74;
+    }
+    .footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.75rem; }
+      .container { padding: 20px 14px 40px; }
+      .hero, .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Python 基本語法與常用指令教材</h1>
+      <p>適合程式設計入門、IoT 控制、資料處理與自動化腳本課程的 Python 基礎教材。</p>
+      <p>重點是讓學生能快速理解語法、能自己撰寫程式、能讀懂錯誤訊息並除錯。</p>
+      <div style="margin-top:16px;">
+        <span class="tag">Python</span>
+        <span class="tag">基礎語法</span>
+        <span class="tag">入門教材</span>
+        <span class="tag">實作教學</span>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>一、教學目標</h2>
+        <ul>
+          <li>理解 Python 的基本語法結構</li>
+          <li>熟悉變數、輸入輸出、條件判斷、迴圈</li>
+          <li>理解函式、串列、字典等常用資料結構</li>
+          <li>學會執行 Python 程式與安裝套件</li>
+          <li>具備撰寫簡單應用程式的能力</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>二、Python 的特色</h2>
+        <ul>
+          <li>語法簡潔，適合教學</li>
+          <li>可用於網頁、AI、資料分析、自動化、IoT</li>
+          <li>有大量第三方套件可使用</li>
+          <li>非常適合初學者建立程式設計觀念</li>
+        </ul>
+        <div class="note">對電子系或 IoT 課程來說，Python 是很好的入門語言，因為它能快速接感測器、網路與資料處理。</div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>三、如何執行 Python</h2>
+      <h3>1. 查看版本</h3>
+      <pre><code>python3 --version</code></pre>
+
+      <h3>2. 進入互動模式</h3>
+      <pre><code>python3</code></pre>
+
+      <h3>3. 執行 Python 檔案</h3>
+      <pre><code>python3 hello.py</code></pre>
+
+      <h3>4. 建立第一個程式</h3>
+      <pre><code>nano hello.py</code></pre>
+
+      <pre><code>print("Hello Python")</code></pre>
+
+      <pre><code>python3 hello.py</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>四、輸出與註解</h2>
+      <h3>1. 輸出文字</h3>
+      <pre><code>print("Hello World")
+print("歡迎學習 Python")</code></pre>
+
+      <h3>2. 單行註解</h3>
+      <pre><code># 這是一行註解
+print("test")</code></pre>
+
+      <h3>3. 多行字串</h3>
+      <pre><code>message = """這是一段
+多行文字
+可用來做說明"""
+print(message)</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>五、變數與資料型態</h2>
+      <h3>1. 變數</h3>
+      <pre><code>name = "Alice"
+age = 20
+height = 165.5
+is_student = True</code></pre>
+
+      <h3>2. 常見資料型態</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>型態</th>
+            <th>範例</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>str</td><td><code>"hello"</code></td><td>字串</td></tr>
+          <tr><td>int</td><td><code>123</code></td><td>整數</td></tr>
+          <tr><td>float</td><td><code>3.14</code></td><td>浮點數</td></tr>
+          <tr><td>bool</td><td><code>True</code>, <code>False</code></td><td>布林值</td></tr>
+          <tr><td>list</td><td><code>[1, 2, 3]</code></td><td>串列</td></tr>
+          <tr><td>dict</td><td><code>{"a":1}</code></td><td>字典</td></tr>
+        </tbody>
+      </table>
+
+      <h3>3. 查看型態</h3>
+      <pre><code>x = 123
+print(type(x))</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>六、輸入與型別轉換</h2>
+      <h3>1. 使用 input()</h3>
+      <pre><code>name = input("請輸入姓名: ")
+print("你好,", name)</code></pre>
+
+      <h3>2. 數字輸入要轉型</h3>
+      <pre><code>age = int(input("請輸入年齡: "))
+print(age + 1)</code></pre>
+
+      <h3>3. 常見型別轉換</h3>
+      <pre><code>a = int("123")
+b = float("3.14")
+c = str(100)</code></pre>
+
+      <div class="warning">初學者常犯錯是忘記把 input() 轉成 int 或 float，導致數字運算失敗。</div>
+    </section>
+
+    <section class="card">
+      <h2>七、運算子</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>類型</th>
+            <th>符號</th>
+            <th>範例</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>加減乘除</td><td><code>+ - * /</code></td><td><code>3 + 2</code></td></tr>
+          <tr><td>整除</td><td><code>//</code></td><td><code>7 // 2</code></td></tr>
+          <tr><td>餘數</td><td><code>%</code></td><td><code>7 % 2</code></td></tr>
+          <tr><td>次方</td><td><code>**</code></td><td><code>2 ** 3</code></td></tr>
+          <tr><td>比較</td><td><code>== != &gt; &lt; &gt;= &lt;=</code></td><td><code>x == 10</code></td></tr>
+          <tr><td>邏輯</td><td><code>and or not</code></td><td><code>x &gt; 0 and x &lt; 10</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>八、條件判斷 if / elif / else</h2>
+      <pre><code>score = int(input("請輸入分數: "))
+
+if score >= 90:
+    print("A")
+elif score >= 80:
+    print("B")
+elif score >= 70:
+    print("C")
+else:
+    print("D")</code></pre>
+
+      <div class="note">Python 用縮排表示程式區塊，這是非常重要的語法特性。</div>
+    </section>
+
+    <section class="card">
+      <h2>九、迴圈 for 與 while</h2>
+      <h3>1. for 迴圈</h3>
+      <pre><code>for i in range(5):
+    print(i)</code></pre>
+
+      <h3>2. while 迴圈</h3>
+      <pre><code>count = 0
+while count < 5:
+    print(count)
+    count += 1</code></pre>
+
+      <h3>3. break 與 continue</h3>
+      <pre><code>for i in range(10):
+    if i == 5:
+        break
+    print(i)</code></pre>
+
+      <pre><code>for i in range(5):
+    if i == 2:
+        continue
+    print(i)</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十、字串操作</h2>
+      <pre><code>text = "Python"
+print(text[0])
+print(len(text))
+print(text.lower())
+print(text.upper())</code></pre>
+
+      <h3>字串格式化</h3>
+      <pre><code>name = "Tom"
+age = 20
+print(f"我的名字是 {name}, 年齡是 {age}")</code></pre>
+
+      <div class="note">f-string 是目前最推薦初學者學的字串格式化方式。</div>
+    </section>
+
+    <section class="card">
+      <h2>十一、串列 list</h2>
+      <pre><code>fruits = ["apple", "banana", "orange"]
+print(fruits[0])
+fruits.append("grape")
+print(fruits)
+print(len(fruits))</code></pre>
+
+      <h3>走訪串列</h3>
+      <pre><code>for fruit in fruits:
+    print(fruit)</code></pre>
+
+      <h3>常見操作</h3>
+      <ul>
+        <li><code>append()</code> 新增元素</li>
+        <li><code>remove()</code> 移除元素</li>
+        <li><code>sort()</code> 排序</li>
+        <li><code>len()</code> 長度</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>十二、字典 dict</h2>
+      <pre><code>student = {
+    "name": "Alice",
+    "age": 20,
+    "major": "EE"
+}
+
+print(student["name"])
+print(student["age"])
+student["grade"] = "A"
+print(student)</code></pre>
+
+      <h3>走訪字典</h3>
+      <pre><code>for key, value in student.items():
+    print(key, value)</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十三、函式 function</h2>
+      <pre><code>def hello(name):
+    print("Hello", name)
+
+hello("Richard")</code></pre>
+
+      <h3>有回傳值的函式</h3>
+      <pre><code>def add(a, b):
+    return a + b
+
+result = add(3, 5)
+print(result)</code></pre>
+
+      <h3>預設參數</h3>
+      <pre><code>def greet(name="student"):
+    print("Hello", name)
+
+greet()
+greet("Tom")</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十四、模組與 import</h2>
+      <pre><code>import math
+print(math.sqrt(16))</code></pre>
+
+      <pre><code>import random
+print(random.randint(1, 10))</code></pre>
+
+      <pre><code>from datetime import datetime
+print(datetime.now())</code></pre>
+
+      <div class="note">這一節很適合帶學生理解「函式庫」與「重用程式碼」的概念。</div>
+    </section>
+
+    <section class="card">
+      <h2>十五、檔案讀寫</h2>
+      <h3>1. 寫入檔案</h3>
+      <pre><code>with open("test.txt", "w", encoding="utf-8") as f:
+    f.write("Hello Python")</code></pre>
+
+      <h3>2. 讀取檔案</h3>
+      <pre><code>with open("test.txt", "r", encoding="utf-8") as f:
+    content = f.read()
+    print(content)</code></pre>
+
+      <div class="warning">建議從一開始就教學生使用 <code>with open(...)</code>，因為這是較安全且標準的寫法。</div>
+    </section>
+
+    <section class="card">
+      <h2>十六、例外處理 try / except</h2>
+      <pre><code>try:
+    num = int(input("請輸入整數: "))
+    print(10 / num)
+except ValueError:
+    print("輸入的不是整數")
+except ZeroDivisionError:
+    print("不能除以 0")</code></pre>
+
+      <div class="note">這一節非常適合培養學生的除錯觀念，讓他們知道錯誤不是失敗，而是程式運作的一部分。</div>
+    </section>
+
+    <section class="card">
+      <h2>十七、常用 pip 指令</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>指令</th>
+            <th>用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><code>python3 -m pip install 套件名</code></td><td>安裝套件</td></tr>
+          <tr><td><code>python3 -m pip uninstall 套件名</code></td><td>移除套件</td></tr>
+          <tr><td><code>python3 -m pip list</code></td><td>查看已安裝套件</td></tr>
+          <tr><td><code>python3 -m pip show 套件名</code></td><td>查看套件資訊</td></tr>
+          <tr><td><code>python3 -m pip install -U 套件名</code></td><td>更新套件</td></tr>
+        </tbody>
+      </table>
+
+      <h3>範例</h3>
+      <pre><code>python3 -m pip install requests
+python3 -m pip list</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十八、虛擬環境 venv</h2>
+      <p>如果課程稍微進階，建議讓學生知道虛擬環境的概念。</p>
+      <pre><code>python3 -m venv myenv
+source myenv/bin/activate
+python3 -m pip install requests</code></pre>
+
+      <p>離開虛擬環境：</p>
+      <pre><code>deactivate</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十九、常見錯誤與提醒</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>錯誤</th>
+            <th>原因</th>
+            <th>建議</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>IndentationError</td><td>縮排錯誤</td><td>確認空白數量一致</td></tr>
+          <tr><td>NameError</td><td>變數名稱錯誤或未定義</td><td>檢查拼字</td></tr>
+          <tr><td>TypeError</td><td>型態不符</td><td>確認資料型別</td></tr>
+          <tr><td>ValueError</td><td>轉型失敗</td><td>確認輸入內容格式</td></tr>
+          <tr><td>ModuleNotFoundError</td><td>模組未安裝</td><td>用 pip 安裝</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>二十、建議課堂練習</h2>
+      <ol>
+        <li>撰寫一個輸入姓名並打招呼的程式</li>
+        <li>撰寫一個計算兩數相加的程式</li>
+        <li>輸入成績並判斷等第</li>
+        <li>用 for 迴圈輸出 1 到 10</li>
+        <li>建立一個串列並計算總和</li>
+        <li>建立字典儲存學生資料並輸出</li>
+        <li>寫一個函式計算矩形面積</li>
+        <li>讀寫一個文字檔</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>二十一、延伸方向</h2>
+      <ul>
+        <li>Python 與 GPIO 控制</li>
+        <li>Python 與 MQTT 通訊</li>
+        <li>Python 與網頁爬蟲</li>
+        <li>Python 與資料分析</li>
+        <li>Python 與 AI / 機器學習</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>二十二、結語</h2>
+      <p>只要把這些基礎語法打穩，學生就能很快接上資料處理、感測器控制、網路通訊與自動化應用。Python 最重要的不是背語法，而是理解程式如何一步一步解決問題。</p>
+    </section>
+
+    <div class="footer">
+      Python_Basics.html, Python 基本語法與常用指令教材
+    </div>
+  </div>
+</body>
+</html>
