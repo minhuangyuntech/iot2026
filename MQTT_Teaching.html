@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MQTT 教材, Raspberry Pico W 與 ESP32 實作教學</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #0f766e;
+      --accent-soft: #ccfbf1;
+      --border: #dbe3ef;
+      --code-bg: #0f172a;
+      --code-text: #e5eefc;
+      --ok: #065f46;
+      --warn: #92400e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0f766e, #0f172a);
+      color: #fff;
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2.15rem;
+    }
+    .hero p {
+      margin: 8px 0;
+      color: rgba(255,255,255,0.92);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      margin-bottom: 20px;
+    }
+    h2, h3 {
+      color: #111827;
+    }
+    h2 {
+      margin-top: 0;
+      border-left: 5px solid var(--accent);
+      padding-left: 12px;
+    }
+    ul, ol {
+      padding-left: 22px;
+    }
+    li + li { margin-top: 6px; }
+    code {
+      background: #eef2ff;
+      color: #312e81;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", "Consolas", monospace;
+      font-size: 0.95em;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.96rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #ecfeff; }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .note, .warning {
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin: 12px 0;
+    }
+    .note {
+      background: #ecfdf5;
+      color: var(--ok);
+      border: 1px solid #a7f3d0;
+    }
+    .warning {
+      background: #fff7ed;
+      color: var(--warn);
+      border: 1px solid #fdba74;
+    }
+    .footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.75rem; }
+      .container { padding: 20px 14px 40px; }
+      .hero, .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>MQTT 教材, Raspberry Pico W 與 ESP32 實作教學</h1>
+      <p>從 MQTT 基本觀念、Broker 架設、Topic 規劃，到 Raspberry Pi Pico W、ESP32 發佈資料，並使用 Python 撰寫 Subscriber 進行接收。</p>
+      <p>適合 IoT、嵌入式系統、網路通訊與智慧裝置課程。</p>
+      <div style="margin-top:16px;">
+        <span class="tag">MQTT</span>
+        <span class="tag">Pico W</span>
+        <span class="tag">ESP32</span>
+        <span class="tag">Python Subscriber</span>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>一、教學目標</h2>
+        <ul>
+          <li>理解 MQTT 的通訊模式與用途</li>
+          <li>了解 Publisher、Subscriber、Broker 的角色</li>
+          <li>學會架設 Mosquitto Broker</li>
+          <li>學會讓 Pico W 與 ESP32 發送資料</li>
+          <li>學會使用 Python 撰寫 Subscriber 接收訊息</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>二、適用情境</h2>
+        <ul>
+          <li>感測器資料上傳</li>
+          <li>智慧家庭裝置控制</li>
+          <li>教室 IoT 實驗平台</li>
+          <li>多設備之間的低頻寬通訊</li>
+          <li>邊緣運算與雲端橋接</li>
+        </ul>
+        <div class="note">MQTT 的優勢是輕量、簡單、適合資源有限的微控制器。</div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>三、MQTT 基本觀念</h2>
+      <h3>1. 三個核心角色</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>角色</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Publisher</td><td>發送訊息的裝置，例如感測器、ESP32、Pico W</td></tr>
+          <tr><td>Subscriber</td><td>接收訊息的裝置或程式，例如 Python 應用程式</td></tr>
+          <tr><td>Broker</td><td>負責轉送訊息的中心伺服器，例如 Mosquitto</td></tr>
+        </tbody>
+      </table>
+
+      <h3>2. Topic 的概念</h3>
+      <p>MQTT 用 <code>topic</code> 來分類訊息，例如：</p>
+      <pre><code>iot/classroom/temp
+iot/classroom/humidity
+iot/pico/led
+iot/esp32/status</code></pre>
+
+      <h3>3. Publish / Subscribe 模式</h3>
+      <ul>
+        <li>Publisher 不需要知道誰在接收</li>
+        <li>Subscriber 不需要知道訊息從哪個裝置來</li>
+        <li>Broker 負責訊息分發</li>
+      </ul>
+
+      <h3>4. MQTT 常見特色</h3>
+      <ul>
+        <li>封包小，適合低頻寬網路</li>
+        <li>支援斷線重連</li>
+        <li>支援 QoS 等級</li>
+        <li>支援 retain 訊息</li>
+        <li>適合物聯網裝置協作</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>四、QoS 與 Retain 概念</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>功能</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>QoS 0</td><td>最多傳一次，最快，但不保證一定收到</td></tr>
+          <tr><td>QoS 1</td><td>至少傳一次，可能重複收到</td></tr>
+          <tr><td>QoS 2</td><td>只傳一次，最可靠但開銷較大</td></tr>
+          <tr><td>Retain</td><td>Broker 保留最後一筆訊息，新訂閱者一連上就能收到</td></tr>
+        </tbody>
+      </table>
+      <div class="note">教學初期大多使用 QoS 0 或 QoS 1 就夠了。</div>
+    </section>
+
+    <section class="card">
+      <h2>五、在 Raspberry Pi 上安裝 MQTT Broker, Mosquitto</h2>
+      <h3>1. 安裝套件</h3>
+      <pre><code>sudo apt update
+sudo apt install -y mosquitto mosquitto-clients</code></pre>
+
+      <h3>2. 啟動服務</h3>
+      <pre><code>sudo systemctl enable mosquitto
+sudo systemctl start mosquitto
+sudo systemctl status mosquitto</code></pre>
+
+      <h3>3. 測試本機 Broker</h3>
+      <p>先開兩個終端機。</p>
+      <p><strong>終端機 A，訂閱：</strong></p>
+      <pre><code>mosquitto_sub -h localhost -t test/topic</code></pre>
+
+      <p><strong>終端機 B，發送：</strong></p>
+      <pre><code>mosquitto_pub -h localhost -t test/topic -m "Hello MQTT"</code></pre>
+
+      <div class="note">如果終端機 A 收到訊息，代表 Broker 已可正常工作。</div>
+    </section>
+
+    <section class="card">
+      <h2>六、課堂建議的 Topic 規劃方式</h2>
+      <pre><code>iot/班級/裝置/資料類型
+
+例如：
+iot/ece2026/picow/temp
+iot/ece2026/picow/humidity
+iot/ece2026/esp32/light
+iot/ece2026/esp32/status</code></pre>
+
+      <h3>建議原則</h3>
+      <ul>
+        <li>主題名稱清楚、有層次</li>
+        <li>避免中文 topic，盡量使用英文與數字</li>
+        <li>不同組別可使用不同前綴，例如 <code>group1</code>、<code>group2</code></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>七、使用 Python 撰寫 MQTT Subscriber</h2>
+      <h3>1. 安裝 paho-mqtt</h3>
+      <pre><code>python3 -m pip install paho-mqtt</code></pre>
+
+      <h3>2. subscriber.py</h3>
+      <pre><code>import paho.mqtt.client as mqtt
+
+BROKER_IP = "192.168.1.120"
+TOPIC = "iot/ece2026/#"
+
+
+def on_connect(client, userdata, flags, rc):
+    print("Connected with result code", rc)
+    client.subscribe(TOPIC)
+
+
+def on_message(client, userdata, msg):
+    print(f"Topic: {msg.topic}")
+    print(f"Message: {msg.payload.decode()}")
+    print("-" * 40)
+
+
+client = mqtt.Client()
+client.on_connect = on_connect
+client.on_message = on_message
+
+client.connect(BROKER_IP, 1883, 60)
+client.loop_forever()</code></pre>
+
+      <h3>3. 執行</h3>
+      <pre><code>python3 subscriber.py</code></pre>
+
+      <div class="note">這個範例會接收 <code>iot/ece2026/</code> 底下的所有子 topic，非常適合課堂展示。</div>
+    </section>
+
+    <section class="card">
+      <h2>八、Raspberry Pi Pico W 連線 MQTT 範例</h2>
+      <p>本節採用 MicroPython。請先使用 Thonny 或 mpremote 將 MicroPython 韌體燒錄到 Pico W。</p>
+
+      <h3>1. 準備檔案</h3>
+      <ul>
+        <li><code>boot.py</code>，可選</li>
+        <li><code>main.py</code>，主程式</li>
+        <li><code>umqtt.simple</code> 模組</li>
+      </ul>
+
+      <h3>2. Pico W publisher 範例</h3>
+      <pre><code>import network
+import time
+from umqtt.simple import MQTTClient
+
+SSID = '你的WiFi名稱'
+PASSWORD = '你的WiFi密碼'
+BROKER = '192.168.1.120'
+CLIENT_ID = 'pico_w_01'
+TOPIC = b'iot/ece2026/picow/temp'
+
+wlan = network.WLAN(network.STA_IF)
+wlan.active(True)
+wlan.connect(SSID, PASSWORD)
+
+while not wlan.isconnected():
+    print('WiFi connecting...')
+    time.sleep(1)
+
+print('WiFi connected:', wlan.ifconfig())
+
+client = MQTTClient(CLIENT_ID, BROKER)
+client.connect()
+print('MQTT connected')
+
+count = 0
+while True:
+    message = 'Pico W temperature=' + str(25 + count % 5)
+    client.publish(TOPIC, message)
+    print('Published:', message)
+    count += 1
+    time.sleep(5)</code></pre>
+
+      <h3>3. Pico W subscriber 範例</h3>
+      <pre><code>import network
+import time
+from umqtt.simple import MQTTClient
+
+SSID = '你的WiFi名稱'
+PASSWORD = '你的WiFi密碼'
+BROKER = '192.168.1.120'
+CLIENT_ID = 'pico_w_sub_01'
+TOPIC = b'iot/ece2026/picow/led'
+
+
+def sub_cb(topic, msg):
+    print('Received:', topic, msg)
+
+wlan = network.WLAN(network.STA_IF)
+wlan.active(True)
+wlan.connect(SSID, PASSWORD)
+
+while not wlan.isconnected():
+    time.sleep(1)
+
+client = MQTTClient(CLIENT_ID, BROKER)
+client.set_callback(sub_cb)
+client.connect()
+client.subscribe(TOPIC)
+print('Subscribed to', TOPIC)
+
+while True:
+    client.check_msg()
+    time.sleep(1)</code></pre>
+
+      <div class="warning">Pico W 使用 MicroPython 時，函式庫名稱與桌面 Python 不同，不能直接使用 paho-mqtt。</div>
+    </section>
+
+    <section class="card">
+      <h2>九、ESP32 透過 MicroPython 發送 MQTT 範例</h2>
+      <p>若 ESP32 安裝的是 MicroPython，可直接使用與 Pico W 類似的方式。</p>
+
+      <pre><code>import network
+import time
+from umqtt.simple import MQTTClient
+
+SSID = '你的WiFi名稱'
+PASSWORD = '你的WiFi密碼'
+BROKER = '192.168.1.120'
+CLIENT_ID = 'esp32_01'
+TOPIC = b'iot/ece2026/esp32/status'
+
+wlan = network.WLAN(network.STA_IF)
+wlan.active(True)
+wlan.connect(SSID, PASSWORD)
+
+while not wlan.isconnected():
+    print('Connecting WiFi...')
+    time.sleep(1)
+
+print('WiFi OK:', wlan.ifconfig())
+
+client = MQTTClient(CLIENT_ID, BROKER)
+client.connect()
+print('MQTT connected')
+
+counter = 0
+while True:
+    payload = 'ESP32 alive ' + str(counter)
+    client.publish(TOPIC, payload)
+    print('Published:', payload)
+    counter += 1
+    time.sleep(3)</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十、ESP32 透過 Arduino 框架發送 MQTT 範例</h2>
+      <p>如果課程使用 Arduino IDE，這個版本通常更常見。</p>
+
+      <h3>1. 安裝函式庫</h3>
+      <ul>
+        <li>WiFi.h</li>
+        <li>PubSubClient</li>
+      </ul>
+
+      <h3>2. 範例程式</h3>
+      <pre><code>#include &lt;WiFi.h&gt;
+#include &lt;PubSubClient.h&gt;
+
+const char* ssid = "你的WiFi名稱";
+const char* password = "你的WiFi密碼";
+const char* mqtt_server = "192.168.1.120";
+
+WiFiClient espClient;
+PubSubClient client(espClient);
+
+void setup_wifi() {
+  delay(10);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+  }
+}
+
+void reconnect() {
+  while (!client.connected()) {
+    if (client.connect("ESP32Client")) {
+      client.publish("iot/ece2026/esp32/status", "ESP32 connected");
+    } else {
+      delay(1000);
+    }
+  }
+}
+
+void setup() {
+  Serial.begin(115200);
+  setup_wifi();
+  client.setServer(mqtt_server, 1883);
+}
+
+void loop() {
+  if (!client.connected()) {
+    reconnect();
+  }
+  client.loop();
+  client.publish("iot/ece2026/esp32/status", "Hello from ESP32");
+  delay(5000);
+}</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十一、Python 端接收 Pico W 與 ESP32 訊息的整合範例</h2>
+      <pre><code>import paho.mqtt.client as mqtt
+import json
+from datetime import datetime
+
+BROKER_IP = "192.168.1.120"
+TOPICS = [
+    ("iot/ece2026/picow/temp", 0),
+    ("iot/ece2026/esp32/status", 0),
+    ("iot/ece2026/#", 0)
+]
+
+
+def on_connect(client, userdata, flags, rc):
+    print("Connected:", rc)
+    for topic, qos in TOPICS:
+        client.subscribe(topic, qos)
+        print("Subscribed:", topic)
+
+
+def on_message(client, userdata, msg):
+    payload = msg.payload.decode()
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    print(f"[{now}] {msg.topic} -> {payload}")
+
+
+client = mqtt.Client()
+client.on_connect = on_connect
+client.on_message = on_message
+client.connect(BROKER_IP, 1883, 60)
+client.loop_forever()</code></pre>
+
+      <div class="note">這樣一來，Pico W 與 ESP32 都能發送資料到同一台 Broker，再由 Python 統一接收。</div>
+    </section>
+
+    <section class="card">
+      <h2>十二、如果要用 Raspberry Pi 上的 Python 當 Publisher</h2>
+      <pre><code>import paho.mqtt.client as mqtt
+import time
+
+BROKER_IP = "192.168.1.120"
+TOPIC = "iot/ece2026/rpi/message"
+
+client = mqtt.Client()
+client.connect(BROKER_IP, 1883, 60)
+
+count = 0
+while True:
+    msg = f"Hello from Raspberry Pi {count}"
+    client.publish(TOPIC, msg)
+    print(msg)
+    count += 1
+    time.sleep(5)</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十三、課堂實驗流程建議</h2>
+      <ol>
+        <li>先在 Raspberry Pi 安裝 Mosquitto Broker</li>
+        <li>使用 <code>mosquitto_pub</code> 與 <code>mosquitto_sub</code> 做第一個測試</li>
+        <li>再讓 Python Subscriber 成功接收訊息</li>
+        <li>接著讓 Pico W 發送資料</li>
+        <li>再讓 ESP32 發送資料</li>
+        <li>最後做多裝置同時上傳與統一監控</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>十四、常見錯誤與除錯方法</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>問題</th>
+            <th>可能原因</th>
+            <th>解法</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>連不到 Broker</td><td>IP 填錯、Broker 未啟動、防火牆阻擋</td><td>檢查 <code>systemctl status mosquitto</code> 與 IP 位址</td></tr>
+          <tr><td>Python 收不到訊息</td><td>topic 不一致</td><td>確認 topic 字串完全一致</td></tr>
+          <tr><td>Pico W 無法連 Wi-Fi</td><td>SSID/密碼錯誤、頻段不支援</td><td>確認 2.4GHz Wi-Fi 與帳密</td></tr>
+          <tr><td>ESP32 斷線</td><td>Wi-Fi 不穩、未做重連</td><td>加入 reconnect 邏輯</td></tr>
+          <tr><td>訊息中文亂碼</td><td>編碼問題</td><td>統一使用 UTF-8</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>十五、延伸教學主題</h2>
+      <ul>
+        <li>加入 DHT11 / DHT22 / 光敏電阻等感測器</li>
+        <li>將資料存入 MariaDB 或 InfluxDB</li>
+        <li>以 Node-RED 建立即時儀表板</li>
+        <li>以 Flask / FastAPI 製作 Web API</li>
+        <li>加入 TLS、帳號密碼認證，提高安全性</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>十六、作業與實驗題目建議</h2>
+      <ol>
+        <li>完成 Raspberry Pi 上的 Mosquitto 安裝與測試</li>
+        <li>完成 Python Subscriber 程式並接收測試訊息</li>
+        <li>讓 Pico W 每 5 秒送出一筆溫度資料</li>
+        <li>讓 ESP32 每 3 秒送出狀態訊息</li>
+        <li>設計自己的 topic 命名規則</li>
+        <li>進階題：以 Python 將收到的資料寫入 CSV 檔案</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>十七、結語</h2>
+      <p>MQTT 是 IoT 世界中非常重要的通訊協定，觀念清楚之後，學生很快就能把感測器、微控制器、樹莓派、資料庫與網頁儀表板串接起來。</p>
+      <p>這份教材的重點不是只會執行範例，而是讓學生理解資料如何從裝置經過 Broker，再傳到應用程式端。</p>
+    </section>
+
+    <div class="footer">
+      MQTT_Teaching.html, MQTT 教材, Raspberry Pico W 與 ESP32 實作教學
+    </div>
+  </div>
+</body>
+</html>
