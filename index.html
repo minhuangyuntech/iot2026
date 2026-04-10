@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>IoT 2026 課程教材首頁</title>
+  <title>IoT 2026 課程教材入口</title>
   <style>
     :root {
       --bg: #f4f7fb;
@@ -11,8 +11,8 @@
       --text: #1f2937;
       --muted: #6b7280;
       --accent: #1d4ed8;
-      --accent2: #0f766e;
       --border: #dbe3ef;
+      --shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
     }
     * { box-sizing: border-box; }
     body {
@@ -23,55 +23,84 @@
       line-height: 1.7;
     }
     .container {
-      max-width: 1100px;
+      max-width: 1180px;
       margin: 0 auto;
       padding: 32px 20px 64px;
     }
     .hero {
       background: linear-gradient(135deg, #1d4ed8, #0f172a);
-      color: white;
+      color: #fff;
       border-radius: 22px;
-      padding: 38px 32px;
-      margin-bottom: 26px;
+      padding: 40px 34px;
+      margin-bottom: 28px;
       box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
     }
     .hero h1 {
       margin: 0 0 10px;
-      font-size: 2.2rem;
+      font-size: 2.3rem;
     }
     .hero p {
       margin: 6px 0;
       color: rgba(255,255,255,0.92);
     }
+    .toc {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px 22px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+    }
+    .toc a {
+      display: inline-block;
+      margin: 6px 10px 6px 0;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    .section {
+      margin-bottom: 30px;
+    }
+    .section h2 {
+      margin: 0 0 16px;
+      font-size: 1.5rem;
+      padding-left: 12px;
+      border-left: 6px solid var(--accent);
+    }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 18px;
     }
     .card {
       background: var(--card);
       border: 1px solid var(--border);
       border-radius: 18px;
       padding: 22px;
-      box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
+      box-shadow: var(--shadow);
     }
-    .card h2 {
+    .card h3 {
       margin-top: 0;
-      font-size: 1.2rem;
+      margin-bottom: 10px;
+      font-size: 1.15rem;
     }
     .card p {
       color: var(--muted);
-      min-height: 66px;
+      min-height: 72px;
     }
     .tag {
       display: inline-block;
       padding: 4px 10px;
       border-radius: 999px;
-      font-size: 0.84rem;
+      font-size: 0.82rem;
       margin-right: 8px;
       margin-bottom: 10px;
-      background: #dbeafe;
-      color: var(--accent);
+      background: #e0e7ff;
+      color: #3730a3;
       font-weight: 700;
     }
     .btn {
@@ -84,112 +113,141 @@
       border-radius: 10px;
       font-weight: 700;
     }
-    .btn.alt {
-      background: var(--accent2);
-    }
     .footer {
-      margin-top: 32px;
+      margin-top: 36px;
       text-align: center;
       color: var(--muted);
       font-size: 0.95rem;
     }
     @media (max-width: 640px) {
-      .hero h1 { font-size: 1.75rem; }
+      .hero h1 { font-size: 1.8rem; }
       .container { padding: 20px 14px 40px; }
-      .hero, .card { padding: 20px; }
+      .hero, .toc, .card { padding: 20px; }
+      .card p { min-height: auto; }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <section class="hero">
-      <h1>IoT 2026 課程教材首頁</h1>
-      <p>這裡整理本學期可直接開啟授課的 HTML 教材。</p>
-      <p>適合課堂展示、學生自學、實作課逐步操作。</p>
+      <h1>IoT 2026 課程教材入口</h1>
+      <p>這裡整理本學期所有可直接授課的 HTML 教材。</p>
+      <p>已依主題分類成 Linux、Python、硬體控制、IoT 通訊、Web 與資料庫，方便教學時快速切換。</p>
     </section>
 
-    <div class="grid">
-      <section class="card">
-        <span class="tag">Linux</span>
-        <h2>Ubuntu 必學指令教學</h2>
-        <p>包含終端機基本概念、常用指令、檔案管理、權限、系統管理、IoT 與電子系常用操作。</p>
-        <a class="btn" href="Linux_CMD.html">開啟教材</a>
-      </section>
+    <section class="toc">
+      <strong>快速導覽：</strong><br>
+      <a href="#foundation">基礎能力</a>
+      <a href="#hardware">硬體控制與 Raspberry Pi</a>
+      <a href="#iot">IoT 與通訊</a>
+      <a href="#web">Web 開發與部署</a>
+      <a href="#database">資料庫</a>
+    </section>
 
-      <section class="card">
-        <span class="tag">Raspberry Pi 5</span>
-        <h2>Raspberry Pi 5 從安裝到伺服器部署</h2>
-        <p>從系統燒錄、SSH、更新套件，到 Nginx、Docker、Ollama、MariaDB、phpMyAdmin、LAMP 的完整教學。</p>
-        <a class="btn" href="RaspberryPi5_Setup.html">開啟教材</a>
-      </section>
+    <section class="section" id="foundation">
+      <h2>基礎能力</h2>
+      <div class="grid">
+        <section class="card">
+          <span class="tag">Linux</span>
+          <h3>Ubuntu 必學指令教學</h3>
+          <p>整理 Linux 與 Ubuntu 入門最重要的終端機指令、檔案管理、權限概念與常用操作。</p>
+          <a class="btn" href="Linux_CMD.html">開啟教材</a>
+        </section>
 
-      <section class="card">
-        <span class="tag">MQTT</span>
-        <h2>MQTT, Pico W 與 ESP32 實作教學</h2>
-        <p>從 MQTT 概念、Mosquitto Broker、Python Subscriber，到 Raspberry Pi Pico W 與 ESP32 傳送訊息範例。</p>
-        <a class="btn" href="MQTT_Teaching.html">開啟教材</a>
-      </section>
+        <section class="card">
+          <span class="tag">Python</span>
+          <h3>Python 基本語法與常用指令教材</h3>
+          <p>包含變數、型別、條件判斷、迴圈、函式、檔案讀寫、pip 與虛擬環境，適合作為程式設計基礎。</p>
+          <a class="btn" href="Python_Basics.html">開啟教材</a>
+        </section>
+      </div>
+    </section>
 
-      <section class="card">
-        <span class="tag">Node-RED</span>
-        <h2>Node-RED + MQTT 儀表板教學</h2>
-        <p>從 Node-RED 安裝、MQTT 節點連接，到建立儀表板、即時顯示感測器資料與控制元件。</p>
-        <a class="btn alt" href="NodeRED_MQTT_Dashboard.html">開啟教材</a>
-      </section>
+    <section class="section" id="hardware">
+      <h2>硬體控制與 Raspberry Pi</h2>
+      <div class="grid">
+        <section class="card">
+          <span class="tag">Raspberry Pi 5</span>
+          <h3>Raspberry Pi 5 從安裝到伺服器部署</h3>
+          <p>從系統燒錄、SSH、套件更新，到 Nginx、Docker、Ollama、MariaDB、phpMyAdmin 與 LAMP 環境建置。</p>
+          <a class="btn" href="RaspberryPi5_Setup.html">開啟教材</a>
+        </section>
 
-      <section class="card">
-        <span class="tag">Python</span>
-        <h2>Python 基本語法與常用指令教材</h2>
-        <p>包含 Python 執行方式、變數、資料型態、條件判斷、迴圈、函式、檔案讀寫、pip 與虛擬環境。</p>
-        <a class="btn" href="Python_Basics.html">開啟教材</a>
-      </section>
+        <section class="card">
+          <span class="tag">GPIO</span>
+          <h3>Raspberry Pi 使用 Python 操作 GPIO 教材</h3>
+          <p>介紹 GPIO 腳位、LED、按鈕、PWM、蜂鳴器與數位輸入等實作，適合硬體控制入門。</p>
+          <a class="btn" href="RaspberryPi_GPIO_Python.html">開啟教材</a>
+        </section>
 
-      <section class="card">
-        <span class="tag">Django</span>
-        <h2>Django 與 Gunicorn + Nginx 部署教材</h2>
-        <p>從 Django 基本架構、app、template、model，到 Gunicorn systemd 與 Nginx 反向代理部署。</p>
-        <a class="btn alt" href="Django_Nginx_Gunicorn.html">開啟教材</a>
-      </section>
+        <section class="card">
+          <span class="tag">Sensors</span>
+          <h3>Raspberry Pi 感測器整合教材</h3>
+          <p>整理溫濕度、人體感測、超音波與其他常見模組的應用概念與教學延伸方向。</p>
+          <a class="btn" href="RaspberryPi_Sensors.html">開啟教材</a>
+        </section>
+      </div>
+    </section>
 
-      <section class="card">
-        <span class="tag">GPIO</span>
-        <h2>Raspberry Pi 使用 Python 操作 GPIO 教材</h2>
-        <p>包含 GPIO 基本觀念、腳位模式、LED、按鈕、PWM、蜂鳴器與 Python 操作範例，適合硬體控制入門。</p>
-        <a class="btn" href="RaspberryPi_GPIO_Python.html">開啟教材</a>
-      </section>
-    </div>
+    <section class="section" id="iot">
+      <h2>IoT 與通訊</h2>
+      <div class="grid">
+        <section class="card">
+          <span class="tag">MQTT</span>
+          <h3>MQTT, Pico W 與 ESP32 實作教學</h3>
+          <p>從 MQTT 基本觀念、Mosquitto Broker、Python Subscriber，到 Pico W 與 ESP32 訊息收發範例。</p>
+          <a class="btn" href="MQTT_Teaching.html">開啟教材</a>
+        </section>
 
-      <section class="card">
-        <span class="tag">Sensors</span>
-        <h2>Raspberry Pi 感測器整合教材</h2>
-        <p>整理 Raspberry Pi 與常見感測器模組的整合方式，包含溫濕度、光敏、人體感測與資料應用方向。</p>
-        <a class="btn alt" href="RaspberryPi_Sensors.html">開啟教材</a>
-      </section>
+        <section class="card">
+          <span class="tag">Node-RED</span>
+          <h3>Node-RED + MQTT 儀表板教學</h3>
+          <p>介紹 Node-RED 與 MQTT 整合、儀表板建立、感測資料顯示與裝置控制的基本流程。</p>
+          <a class="btn" href="NodeRED_MQTT_Dashboard.html">開啟教材</a>
+        </section>
 
-      <section class="card">
-        <span class="tag">Flask</span>
-        <h2>Flask 網站基礎教材</h2>
-        <p>介紹 Flask 基本概念、安裝、路由、模板與適合入門網站與 API 的開發方式。</p>
-        <a class="btn" href="Flask_Basics.html">開啟教材</a>
-      </section>
+        <section class="card">
+          <span class="tag">Interfaces</span>
+          <h3>常見介面 I2C, SPI, UART 教材</h3>
+          <p>說明嵌入式與 IoT 常見通訊介面、接線差異、速度特性與常見應用模組。</p>
+          <a class="btn" href="Common_Interfaces_I2C_SPI_UART.html">開啟教材</a>
+        </section>
+      </div>
+    </section>
 
-      <section class="card">
-        <span class="tag">SQL</span>
-        <h2>MariaDB 與 SQL 基礎教材</h2>
-        <p>介紹資料庫核心觀念、MariaDB 安裝方式，以及常見 SQL 指令如 CREATE、INSERT、SELECT、UPDATE、DELETE。</p>
-        <a class="btn alt" href="MariaDB_SQL_Basics.html">開啟教材</a>
-      </section>
+    <section class="section" id="web">
+      <h2>Web 開發與部署</h2>
+      <div class="grid">
+        <section class="card">
+          <span class="tag">Flask</span>
+          <h3>Flask 網站基礎教材</h3>
+          <p>介紹 Flask 安裝、路由、模板與初學者適合的網站與 API 入門流程。</p>
+          <a class="btn" href="Flask_Basics.html">開啟教材</a>
+        </section>
 
-      <section class="card">
-        <span class="tag">Interfaces</span>
-        <h2>常見介面 I2C, SPI, UART 教材</h2>
-        <p>介紹嵌入式與 IoT 常見通訊介面，說明原理、接線差異、優缺點與適合搭配的模組。</p>
-        <a class="btn" href="Common_Interfaces_I2C_SPI_UART.html">開啟教材</a>
-      </section>
-    </div>
+        <section class="card">
+          <span class="tag">Django</span>
+          <h3>Django 與 Gunicorn + Nginx 部署教材</h3>
+          <p>從 Django 基本架構、app、template、model，到 Gunicorn systemd 與 Nginx 部署的完整介紹。</p>
+          <a class="btn" href="Django_Nginx_Gunicorn.html">開啟教材</a>
+        </section>
+      </div>
+    </section>
+
+    <section class="section" id="database">
+      <h2>資料庫</h2>
+      <div class="grid">
+        <section class="card">
+          <span class="tag">SQL</span>
+          <h3>MariaDB 與 SQL 基礎教材</h3>
+          <p>介紹資料庫基本概念、MariaDB 安裝與常見 SQL 指令，適合作為 Web 與 IoT 後台的資料層入門。</p>
+          <a class="btn" href="MariaDB_SQL_Basics.html">開啟教材</a>
+        </section>
+      </div>
+    </section>
 
     <div class="footer">
-      index.html, IoT 2026 教材導覽首頁
+      index.html, IoT 2026 分類式課程教材入口
     </div>
   </div>
 </body>
