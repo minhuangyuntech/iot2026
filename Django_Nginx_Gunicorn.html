@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Django 網站簡介與 Gunicorn + Nginx 部署教材</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #166534;
+      --accent-soft: #dcfce7;
+      --border: #dbe3ef;
+      --code-bg: #0f172a;
+      --code-text: #e5eefc;
+      --ok: #065f46;
+      --warn: #92400e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #166534, #111827);
+      color: #fff;
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2.15rem;
+    }
+    .hero p {
+      margin: 8px 0;
+      color: rgba(255,255,255,0.92);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      margin-bottom: 20px;
+    }
+    h2, h3 {
+      color: #111827;
+    }
+    h2 {
+      margin-top: 0;
+      border-left: 5px solid var(--accent);
+      padding-left: 12px;
+    }
+    ul, ol {
+      padding-left: 22px;
+    }
+    li + li { margin-top: 6px; }
+    code {
+      background: #eef2ff;
+      color: #312e81;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", "Consolas", monospace;
+      font-size: 0.95em;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.96rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f0fdf4; }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .note, .warning {
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin: 12px 0;
+    }
+    .note {
+      background: #ecfdf5;
+      color: var(--ok);
+      border: 1px solid #a7f3d0;
+    }
+    .warning {
+      background: #fff7ed;
+      color: var(--warn);
+      border: 1px solid #fdba74;
+    }
+    .footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.75rem; }
+      .container { padding: 20px 14px 40px; }
+      .hero, .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Django 網站簡介與 Gunicorn + Nginx 部署教材</h1>
+      <p>從 Django 的基本概念、專案建立、應用程式結構，到使用 Gunicorn 與 Nginx 進行正式部署的完整教學。</p>
+      <p>適合 Web 程式設計、伺服器部署、IoT Web 後台與專題實作課程。</p>
+      <div style="margin-top:16px;">
+        <span class="tag">Django</span>
+        <span class="tag">Python Web</span>
+        <span class="tag">Gunicorn</span>
+        <span class="tag">Nginx 部署</span>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>一、教學目標</h2>
+        <ul>
+          <li>理解 Django 是什麼，以及它適合解決什麼問題</li>
+          <li>學會建立 Django 專案與 app</li>
+          <li>理解 URL、View、Template、Model 的角色</li>
+          <li>學會在開發環境執行 Django</li>
+          <li>學會在伺服器上使用 Gunicorn + Nginx 部署 Django</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>二、Django 簡介</h2>
+        <ul>
+          <li>Django 是 Python 的高階 Web Framework</li>
+          <li>適合快速開發資料庫導向網站</li>
+          <li>內建管理後台、ORM、表單、路由、使用者驗證</li>
+          <li>非常適合做管理平台、專題網站、IoT 後台系統</li>
+        </ul>
+        <div class="note">如果 Flask 比較像輕量工具箱，Django 則比較像功能完整的工程平台。</div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>三、Django 的基本架構</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>元件</th>
+            <th>用途</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>URL</td><td>定義網址路徑與對應的處理函式</td></tr>
+          <tr><td>View</td><td>接收請求並回傳結果</td></tr>
+          <tr><td>Template</td><td>HTML 模板，用來顯示畫面</td></tr>
+          <tr><td>Model</td><td>資料庫模型，定義資料表結構</td></tr>
+          <tr><td>Admin</td><td>內建後台管理介面</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>四、安裝 Django 與建立專案</h2>
+      <h3>1. 安裝 Python 與虛擬環境工具</h3>
+      <pre><code>sudo apt update
+sudo apt install -y python3 python3-pip python3-venv</code></pre>
+
+      <h3>2. 建立專案目錄</h3>
+      <pre><code>mkdir -p ~/django_projects
+cd ~/django_projects</code></pre>
+
+      <h3>3. 建立虛擬環境</h3>
+      <pre><code>python3 -m venv venv
+source venv/bin/activate</code></pre>
+
+      <h3>4. 安裝 Django 與 Gunicorn</h3>
+      <pre><code>pip install django gunicorn</code></pre>
+
+      <h3>5. 建立 Django 專案</h3>
+      <pre><code>django-admin startproject mysite
+cd mysite</code></pre>
+
+      <h3>6. 啟動開發伺服器</h3>
+      <pre><code>python manage.py runserver 0.0.0.0:8000</code></pre>
+
+      <p>瀏覽器測試：</p>
+      <pre><code>http://伺服器IP:8000</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>五、Django 專案目錄說明</h2>
+      <pre><code>mysite/
+├── manage.py
+├── mysite/
+│   ├── __init__.py
+│   ├── settings.py
+│   ├── urls.py
+│   ├── asgi.py
+│   └── wsgi.py</code></pre>
+
+      <ul>
+        <li><code>manage.py</code>：管理專案常用指令入口</li>
+        <li><code>settings.py</code>：專案設定檔</li>
+        <li><code>urls.py</code>：網址路由設定</li>
+        <li><code>wsgi.py</code>：供 Gunicorn 等 WSGI Server 使用</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>六、建立第一個 app</h2>
+      <pre><code>python manage.py startapp mainapp</code></pre>
+
+      <h3>新增到 settings.py</h3>
+      <pre><code>INSTALLED_APPS = [
+    ...
+    'mainapp',
+]</code></pre>
+
+      <h3>建立 View</h3>
+      <pre><code># mainapp/views.py
+from django.http import HttpResponse
+
+
+def home(request):
+    return HttpResponse("Hello Django")</code></pre>
+
+      <h3>建立 app 的 urls.py</h3>
+      <pre><code># mainapp/urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.home, name='home'),
+]</code></pre>
+
+      <h3>在專案 urls.py 掛載</h3>
+      <pre><code># mysite/urls.py
+from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', include('mainapp.urls')),
+]</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>七、Template 基本用法</h2>
+      <h3>1. 建立 templates 資料夾</h3>
+      <pre><code>mkdir -p mainapp/templates/mainapp</code></pre>
+
+      <h3>2. 建立首頁模板</h3>
+      <pre><code>&lt;!-- mainapp/templates/mainapp/index.html --&gt;
+&lt;h1&gt;Welcome to Django&lt;/h1&gt;
+&lt;p&gt;這是我的第一個 Django 網站&lt;/p&gt;</code></pre>
+
+      <h3>3. 修改 View</h3>
+      <pre><code>from django.shortcuts import render
+
+
+def home(request):
+    return render(request, 'mainapp/index.html')</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>八、Model 與資料庫基本概念</h2>
+      <p>Django 預設可使用 SQLite，非常適合教學起步。</p>
+
+      <h3>範例 Model</h3>
+      <pre><code># mainapp/models.py
+from django.db import models
+
+class SensorData(models.Model):
+    device_name = models.CharField(max_length=50)
+    temperature = models.FloatField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.device_name</code></pre>
+
+      <h3>建立 migration 與套用</h3>
+      <pre><code>python manage.py makemigrations
+python manage.py migrate</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>九、建立管理者帳號</h2>
+      <pre><code>python manage.py createsuperuser</code></pre>
+
+      <p>完成後可登入：</p>
+      <pre><code>http://伺服器IP:8000/admin</code></pre>
+
+      <h3>如果要讓模型出現在 admin</h3>
+      <pre><code># mainapp/admin.py
+from django.contrib import admin
+from .models import SensorData
+
+admin.site.register(SensorData)</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十、開發環境與正式部署的差異</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>項目</th>
+            <th>開發模式</th>
+            <th>正式部署</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>伺服器</td><td><code>runserver</code></td><td>Gunicorn</td></tr>
+          <tr><td>前端代理</td><td>無</td><td>Nginx</td></tr>
+          <tr><td>除錯模式</td><td><code>DEBUG=True</code></td><td><code>DEBUG=False</code></td></tr>
+          <tr><td>靜態檔案</td><td>Django 處理</td><td>Nginx 處理</td></tr>
+          <tr><td>安全性</td><td>較低</td><td>較完整</td></tr>
+        </tbody>
+      </table>
+
+      <div class="warning">正式環境絕對不要直接使用 <code>python manage.py runserver</code> 對外提供服務。</div>
+    </section>
+
+    <section class="card">
+      <h2>十一、正式部署前的設定</h2>
+      <h3>1. 修改 settings.py</h3>
+      <pre><code>DEBUG = False
+ALLOWED_HOSTS = ['192.168.1.120', 'localhost', '127.0.0.1']</code></pre>
+
+      <h3>2. 設定靜態檔案位置</h3>
+      <pre><code>import os
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')</code></pre>
+
+      <h3>3. 收集靜態檔案</h3>
+      <pre><code>python manage.py collectstatic</code></pre>
+
+      <h3>4. 測試 Gunicorn</h3>
+      <pre><code>gunicorn --bind 0.0.0.0:8000 mysite.wsgi:application</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十二、安裝 Nginx</h2>
+      <pre><code>sudo apt install -y nginx</code></pre>
+
+      <h3>啟動與開機自動執行</h3>
+      <pre><code>sudo systemctl enable nginx
+sudo systemctl start nginx
+sudo systemctl status nginx</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十三、建立 Gunicorn systemd 服務</h2>
+      <p>這一步很重要，讓 Gunicorn 可以像正式服務一樣由 systemd 管理。</p>
+
+      <h3>建立 service 檔案</h3>
+      <pre><code>sudo nano /etc/systemd/system/gunicorn.service</code></pre>
+
+      <pre><code>[Unit]
+Description=gunicorn daemon for Django project
+After=network.target
+
+[Service]
+User=minhuang
+Group=www-data
+WorkingDirectory=/home/minhuang/django_projects/mysite
+ExecStart=/home/minhuang/django_projects/venv/bin/gunicorn \
+          --workers 3 \
+          --bind unix:/home/minhuang/django_projects/mysite/gunicorn.sock \
+          mysite.wsgi:application
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+
+      <h3>重新載入與啟動</h3>
+      <pre><code>sudo systemctl daemon-reload
+sudo systemctl start gunicorn
+sudo systemctl enable gunicorn
+sudo systemctl status gunicorn</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十四、設定 Nginx 反向代理 Django</h2>
+      <h3>建立站台設定檔</h3>
+      <pre><code>sudo nano /etc/nginx/sites-available/mysite</code></pre>
+
+      <pre><code>server {
+    listen 80;
+    server_name 192.168.1.120;
+
+    location = /favicon.ico { access_log off; log_not_found off; }
+
+    location /static/ {
+        root /home/minhuang/django_projects/mysite;
+    }
+
+    location / {
+        include proxy_params;
+        proxy_pass http://unix:/home/minhuang/django_projects/mysite/gunicorn.sock;
+    }
+}</code></pre>
+
+      <h3>啟用站台</h3>
+      <pre><code>sudo ln -s /etc/nginx/sites-available/mysite /etc/nginx/sites-enabled
+sudo nginx -t
+sudo systemctl restart nginx</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十五、檢查部署是否成功</h2>
+      <ol>
+        <li>確認 Gunicorn 正常執行</li>
+        <li>確認 Nginx 語法正確</li>
+        <li>瀏覽器開啟伺服器 IP</li>
+      </ol>
+
+      <pre><code>sudo systemctl status gunicorn
+sudo systemctl status nginx
+curl http://127.0.0.1</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十六、常見問題與除錯方式</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>問題</th>
+            <th>可能原因</th>
+            <th>解法</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>502 Bad Gateway</td><td>Gunicorn 沒有正常啟動</td><td>檢查 <code>systemctl status gunicorn</code></td></tr>
+          <tr><td>靜態檔案無法載入</td><td>STATIC_ROOT 或 Nginx 路徑錯誤</td><td>重新檢查 <code>collectstatic</code> 與 Nginx 設定</td></tr>
+          <tr><td>DisallowedHost</td><td>ALLOWED_HOSTS 未加入 IP 或網域</td><td>修改 <code>settings.py</code></td></tr>
+          <tr><td>Permission denied</td><td>socket 或目錄權限錯誤</td><td>檢查 User、Group 與路徑權限</td></tr>
+          <tr><td>ModuleNotFoundError</td><td>虛擬環境或套件安裝錯誤</td><td>確認 Gunicorn 使用的 Python 路徑</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>十七、實際部署流程整理</h2>
+      <ol>
+        <li>安裝 Python、venv、pip</li>
+        <li>建立 Django 專案</li>
+        <li>設定 <code>DEBUG=False</code> 與 <code>ALLOWED_HOSTS</code></li>
+        <li>安裝 Gunicorn</li>
+        <li>執行 <code>collectstatic</code></li>
+        <li>建立 Gunicorn systemd 服務</li>
+        <li>安裝與設定 Nginx</li>
+        <li>重新啟動服務並測試</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>十八、進階延伸主題</h2>
+      <ul>
+        <li>使用 PostgreSQL 取代 SQLite</li>
+        <li>用 Let's Encrypt 加上 HTTPS</li>
+        <li>使用環境變數管理 SECRET_KEY</li>
+        <li>搭配 Docker 部署 Django</li>
+        <li>串接 MQTT、感測器資料與 Django 後台管理</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>十九、作業或實驗題目建議</h2>
+      <ol>
+        <li>建立一個 Django 首頁，顯示姓名與學號</li>
+        <li>建立一個 Model 儲存感測器資料</li>
+        <li>把資料顯示在管理後台</li>
+        <li>用 Gunicorn 啟動 Django</li>
+        <li>使用 Nginx 成功代理到 Django 站台</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>二十、結語</h2>
+      <p>Django 非常適合用來教網站系統的完整結構，而 Gunicorn + Nginx 則是學生從開發走向部署的重要一步。只要把這套流程學會，就已經具備部署中小型 Python Web 系統的核心能力。</p>
+    </section>
+
+    <div class="footer">
+      Django_Nginx_Gunicorn.html, Django 網站簡介與 Gunicorn + Nginx 部署教材
+    </div>
+  </div>
+</body>
+</html>
