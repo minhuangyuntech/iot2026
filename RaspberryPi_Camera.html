@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raspberry Pi 使用攝影機教學</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #b91c1c;
+      --accent-soft: #fee2e2;
+      --border: #dbe3ef;
+      --code-bg: #0f172a;
+      --code-text: #e5eefc;
+      --ok: #065f46;
+      --warn: #92400e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #b91c1c, #111827);
+      color: #fff;
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+      margin-bottom: 24px;
+    }
+    .hero h1 { margin: 0 0 8px; font-size: 2.15rem; }
+    .hero p { margin: 8px 0; color: rgba(255,255,255,0.92); }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      margin-bottom: 20px;
+    }
+    h2 { margin-top: 0; border-left: 5px solid var(--accent); padding-left: 12px; }
+    ul, ol { padding-left: 22px; }
+    code {
+      background: #eef2ff;
+      color: #312e81;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: Consolas, monospace;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { border: 1px solid var(--border); padding: 10px 12px; text-align: left; vertical-align: top; }
+    th { background: #fef2f2; }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .note, .warning {
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin: 12px 0;
+    }
+    .note { background: #ecfdf5; color: var(--ok); border: 1px solid #a7f3d0; }
+    .warning { background: #fff7ed; color: var(--warn); border: 1px solid #fdba74; }
+    .footer { margin-top: 28px; color: var(--muted); font-size: 0.95rem; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Raspberry Pi 使用攝影機教學</h1>
+      <p>介紹 Raspberry Pi 使用 USB Webcam 或相機模組的基本方法，包含安裝、偵測、拍照、錄影、串流與 Python 控制。</p>
+      <p>適合搭配你目前課程中的 1080p Web CAM 做教學與專題延伸。</p>
+      <div>
+        <span class="tag">Raspberry Pi</span>
+        <span class="tag">Web CAM</span>
+        <span class="tag">Python</span>
+        <span class="tag">影像應用</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>一、教學目標</h2>
+      <ul>
+        <li>理解 Raspberry Pi 如何使用攝影機</li>
+        <li>學會辨識 USB Webcam 與 Camera Module 的差異</li>
+        <li>學會拍照、錄影與串流</li>
+        <li>學會使用 Python 讀取攝影機畫面</li>
+        <li>能延伸到監控、動態偵測與影像分析專題</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>二、兩種常見攝影機來源</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>類型</th>
+            <th>說明</th>
+            <th>適用情境</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>USB Webcam</td><td>透過 USB 連接，安裝方便</td><td>目前你的 1080p Web CAM 就屬於這種</td></tr>
+          <tr><td>Raspberry Pi Camera Module</td><td>透過 CSI 介面連接，整合度較高</td><td>適合官方相機模組教學</td></tr>
+        </tbody>
+      </table>
+      <div class="note">以你目前的材料來說，USB Webcam 是最直接可用的教學方式。</div>
+    </section>
+
+    <section class="card">
+      <h2>三、確認系統是否偵測到攝影機</h2>
+      <pre><code>lsusb
+v4l2-ctl --list-devices</code></pre>
+
+      <p>若尚未安裝工具：</p>
+      <pre><code>sudo apt update
+sudo apt install -y v4l-utils fswebcam ffmpeg</code></pre>
+
+      <div class="warning">如果沒看到攝影機裝置，先檢查 USB 線材、供電、是否使用 USB Hub 造成供電不足。</div>
+    </section>
+
+    <section class="card">
+      <h2>四、測試拍照</h2>
+      <h3>使用 fswebcam</h3>
+      <pre><code>fswebcam -r 1280x720 --no-banner test.jpg</code></pre>
+
+      <h3>如果要 1080p</h3>
+      <pre><code>fswebcam -r 1920x1080 --no-banner webcam_1080p.jpg</code></pre>
+
+      <p>拍完後可檢查：</p>
+      <pre><code>ls -lh *.jpg</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>五、錄影範例</h2>
+      <p>可使用 ffmpeg 錄下 Webcam 畫面：</p>
+      <pre><code>ffmpeg -f video4linux2 -i /dev/video0 -t 10 output.mp4</code></pre>
+
+      <p>這代表從 <code>/dev/video0</code> 擷取 10 秒影像並輸出成 mp4。</p>
+    </section>
+
+    <section class="card">
+      <h2>六、以 Python 讀取攝影機畫面</h2>
+      <h3>安裝 OpenCV</h3>
+      <pre><code>python3 -m pip install opencv-python</code></pre>
+
+      <h3>基本範例</h3>
+      <pre><code>import cv2
+
+cap = cv2.VideoCapture(0)
+
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        print("無法讀取畫面")
+        break
+
+    cv2.imshow("Webcam", frame)
+
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+
+cap.release()
+cv2.destroyAllWindows()</code></pre>
+
+      <div class="note">這是影像處理課程最常用的起點，後續可加上拍照、存檔、辨識與串流。</div>
+    </section>
+
+    <section class="card">
+      <h2>七、用 Python 拍照存檔</h2>
+      <pre><code>import cv2
+
+cap = cv2.VideoCapture(0)
+ret, frame = cap.read()
+
+if ret:
+    cv2.imwrite("snapshot.jpg", frame)
+    print("已儲存 snapshot.jpg")
+else:
+    print("拍照失敗")
+
+cap.release()</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>八、簡單動態偵測概念</h2>
+      <p>可比對連續兩張影像的差異，判斷畫面是否有移動。這是很多監控系統的入門做法。</p>
+
+      <pre><code>import cv2
+
+cap = cv2.VideoCapture(0)
+ret, frame1 = cap.read()
+ret, frame2 = cap.read()
+
+while ret:
+    diff = cv2.absdiff(frame1, frame2)
+    gray = cv2.cvtColor(diff, cv2.COLOR_BGR2GRAY)
+    _, thresh = cv2.threshold(gray, 25, 255, cv2.THRESH_BINARY)
+
+    if thresh.sum() > 500000:
+        print("偵測到畫面變化")
+
+    frame1 = frame2
+    ret, frame2 = cap.read()</code></pre>
+
+      <div class="warning">這只是入門示意，實際專題通常還要加入雜訊過濾、框選物體、存檔或通知機制。</div>
+    </section>
+
+    <section class="card">
+      <h2>九、建立簡單串流服務的方向</h2>
+      <ul>
+        <li>用 Python + Flask 產生 MJPEG 串流</li>
+        <li>用 motion / motionEye 做監控系統</li>
+        <li>用 ffmpeg + Nginx 做簡單視訊輸出</li>
+      </ul>
+
+      <p>若要最容易上手的教學方向，通常會推薦：</p>
+      <ol>
+        <li>先用 OpenCV 本地顯示畫面</li>
+        <li>再用 Python 存圖</li>
+        <li>最後用 Flask 做網頁串流</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>十、課堂可以延伸的專題</h2>
+      <ul>
+        <li>Webcam 即時監控頁面</li>
+        <li>動態偵測錄影系統</li>
+        <li>智慧門鈴拍照通知</li>
+        <li>OpenCV 人臉辨識入門</li>
+        <li>影像資料上傳到 MQTT / Flask / Django 平台</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>十一、常見問題與排除</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>問題</th>
+            <th>可能原因</th>
+            <th>建議</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>抓不到攝影機</td><td>設備未偵測或供電不足</td><td>先用 <code>lsusb</code> 和 <code>v4l2-ctl --list-devices</code> 檢查</td></tr>
+          <tr><td>畫面黑屏</td><td>裝置被其他程式占用</td><td>關閉其他影像程式後重試</td></tr>
+          <tr><td>解析度無法到 1080p</td><td>Webcam 或驅動限制</td><td>先查看支援格式與解析度</td></tr>
+          <tr><td>OpenCV 安裝失敗</td><td>套件環境問題</td><td>建議使用虛擬環境安裝</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>十二、推薦參考資源</h2>
+      <ul>
+        <li><a href="https://pimylifeup.com/raspberry-pi-webcam-server/" target="_blank">Pi My Life Up, Raspberry Pi Webcam Server</a></li>
+        <li><a href="https://raspberrytips.com/raspberry-pi-camera-projects-ideas/" target="_blank">Raspberry Pi Camera Project Ideas</a></li>
+        <li><a href="https://opencv.org/" target="_blank">OpenCV 官方網站</a></li>
+        <li><a href="https://projects-raspberry.com/picamera-python-programming-a-webcam-on-raspberry-pi/" target="_blank">PiCamera / Webcam Python 教學類文章</a></li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>十三、結語</h2>
+      <p>Raspberry Pi 加上 1080p Web CAM，非常適合拿來做影像入門教學。只要學生先會偵測、拍照、錄影與 OpenCV 讀圖，後面要做監控、辨識、串流或智慧門鈴都能順利接上。</p>
+    </section>
+
+    <div class="footer">RaspberryPi_Camera.html, Raspberry Pi 使用攝影機教學</div>
+  </div>
+</body>
+</html>
