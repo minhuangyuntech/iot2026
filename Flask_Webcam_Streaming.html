@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flask 串流 Webcam 教學</title>
+  <style>
+    :root { --bg:#f6f8fb; --card:#fff; --text:#1f2937; --muted:#6b7280; --accent:#dc2626; --accent-soft:#fee2e2; --border:#dbe3ef; --code-bg:#0f172a; --code-text:#e5eefc; --ok:#065f46; --warn:#92400e; }
+    *{box-sizing:border-box} body{margin:0;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.75}
+    .container{max-width:1180px;margin:0 auto;padding:32px 20px 64px}.hero{background:linear-gradient(135deg,#dc2626,#111827);color:#fff;border-radius:20px;padding:36px 32px;box-shadow:0 18px 45px rgba(15,23,42,.18);margin-bottom:24px}.hero h1{margin:0 0 8px;font-size:2.15rem}.hero p{margin:8px 0;color:rgba(255,255,255,.92)}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 8px 22px rgba(15,23,42,.06);margin-bottom:20px}h2{margin-top:0;border-left:5px solid var(--accent);padding-left:12px}ul,ol{padding-left:22px}code{background:#eef2ff;color:#312e81;padding:2px 6px;border-radius:6px;font-family:Consolas,monospace}pre{background:var(--code-bg);color:var(--code-text);padding:16px;border-radius:14px;overflow-x:auto;border:1px solid #1e293b}.tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:.85rem;margin-right:8px;margin-bottom:8px;background:var(--accent-soft);color:var(--accent);font-weight:600}.note,.warning{padding:14px 16px;border-radius:14px;margin:12px 0}.note{background:#ecfdf5;color:var(--ok);border:1px solid #a7f3d0}.warning{background:#fff7ed;color:var(--warn);border:1px solid #fdba74}.footer{margin-top:28px;color:var(--muted);font-size:.95rem;text-align:center}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Flask 串流 Webcam 教學</h1>
+      <p>介紹如何使用 Flask 與 OpenCV 在 Raspberry Pi 上建立簡單的 Webcam 串流網頁。</p>
+      <p>很適合搭配 1080p Web CAM，延伸成監控、智慧門鈴或影像辨識展示系統。</p>
+      <div><span class="tag">Flask</span><span class="tag">Web CAM</span><span class="tag">OpenCV</span><span class="tag">Streaming</span></div>
+    </section>
+
+    <section class="card">
+      <h2>一、教學目標</h2>
+      <ul>
+        <li>理解 Flask 如何輸出即時影像</li>
+        <li>學會用 OpenCV 擷取 Webcam 畫面</li>
+        <li>學會透過瀏覽器觀看即時串流</li>
+        <li>理解後續如何擴充到監控與通知系統</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>二、安裝環境</h2>
+      <pre><code>python3 -m venv venv
+source venv/bin/activate
+python3 -m pip install flask opencv-python</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>三、專案結構</h2>
+      <pre><code>webcam_flask/
+├── app.py
+└── templates/
+    └── index.html</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>四、app.py 範例</h2>
+      <pre><code>from flask import Flask, render_template, Response
+import cv2
+
+app = Flask(__name__)
+camera = cv2.VideoCapture(0)
+
+
+def generate_frames():
+    while True:
+        success, frame = camera.read()
+        if not success:
+            break
+        else:
+            ret, buffer = cv2.imencode('.jpg', frame)
+            frame = buffer.tobytes()
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+
+@app.route('/video_feed')
+def video_feed():
+    return Response(generate_frames(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>五、templates/index.html 範例</h2>
+      <pre><code>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Flask Webcam&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Flask Webcam Stream&lt;/h1&gt;
+    &lt;img src="{{ url_for('video_feed') }}" width="720"&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>六、執行方式</h2>
+      <pre><code>python3 app.py</code></pre>
+      <p>瀏覽器開啟：</p>
+      <pre><code>http://樹莓派IP:5000</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>七、可延伸功能</h2>
+      <ul>
+        <li>加入拍照按鈕</li>
+        <li>加入動態偵測</li>
+        <li>加入人臉偵測框線</li>
+        <li>加入帳號登入與權限控制</li>
+        <li>與 MQTT 或 Line / Telegram 通知整合</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>八、部署方向</h2>
+      <p>開發階段可直接用 Flask 執行，正式展示時可再結合 Gunicorn 與 Nginx 反向代理。</p>
+      <div class="note">如果你想把這份教材再延伸，我下一步就可以接成「Flask Webcam 串流 + 拍照存檔 + Nginx 部署」完整專題頁。</div>
+    </section>
+
+    <section class="card">
+      <h2>九、常見問題</h2>
+      <ul>
+        <li>相機裝置索引錯誤</li>
+        <li>OpenCV 無法抓到畫面</li>
+        <li>Flask 被防火牆阻擋</li>
+        <li>多個程式同時占用攝影機</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>十、推薦參考</h2>
+      <ul>
+        <li><a href="https://flask.palletsprojects.com/" target="_blank">Flask 官方文件</a></li>
+        <li><a href="https://opencv.org/" target="_blank">OpenCV 官方網站</a></li>
+        <li><a href="https://pimylifeup.com/raspberry-pi-webcam-server/" target="_blank">Raspberry Pi Webcam Server 相關教學</a></li>
+      </ul>
+    </section>
+
+    <div class="footer">Flask_Webcam_Streaming.html, Flask 串流 Webcam 教學</div>
+  </div>
+</body>
+</html>

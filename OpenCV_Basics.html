@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenCV 影像辨識入門教材</title>
+  <style>
+    :root { --bg:#f6f8fb; --card:#fff; --text:#1f2937; --muted:#6b7280; --accent:#0f766e; --accent-soft:#ccfbf1; --border:#dbe3ef; --code-bg:#0f172a; --code-text:#e5eefc; --ok:#065f46; --warn:#92400e; }
+    *{box-sizing:border-box} body{margin:0;font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.75}
+    .container{max-width:1180px;margin:0 auto;padding:32px 20px 64px}.hero{background:linear-gradient(135deg,#0f766e,#111827);color:#fff;border-radius:20px;padding:36px 32px;box-shadow:0 18px 45px rgba(15,23,42,.18);margin-bottom:24px}.hero h1{margin:0 0 8px;font-size:2.15rem}.hero p{margin:8px 0;color:rgba(255,255,255,.92)}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;box-shadow:0 8px 22px rgba(15,23,42,.06);margin-bottom:20px}h2{margin-top:0;border-left:5px solid var(--accent);padding-left:12px}ul,ol{padding-left:22px}code{background:#eef2ff;color:#312e81;padding:2px 6px;border-radius:6px;font-family:Consolas,monospace}pre{background:var(--code-bg);color:var(--code-text);padding:16px;border-radius:14px;overflow-x:auto;border:1px solid #1e293b}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top}th{background:#ecfeff}.tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:.85rem;margin-right:8px;margin-bottom:8px;background:var(--accent-soft);color:var(--accent);font-weight:600}.note,.warning{padding:14px 16px;border-radius:14px;margin:12px 0}.note{background:#ecfdf5;color:var(--ok);border:1px solid #a7f3d0}.warning{background:#fff7ed;color:var(--warn);border:1px solid #fdba74}.footer{margin-top:28px;color:var(--muted);font-size:.95rem;text-align:center}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>OpenCV 影像辨識入門教材</h1>
+      <p>介紹 OpenCV 的基本安裝、影像讀取、攝影機擷取、灰階、邊緣偵測、輪廓、臉部辨識與課堂應用。</p>
+      <p>很適合搭配 Raspberry Pi 與 1080p Web CAM 進行影像處理入門教學。</p>
+      <div><span class="tag">OpenCV</span><span class="tag">Python</span><span class="tag">Web CAM</span><span class="tag">Computer Vision</span></div>
+    </section>
+
+    <section class="card">
+      <h2>一、OpenCV 是什麼</h2>
+      <ul>
+        <li>OpenCV 是最常見的電腦視覺函式庫之一</li>
+        <li>可用於影像讀取、攝影機擷取、物件偵測、邊緣處理、人臉辨識等</li>
+        <li>適合做影像處理課程與 IoT 視覺專題入門</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>二、安裝 OpenCV</h2>
+      <pre><code>python3 -m venv venv
+source venv/bin/activate
+python3 -m pip install opencv-python</code></pre>
+      <div class="note">建議使用虛擬環境，避免系統 Python 套件混亂。</div>
+    </section>
+
+    <section class="card">
+      <h2>三、讀取圖片</h2>
+      <pre><code>import cv2
+img = cv2.imread('test.jpg')
+cv2.imshow('Image', img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>四、讀取 Webcam 畫面</h2>
+      <pre><code>import cv2
+cap = cv2.VideoCapture(0)
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+    cv2.imshow('Webcam', frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+cap.release()
+cv2.destroyAllWindows()</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>五、灰階與邊緣偵測</h2>
+      <pre><code>import cv2
+img = cv2.imread('test.jpg')
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+edges = cv2.Canny(gray, 100, 200)
+cv2.imshow('Gray', gray)
+cv2.imshow('Edges', edges)
+cv2.waitKey(0)
+cv2.destroyAllWindows()</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>六、影像存檔</h2>
+      <pre><code>import cv2
+img = cv2.imread('test.jpg')
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+cv2.imwrite('gray.jpg', gray)</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>七、輪廓偵測概念</h2>
+      <pre><code>import cv2
+img = cv2.imread('test.jpg')
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+_, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+cv2.drawContours(img, contours, -1, (0,255,0), 2)
+cv2.imshow('Contours', img)
+cv2.waitKey(0)
+cv2.destroyAllWindows()</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>八、臉部辨識入門</h2>
+      <pre><code>import cv2
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+cap = cv2.VideoCapture(0)
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+    for (x, y, w, h) in faces:
+        cv2.rectangle(frame, (x,y), (x+w, y+h), (0,255,0), 2)
+    cv2.imshow('Face Detection', frame)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+cap.release()
+cv2.destroyAllWindows()</code></pre>
+      <div class="warning">這是入門版偵測，不是高精度 AI 辨識，但非常適合教學展示。</div>
+    </section>
+
+    <section class="card">
+      <h2>九、適合課堂專題的延伸</h2>
+      <ul>
+        <li>動態偵測</li>
+        <li>人臉偵測門禁雛形</li>
+        <li>智慧教室人流監測概念</li>
+        <li>影像拍照通知系統</li>
+        <li>Webcam 畫面串流到 Flask 或 Django</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>十、常見錯誤</h2>
+      <table>
+        <thead><tr><th>問題</th><th>原因</th><th>解法</th></tr></thead>
+        <tbody>
+          <tr><td>抓不到相機</td><td>索引錯誤或裝置未偵測</td><td>確認 <code>/dev/video0</code> 與 Webcam 是否存在</td></tr>
+          <tr><td>無法顯示視窗</td><td>圖形環境限制</td><td>確認桌面環境或改用存檔測試</td></tr>
+          <tr><td>模組找不到</td><td>OpenCV 未安裝到正確環境</td><td>重新確認 venv 與 pip 安裝位置</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>十一、推薦參考</h2>
+      <ul>
+        <li><a href="https://opencv.org/" target="_blank">OpenCV 官方網站</a></li>
+        <li><a href="https://docs.opencv.org/" target="_blank">OpenCV 官方文件</a></li>
+        <li><a href="https://pyimagesearch.com/" target="_blank">PyImageSearch</a></li>
+      </ul>
+    </section>
+
+    <div class="footer">OpenCV_Basics.html, OpenCV 影像辨識入門教材</div>
+  </div>
+</body>
+</html>
