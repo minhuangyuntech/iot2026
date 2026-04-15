@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Raspberry Pi Pico W 程式設計教材</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #0f766e;
+      --accent-soft: #ccfbf1;
+      --border: #dbe3ef;
+      --code-bg: #0f172a;
+      --code-text: #e5eefc;
+      --ok: #065f46;
+      --warn: #92400e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0f766e, #111827);
+      color: #fff;
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2.15rem;
+    }
+    .hero p {
+      margin: 8px 0;
+      color: rgba(255,255,255,0.92);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      margin-bottom: 20px;
+    }
+    h2, h3 {
+      color: #111827;
+    }
+    h2 {
+      margin-top: 0;
+      border-left: 5px solid var(--accent);
+      padding-left: 12px;
+    }
+    ul, ol {
+      padding-left: 22px;
+    }
+    li + li { margin-top: 6px; }
+    code {
+      background: #eef2ff;
+      color: #312e81;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", "Consolas", monospace;
+      font-size: 0.95em;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.96rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #ecfeff; }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .note, .warning {
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin: 12px 0;
+    }
+    .note {
+      background: #ecfdf5;
+      color: var(--ok);
+      border: 1px solid #a7f3d0;
+    }
+    .warning {
+      background: #fff7ed;
+      color: var(--warn);
+      border: 1px solid #fdba74;
+    }
+    .footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.75rem; }
+      .container { padding: 20px 14px 40px; }
+      .hero, .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>Raspberry Pi Pico W 程式設計教材</h1>
+      <p>從 MicroPython 開發環境、GPIO、PWM、ADC、Wi-Fi 連線，到 HTTP 與 MQTT 應用，建立 Pico W 在 IoT 課程中的完整實作基礎。</p>
+      <p>適合電子系、嵌入式系統、微控制器、智慧裝置與物聯網課程。</p>
+      <div style="margin-top:16px;">
+        <span class="tag">Pico W</span>
+        <span class="tag">MicroPython</span>
+        <span class="tag">Wi-Fi</span>
+        <span class="tag">IoT</span>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>一、教學目標</h2>
+        <ul>
+          <li>理解 Raspberry Pi Pico W 與一般單板電腦的差異</li>
+          <li>學會安裝 MicroPython 與使用 Thonny 開發</li>
+          <li>熟悉 GPIO、按鈕輸入、LED、PWM 與 ADC 讀值</li>
+          <li>學會讓 Pico W 連上 Wi-Fi 並進行網路通訊</li>
+          <li>能完成 MQTT 或 HTTP 為基礎的 IoT 小專題</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>二、Pico W 適合做什麼</h2>
+        <ul>
+          <li>感測器資料收集與上傳</li>
+          <li>低成本控制器與教學實驗平台</li>
+          <li>Wi-Fi 連網開關、簡易監測站</li>
+          <li>IoT 裝置原型設計</li>
+          <li>搭配 Raspberry Pi 或伺服器做前後端整合</li>
+        </ul>
+        <div class="note">Pico W 是微控制器，不是完整 Linux 電腦。它啟動快、耗電低，適合硬體控制與網路節點。</div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>三、Pico W 與 Raspberry Pi 的差異</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>項目</th>
+            <th>Raspberry Pi 5</th>
+            <th>Pico W</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>類型</td><td>單板電腦</td><td>微控制器開發板</td></tr>
+          <tr><td>作業系統</td><td>可執行 Linux</td><td>通常執行 MicroPython 或 C/C++ 韌體</td></tr>
+          <tr><td>啟動時間</td><td>較長</td><td>非常快</td></tr>
+          <tr><td>硬體控制</td><td>適合，但偏高階應用</td><td>非常適合即時 I/O 控制</td></tr>
+          <tr><td>網路功能</td><td>完整網路堆疊</td><td>具 Wi-Fi，可做輕量 IoT 應用</td></tr>
+          <tr><td>適用課題</td><td>伺服器、網站、AI、影像</td><td>感測器、控制器、低功耗 IoT 節點</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>四、硬體規格與注意事項</h2>
+      <ul>
+        <li>內建 RP2040 晶片與 Wi-Fi 功能</li>
+        <li>GPIO 為 3.3V 邏輯</li>
+        <li>支援 PWM、ADC、I2C、SPI、UART</li>
+        <li>可使用 USB 供電與程式下載</li>
+      </ul>
+      <div class="warning">Pico W 的 GPIO 不可直接接 5V 訊號。若外部模組是 5V，應使用分壓、電平轉換器或相容的介面電路。</div>
+    </section>
+
+    <section class="card">
+      <h2>五、開發環境安裝流程</h2>
+      <h3>1. 準備工具</h3>
+      <ul>
+        <li>Raspberry Pi Pico W 開發板</li>
+        <li>Micro USB 傳輸線</li>
+        <li>Thonny Python IDE</li>
+        <li>麵包板、LED、電阻、按鈕、杜邦線</li>
+      </ul>
+
+      <h3>2. 安裝 MicroPython 韌體</h3>
+      <ol>
+        <li>按住 Pico W 的 BOOTSEL 按鈕</li>
+        <li>插入 USB 連接電腦</li>
+        <li>電腦會出現可攜式磁碟</li>
+        <li>將對應的 <code>.uf2</code> 韌體檔拖曳進去</li>
+      </ol>
+
+      <h3>3. 使用 Thonny 設定直譯器</h3>
+      <ul>
+        <li>開啟 Thonny</li>
+        <li>在右下角選擇直譯器為 <code>MicroPython (Raspberry Pi Pico)</code></li>
+        <li>選擇正確的連接埠</li>
+        <li>測試能否在 Shell 中輸入 Python 指令</li>
+      </ul>
+
+      <div class="note">教學上建議先用 Thonny，因為它同時提供編輯器、Shell、檔案上傳與執行環境，對初學者最友善。</div>
+    </section>
+
+    <section class="card">
+      <h2>六、第一個程式：Hello Pico W</h2>
+      <p>先確認程式可以正常下載到板子並執行。</p>
+      <pre><code>print("Hello, Pico W!")</code></pre>
+      <p>可以先在 Thonny 直接執行，再將程式存成板子上的 <code>main.py</code>，讓裝置重新開機後也能自動執行。</p>
+    </section>
+
+    <section class="card">
+      <h2>七、GPIO 輸出：點亮 LED</h2>
+      <h3>接線建議</h3>
+      <ul>
+        <li>GPIO 接 LED 正極</li>
+        <li>LED 負極串接 220Ω 電阻後接 GND</li>
+      </ul>
+
+      <h3>MicroPython 範例</h3>
+      <pre><code>from machine import Pin
+from time import sleep
+
+led = Pin(15, Pin.OUT)
+
+while True:
+    led.toggle()
+    sleep(0.5)</code></pre>
+
+      <div class="note">若使用 Pico W 板上 LED，某些版本可以用 <code>Pin("LED", Pin.OUT)</code> 控制，教學時可依實際韌體版本調整。</div>
+    </section>
+
+    <section class="card">
+      <h2>八、GPIO 輸入：按鈕讀取</h2>
+      <p>按鈕範例可讓學生理解數位輸入、上拉電阻與條件判斷。</p>
+      <pre><code>from machine import Pin
+from time import sleep
+
+button = Pin(14, Pin.IN, Pin.PULL_UP)
+led = Pin(15, Pin.OUT)
+
+while True:
+    if button.value() == 0:
+        led.value(1)
+    else:
+        led.value(0)
+    sleep(0.05)</code></pre>
+
+      <div class="warning">使用 <code>Pin.PULL_UP</code> 時，按鈕按下通常會讀到 0。這是初學者很常混淆的地方。</div>
+    </section>
+
+    <section class="card">
+      <h2>九、PWM：控制 LED 亮度或蜂鳴器</h2>
+      <pre><code>from machine import Pin, PWM
+from time import sleep
+
+pwm = PWM(Pin(15))
+pwm.freq(1000)
+
+for duty in range(0, 65535, 2000):
+    pwm.duty_u16(duty)
+    sleep(0.05)
+
+for duty in range(65535, 0, -2000):
+    pwm.duty_u16(duty)
+    sleep(0.05)</code></pre>
+
+      <p>可以延伸成：</p>
+      <ul>
+        <li>呼吸燈效果</li>
+        <li>蜂鳴器發聲</li>
+        <li>伺服馬達角度控制</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>十、ADC：讀取類比訊號</h2>
+      <p>Pico W 可透過 ADC 讀取可變電阻、光敏電阻或其他類比感測訊號。</p>
+      <pre><code>from machine import ADC
+from time import sleep
+
+adc = ADC(26)
+
+while True:
+    value = adc.read_u16()
+    print(value)
+    sleep(0.2)</code></pre>
+
+      <p>如果要轉成電壓，可用近似公式：</p>
+      <pre><code>voltage = value * 3.3 / 65535</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十一、讓 Pico W 連上 Wi-Fi</h2>
+      <p>這是 Pico W 與一般 Pico 的重要差異，也是進入 IoT 應用的核心能力。</p>
+      <pre><code>import network
+import time
+
+ssid = "你的WiFi名稱"
+password = "你的WiFi密碼"
+
+wlan = network.WLAN(network.STA_IF)
+wlan.active(True)
+wlan.connect(ssid, password)
+
+for _ in range(20):
+    if wlan.isconnected():
+        break
+    print("連線中...")
+    time.sleep(1)
+
+if wlan.isconnected():
+    print("Wi-Fi 連線成功")
+    print("IP:", wlan.ifconfig()[0])
+else:
+    print("Wi-Fi 連線失敗")</code></pre>
+
+      <div class="warning">教學時可提醒學生：SSID 與密碼大小寫有差，且 2.4GHz Wi-Fi 相容性通常比 5GHz 更好。</div>
+    </section>
+
+    <section class="card">
+      <h2>十二、HTTP 範例：向網頁伺服器發出請求</h2>
+      <p>若已安裝支援的 <code>urequests</code> 模組，可以進一步測試 HTTP 通訊。</p>
+      <pre><code>import network
+import time
+import urequests
+
+ssid = "你的WiFi名稱"
+password = "你的WiFi密碼"
+
+wlan = network.WLAN(network.STA_IF)
+wlan.active(True)
+wlan.connect(ssid, password)
+
+while not wlan.isconnected():
+    time.sleep(1)
+
+response = urequests.get("http://httpbin.org/get")
+print(response.text)
+response.close()</code></pre>
+
+      <p>這一段可延伸成：</p>
+      <ul>
+        <li>向學校伺服器上傳感測資料</li>
+        <li>呼叫 REST API</li>
+        <li>從雲端抓設定值</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>十三、MQTT 範例：發佈感測資料</h2>
+      <p>若課程已搭配 Mosquitto 或 Node-RED，可直接讓 Pico W 發佈資料到 Broker。</p>
+      <pre><code>import network
+import time
+from umqtt.simple import MQTTClient
+from machine import ADC
+
+ssid = "你的WiFi名稱"
+password = "你的WiFi密碼"
+mqtt_server = "192.168.1.100"
+client_id = "pico_w_01"
+topic = b"iot/picow/light"
+
+wlan = network.WLAN(network.STA_IF)
+wlan.active(True)
+wlan.connect(ssid, password)
+
+while not wlan.isconnected():
+    time.sleep(1)
+
+adc = ADC(26)
+client = MQTTClient(client_id, mqtt_server)
+client.connect()
+
+while True:
+    value = adc.read_u16()
+    client.publish(topic, str(value))
+    print("publish:", value)
+    time.sleep(2)</code></pre>
+
+      <div class="note">這份教材與 repo 內的 MQTT 教材可以互相搭配：Pico W 負責送資料，Raspberry Pi 或 Python 程式負責接收與顯示。</div>
+    </section>
+
+    <section class="card">
+      <h2>十四、建議課堂實驗流程</h2>
+      <ol>
+        <li>完成開發環境安裝與 Hello Pico W</li>
+        <li>做 LED 閃爍與按鈕控制</li>
+        <li>加入 PWM 與 ADC 感測</li>
+        <li>完成 Wi-Fi 連線測試</li>
+        <li>將感測值上傳到 MQTT 或 HTTP 服務</li>
+        <li>搭配 Node-RED、Flask 或資料庫做視覺化</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>十五、常見錯誤與排除</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>問題</th>
+            <th>可能原因</th>
+            <th>處理方式</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Thonny 找不到板子</td><td>線材只支援充電、連接埠未選對</td><td>改用可傳輸資料的 USB 線，重新選擇 Port</td></tr>
+          <tr><td>程式上傳失敗</td><td>直譯器設定錯誤</td><td>確認選的是 MicroPython (Raspberry Pi Pico)</td></tr>
+          <tr><td>LED 不亮</td><td>腳位接錯、極性相反、沒接 GND</td><td>重新檢查接線與程式腳位編號</td></tr>
+          <tr><td>Wi-Fi 連不上</td><td>SSID/密碼錯誤、訊號差、頻段不相容</td><td>確認 2.4GHz 網路、重新檢查帳密</td></tr>
+          <tr><td>MQTT 無法連線</td><td>Broker IP 錯誤、防火牆、Topic 設定不一致</td><td>先用電腦端測試 Broker，再回頭檢查 Pico W</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>十六、課堂專題方向</h2>
+      <ul>
+        <li>教室溫濕度監測站</li>
+        <li>Wi-Fi 遙控 LED 或繼電器</li>
+        <li>智慧盆栽土壤濕度節點</li>
+        <li>Pico W + Node-RED 即時資料儀表板</li>
+        <li>Pico W 感測資料上傳到 Flask / Django / MariaDB</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>十七、與本課程其他教材的搭配方式</h2>
+      <ul>
+        <li>先學 <code>Python_Basics.html</code> 建立程式語法基礎</li>
+        <li>再學 <code>MQTT_Teaching.html</code> 做裝置通訊</li>
+        <li>搭配 <code>NodeRED_MQTT_Dashboard.html</code> 做儀表板</li>
+        <li>搭配 <code>Flask_Basics.html</code> 或 <code>Django_Nginx_Gunicorn.html</code> 做後台系統</li>
+      </ul>
+      <div class="note">這樣的教材順序可以形成「微控制器感測 → 網路傳輸 → 儀表板 → Web 後台」的完整 IoT 教學路線。</div>
+    </section>
+
+    <div class="footer">
+      PicoW_Programming.html, IoT 2026 Raspberry Pi Pico W 程式設計教材
+    </div>
+  </div>
+</body>
+</html>
