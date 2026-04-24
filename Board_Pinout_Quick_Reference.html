@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>主要開發板 Pinout 速查教材</title>
+  <title>主要開發板 Pinout 圖形速查教材</title>
   <style>
     :root {
       --bg: #f6f8fb;
@@ -13,38 +13,50 @@
       --accent: #2563eb;
       --accent-soft: #dbeafe;
       --border: #dbe3ef;
+      --shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+      --power-bg: #fee2e2;
+      --power-text: #b91c1c;
+      --gnd-bg: #e5e7eb;
+      --gnd-text: #111827;
+      --gpio-bg: #dbeafe;
+      --gpio-text: #1d4ed8;
+      --i2c-bg: #dcfce7;
+      --i2c-text: #166534;
+      --spi-bg: #ede9fe;
+      --spi-text: #6d28d9;
+      --uart-bg: #ffedd5;
+      --uart-text: #c2410c;
+      --adc-bg: #fef3c7;
+      --adc-text: #a16207;
+      --special-bg: #cffafe;
+      --special-text: #155e75;
       --ok: #065f46;
       --warn: #92400e;
-      --warn-bg: #fff7ed;
-      --warn-border: #fdba74;
-      --note-bg: #ecfdf5;
-      --note-border: #a7f3d0;
-      --shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
-      background: var(--bg);
+      background: linear-gradient(180deg, #eef4fb 0%, #f8fbff 100%);
       color: var(--text);
       line-height: 1.75;
     }
     .container {
-      max-width: 1220px;
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 32px 20px 64px;
+      padding: 32px 20px 72px;
     }
     .hero {
       background: linear-gradient(135deg, #2563eb, #0f172a);
       color: #fff;
-      border-radius: 22px;
-      padding: 38px 34px;
-      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+      border-radius: 24px;
+      padding: 40px 34px;
+      box-shadow: 0 20px 48px rgba(15, 23, 42, 0.18);
       margin-bottom: 24px;
     }
     .hero h1 {
       margin: 0 0 8px;
-      font-size: 2.2rem;
+      font-size: 2.25rem;
     }
     .hero p {
       margin: 8px 0;
@@ -55,7 +67,7 @@
       display: inline-block;
       padding: 4px 10px;
       border-radius: 999px;
-      font-size: 0.85rem;
+      font-size: 0.84rem;
       margin-right: 8px;
       margin-bottom: 8px;
       background: var(--accent-soft);
@@ -70,7 +82,7 @@
     .toc, .card {
       background: var(--card);
       border: 1px solid var(--border);
-      border-radius: 18px;
+      border-radius: 20px;
       box-shadow: var(--shadow);
     }
     .toc {
@@ -90,13 +102,13 @@
     }
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 18px;
       margin-bottom: 24px;
     }
     .card {
-      padding: 22px;
-      margin-bottom: 20px;
+      padding: 24px;
+      margin-bottom: 22px;
     }
     h2, h3 {
       color: #111827;
@@ -105,9 +117,11 @@
       margin-top: 0;
       border-left: 5px solid var(--accent);
       padding-left: 12px;
+      font-size: 1.5rem;
     }
     h3 {
       margin-bottom: 10px;
+      font-size: 1.12rem;
     }
     p, li { color: var(--text); }
     ul, ol { padding-left: 22px; }
@@ -124,23 +138,21 @@
       text-align: left;
       vertical-align: top;
     }
-    th {
-      background: #eff6ff;
-    }
+    th { background: #eff6ff; }
     .note, .warning {
       padding: 14px 16px;
       border-radius: 14px;
       margin: 12px 0;
     }
     .note {
-      background: var(--note-bg);
+      background: #ecfdf5;
       color: var(--ok);
-      border: 1px solid var(--note-border);
+      border: 1px solid #a7f3d0;
     }
     .warning {
-      background: var(--warn-bg);
+      background: #fff7ed;
       color: var(--warn);
-      border: 1px solid var(--warn-border);
+      border: 1px solid #fdba74;
     }
     .board-head {
       display: flex;
@@ -167,62 +179,233 @@
       margin-bottom: 6px;
       color: #1d4ed8;
     }
-    .pin-layout {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
       margin-top: 14px;
     }
-    .pin-column {
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #f8fafc;
       border: 1px solid var(--border);
-      border-radius: 14px;
-      overflow: hidden;
-      background: #fbfdff;
+      font-size: 0.9rem;
+      color: var(--muted);
     }
-    .pin-column h4 {
-      margin: 0;
-      padding: 12px 14px;
-      background: #eff6ff;
-      font-size: 1rem;
+    .swatch {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: inline-block;
+      border: 1px solid rgba(15, 23, 42, 0.08);
     }
-    .pin-column ul {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-    .pin-column li {
-      padding: 10px 14px;
-      border-top: 1px solid var(--border);
-      font-size: 0.95rem;
-    }
-    .pin-column li strong {
-      color: #1d4ed8;
-    }
-    .compare {
+    .diagram-shell {
+      margin-top: 18px;
+      background: linear-gradient(180deg, #fbfdff 0%, #f4f8ff 100%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 20px;
       overflow-x: auto;
     }
+    .pin-chip {
+      border-radius: 12px;
+      padding: 6px 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1.3;
+      text-align: center;
+      border: 1px solid rgba(15, 23, 42, 0.08);
+      min-height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .pin-chip small {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 600;
+      opacity: 0.9;
+    }
+    .power { background: var(--power-bg); color: var(--power-text); }
+    .gnd { background: var(--gnd-bg); color: var(--gnd-text); }
+    .gpio { background: var(--gpio-bg); color: var(--gpio-text); }
+    .i2c { background: var(--i2c-bg); color: var(--i2c-text); }
+    .spi { background: var(--spi-bg); color: var(--spi-text); }
+    .uart { background: var(--uart-bg); color: var(--uart-text); }
+    .adc { background: var(--adc-bg); color: var(--adc-text); }
+    .special { background: var(--special-bg); color: var(--special-text); }
+    .diagram-caption {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+    .rpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(70px, 1fr));
+      gap: 10px;
+      min-width: 640px;
+      align-items: center;
+    }
+    .rpi-number {
+      font-size: 0.78rem;
+      color: var(--muted);
+      text-align: center;
+      font-weight: 700;
+    }
+    .board-vertical {
+      display: grid;
+      grid-template-columns: minmax(160px, 220px) minmax(220px, 1fr) minmax(160px, 220px);
+      gap: 18px;
+      min-width: 760px;
+      align-items: stretch;
+    }
+    .pin-stack {
+      display: grid;
+      gap: 8px;
+    }
+    .board-body {
+      border-radius: 20px;
+      min-height: 500px;
+      padding: 18px;
+      position: relative;
+      color: #fff;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .board-body h3 {
+      margin: 0;
+      color: #fff;
+      font-size: 1.35rem;
+    }
+    .board-body p {
+      color: rgba(255,255,255,0.92);
+      margin: 6px 0 0;
+    }
+    .board-core {
+      border: 2px solid rgba(255,255,255,0.25);
+      border-radius: 18px;
+      padding: 16px;
+      background: rgba(255,255,255,0.08);
+      backdrop-filter: blur(2px);
+    }
+    .chip-cluster {
+      display: grid;
+      gap: 10px;
+    }
+    .chip-box {
+      border-radius: 14px;
+      padding: 14px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: 0.92rem;
+    }
+    .pico-board {
+      background: linear-gradient(180deg, #0f766e, #134e4a);
+    }
+    .esp32-board {
+      background: linear-gradient(180deg, #1f2937, #111827);
+    }
+    .uno-board {
+      background: linear-gradient(180deg, #0284c7, #0f766e);
+      min-height: 260px;
+    }
+    .usb-port, .antenna, .header-label, .board-dot {
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.22);
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+    .usb-port {
+      width: 84px;
+      height: 18px;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 10px;
+    }
+    .antenna {
+      width: 120px;
+      height: 28px;
+      top: 12px;
+      right: 18px;
+      border-radius: 12px;
+    }
+    .board-dot {
+      width: 10px;
+      height: 10px;
+    }
+    .board-dot.one { top: 70px; right: 26px; }
+    .board-dot.two { bottom: 24px; left: 22px; }
+    .board-dot.three { bottom: 24px; right: 22px; }
+    .mini-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .mini-hole {
+      height: 16px;
+      border-radius: 4px;
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .uno-layout {
+      min-width: 820px;
+    }
+    .uno-top, .uno-bottom {
+      display: grid;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .uno-top { grid-template-columns: repeat(14, minmax(54px, 1fr)); }
+    .uno-bottom { grid-template-columns: repeat(12, minmax(54px, 1fr)); }
+    .uno-body-wrap {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 16px;
+      align-items: stretch;
+    }
+    .uno-chip-area {
+      display: grid;
+      gap: 12px;
+    }
+    .uno-chip {
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.2);
+      background: rgba(255,255,255,0.12);
+      padding: 16px;
+      color: rgba(255,255,255,0.95);
+    }
+    .compare { overflow-x: auto; }
     .footer {
       margin-top: 32px;
       text-align: center;
       color: var(--muted);
       font-size: 0.95rem;
     }
-    @media (max-width: 760px) {
-      .hero h1 { font-size: 1.8rem; }
+    @media (max-width: 900px) {
+      .hero h1 { font-size: 1.85rem; }
       .container { padding: 20px 14px 42px; }
       .hero, .card, .toc { padding: 20px; }
-      .pin-layout { grid-template-columns: 1fr; }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <section class="hero">
-      <h1>主要開發板 Pinout 速查教材</h1>
-      <p>本頁整理 IoT 與嵌入式課程中最常見的幾種開發板腳位重點，方便上課、實作與專題時快速查找電源腳、GPIO、PWM、ADC、I2C、SPI、UART 等常用功能。</p>
-      <p>內容以教學實務常見版本為主，適合搭配 Raspberry Pi、Pico W、ESP32 與 Arduino Uno 入門。不同廠牌或不同版本板子，實際絲印與腳位名稱可能略有差異，接線前仍應再對照手上板子的官方 pinout。</p>
+      <h1>主要開發板 Pinout 圖形速查教材</h1>
+      <p>本頁將原本的表格整理升級為「圖形 + 表格」雙重速查模式，方便學生先用顏色快速辨識 pin 類型，再用表格核對功能與用途。</p>
+      <p>內容以 IoT 課程常見版本為主，聚焦 Raspberry Pi、Raspberry Pi Pico W、ESP32 DevKit 與 Arduino Uno R3。不同廠牌或版本的腳位標示可能略有差異，正式接線前仍建議與手上板子的官方 pinout 對照。</p>
       <div style="margin-top:16px;">
-        <span class="tag">Pinout</span>
+        <span class="tag">圖形化 Pinout</span>
         <span class="tag">Raspberry Pi</span>
         <span class="tag">Pico W</span>
         <span class="tag">ESP32</span>
@@ -233,10 +416,12 @@
     <section class="toc">
       <strong>快速導覽：</strong><br>
       <a href="#overview">選板速查</a>
+      <a href="#legend">顏色圖例</a>
       <a href="#rpi">Raspberry Pi 40-pin</a>
       <a href="#pico">Raspberry Pi Pico W</a>
       <a href="#esp32">ESP32 DevKit</a>
       <a href="#uno">Arduino Uno R3</a>
+      <a href="#compare">通訊腳位總整理</a>
       <a href="#safety">接線安全提醒</a>
     </section>
 
@@ -254,7 +439,7 @@
           <tbody>
             <tr><td>Raspberry Pi</td><td>單板電腦</td><td>Linux、Web、資料收集、影像、伺服器與 GPIO 整合</td></tr>
             <tr><td>Raspberry Pi Pico W</td><td>微控制器 + Wi-Fi</td><td>MicroPython、感測器控制、輕量網路節點、低成本 IoT 實作</td></tr>
-            <tr><td>ESP32 DevKit</td><td>微控制器 + Wi-Fi/Bluetooth</td><td>IoT 節點、無線控制、ADC、PWM、行動裝置互動</td></tr>
+            <tr><td>ESP32 DevKit</td><td>微控制器 + Wi-Fi / Bluetooth</td><td>IoT 節點、無線控制、ADC、PWM、行動裝置互動</td></tr>
             <tr><td>Arduino Uno R3</td><td>經典教學板</td><td>數位輸入輸出、基本感測器、PWM、初學者電子實驗</td></tr>
           </tbody>
         </table>
@@ -282,9 +467,24 @@
       </section>
     </div>
 
+    <section class="card" id="legend">
+      <h2>三、Pin 顏色圖例</h2>
+      <p>下面所有圖形化 pinout 都使用一致的色彩邏輯，讓學生可以跨不同開發板快速比對相似功能。</p>
+      <div class="legend">
+        <span class="legend-item"><span class="swatch power"></span>電源 / 5V / 3.3V / VIN</span>
+        <span class="legend-item"><span class="swatch gnd"></span>GND 接地</span>
+        <span class="legend-item"><span class="swatch gpio"></span>一般 GPIO / 數位 I/O</span>
+        <span class="legend-item"><span class="swatch i2c"></span>I2C</span>
+        <span class="legend-item"><span class="swatch spi"></span>SPI</span>
+        <span class="legend-item"><span class="swatch uart"></span>UART / Serial</span>
+        <span class="legend-item"><span class="swatch adc"></span>ADC / PWM / 類比相關</span>
+        <span class="legend-item"><span class="swatch special"></span>特殊 / 系統用途</span>
+      </div>
+    </section>
+
     <section class="card" id="rpi">
       <div class="board-head">
-        <h2>三、Raspberry Pi 40-pin GPIO 速查</h2>
+        <h2>四、Raspberry Pi 40-pin GPIO 圖形速查</h2>
         <div>
           <span class="tag">3.3V</span>
           <span class="tag">I2C</span>
@@ -292,71 +492,44 @@
           <span class="tag">UART</span>
         </div>
       </div>
-      <p>適用多數 Raspberry Pi 3 / 4 / 5 的 40-pin 排針配置。課堂上最常用的是電源、GND、GPIO17 / 27 / 22、I2C SDA/SCL，以及 UART 的 TX/RX。</p>
+      <p>適用多數 Raspberry Pi 3 / 4 / 5 的 40-pin 排針配置。圖形區以「實體腳位排列」呈現，方便學生直接從板子排針方向對照。</p>
       <div class="spec-grid">
         <div class="spec-box"><strong>常用電源腳</strong>1: 3.3V、2/4: 5V、6: GND</div>
         <div class="spec-box"><strong>I2C</strong>3: GPIO2 SDA、5: GPIO3 SCL</div>
         <div class="spec-box"><strong>UART</strong>8: GPIO14 TXD、10: GPIO15 RXD</div>
         <div class="spec-box"><strong>SPI</strong>19: MOSI、21: MISO、23: SCLK、24: CE0</div>
       </div>
-      <div class="pin-layout">
-        <div class="pin-column">
-          <h4>奇數排（左側）</h4>
-          <ul>
-            <li><strong>1</strong> — 3.3V</li>
-            <li><strong>3</strong> — GPIO2 / SDA1</li>
-            <li><strong>5</strong> — GPIO3 / SCL1</li>
-            <li><strong>7</strong> — GPIO4 / GPCLK0</li>
-            <li><strong>9</strong> — GND</li>
-            <li><strong>11</strong> — GPIO17</li>
-            <li><strong>13</strong> — GPIO27</li>
-            <li><strong>15</strong> — GPIO22</li>
-            <li><strong>17</strong> — 3.3V</li>
-            <li><strong>19</strong> — GPIO10 / MOSI</li>
-            <li><strong>21</strong> — GPIO9 / MISO</li>
-            <li><strong>23</strong> — GPIO11 / SCLK</li>
-            <li><strong>25</strong> — GND</li>
-            <li><strong>27</strong> — GPIO0 / ID_SD</li>
-            <li><strong>29</strong> — GPIO5</li>
-            <li><strong>31</strong> — GPIO6</li>
-            <li><strong>33</strong> — GPIO13 / PWM</li>
-            <li><strong>35</strong> — GPIO19 / PCM FS</li>
-            <li><strong>37</strong> — GPIO26</li>
-            <li><strong>39</strong> — GND</li>
-          </ul>
+      <div class="diagram-shell">
+        <div class="rpi-grid">
+          <div class="rpi-number">1</div><div class="pin-chip power">3.3V</div><div class="pin-chip power">5V</div><div class="rpi-number">2</div>
+          <div class="rpi-number">3</div><div class="pin-chip i2c">GPIO2<small>SDA1</small></div><div class="pin-chip power">5V</div><div class="rpi-number">4</div>
+          <div class="rpi-number">5</div><div class="pin-chip i2c">GPIO3<small>SCL1</small></div><div class="pin-chip gnd">GND</div><div class="rpi-number">6</div>
+          <div class="rpi-number">7</div><div class="pin-chip gpio">GPIO4<small>GPCLK0</small></div><div class="pin-chip uart">GPIO14<small>TXD</small></div><div class="rpi-number">8</div>
+          <div class="rpi-number">9</div><div class="pin-chip gnd">GND</div><div class="pin-chip uart">GPIO15<small>RXD</small></div><div class="rpi-number">10</div>
+          <div class="rpi-number">11</div><div class="pin-chip gpio">GPIO17</div><div class="pin-chip adc">GPIO18<small>PWM</small></div><div class="rpi-number">12</div>
+          <div class="rpi-number">13</div><div class="pin-chip gpio">GPIO27</div><div class="pin-chip gnd">GND</div><div class="rpi-number">14</div>
+          <div class="rpi-number">15</div><div class="pin-chip gpio">GPIO22</div><div class="pin-chip gpio">GPIO23</div><div class="rpi-number">16</div>
+          <div class="rpi-number">17</div><div class="pin-chip power">3.3V</div><div class="pin-chip gpio">GPIO24</div><div class="rpi-number">18</div>
+          <div class="rpi-number">19</div><div class="pin-chip spi">GPIO10<small>MOSI</small></div><div class="pin-chip gnd">GND</div><div class="rpi-number">20</div>
+          <div class="rpi-number">21</div><div class="pin-chip spi">GPIO9<small>MISO</small></div><div class="pin-chip gpio">GPIO25</div><div class="rpi-number">22</div>
+          <div class="rpi-number">23</div><div class="pin-chip spi">GPIO11<small>SCLK</small></div><div class="pin-chip spi">GPIO8<small>CE0</small></div><div class="rpi-number">24</div>
+          <div class="rpi-number">25</div><div class="pin-chip gnd">GND</div><div class="pin-chip spi">GPIO7<small>CE1</small></div><div class="rpi-number">26</div>
+          <div class="rpi-number">27</div><div class="pin-chip special">GPIO0<small>ID_SD</small></div><div class="pin-chip special">GPIO1<small>ID_SC</small></div><div class="rpi-number">28</div>
+          <div class="rpi-number">29</div><div class="pin-chip gpio">GPIO5</div><div class="pin-chip gnd">GND</div><div class="rpi-number">30</div>
+          <div class="rpi-number">31</div><div class="pin-chip gpio">GPIO6</div><div class="pin-chip adc">GPIO12<small>PWM</small></div><div class="rpi-number">32</div>
+          <div class="rpi-number">33</div><div class="pin-chip adc">GPIO13<small>PWM</small></div><div class="pin-chip gnd">GND</div><div class="rpi-number">34</div>
+          <div class="rpi-number">35</div><div class="pin-chip special">GPIO19<small>PCM FS</small></div><div class="pin-chip gpio">GPIO16</div><div class="rpi-number">36</div>
+          <div class="rpi-number">37</div><div class="pin-chip gpio">GPIO26</div><div class="pin-chip special">GPIO20<small>PCM DIN</small></div><div class="rpi-number">38</div>
+          <div class="rpi-number">39</div><div class="pin-chip gnd">GND</div><div class="pin-chip special">GPIO21<small>PCM DOUT</small></div><div class="rpi-number">40</div>
         </div>
-        <div class="pin-column">
-          <h4>偶數排（右側）</h4>
-          <ul>
-            <li><strong>2</strong> — 5V</li>
-            <li><strong>4</strong> — 5V</li>
-            <li><strong>6</strong> — GND</li>
-            <li><strong>8</strong> — GPIO14 / TXD</li>
-            <li><strong>10</strong> — GPIO15 / RXD</li>
-            <li><strong>12</strong> — GPIO18 / PWM</li>
-            <li><strong>14</strong> — GND</li>
-            <li><strong>16</strong> — GPIO23</li>
-            <li><strong>18</strong> — GPIO24</li>
-            <li><strong>20</strong> — GND</li>
-            <li><strong>22</strong> — GPIO25</li>
-            <li><strong>24</strong> — GPIO8 / CE0</li>
-            <li><strong>26</strong> — GPIO7 / CE1</li>
-            <li><strong>28</strong> — GPIO1 / ID_SC</li>
-            <li><strong>30</strong> — GND</li>
-            <li><strong>32</strong> — GPIO12 / PWM</li>
-            <li><strong>34</strong> — GND</li>
-            <li><strong>36</strong> — GPIO16</li>
-            <li><strong>38</strong> — GPIO20 / PCM DIN</li>
-            <li><strong>40</strong> — GPIO21 / PCM DOUT</li>
-          </ul>
-        </div>
+        <div class="diagram-caption">圖形排列即為 40-pin 排針實體位置：左邊為奇數腳，右邊為偶數腳。很適合搭配麵包板接線實作。</div>
       </div>
       <div class="warning">Raspberry Pi 有 BOARD 與 BCM 兩種編號方式。接線教學時務必說明你用的是「實體腳位編號」還是「BCM GPIO 編號」。</div>
     </section>
 
     <section class="card" id="pico">
       <div class="board-head">
-        <h2>四、Raspberry Pi Pico W 速查</h2>
+        <h2>五、Raspberry Pi Pico W 圖形速查</h2>
         <div>
           <span class="tag">MicroPython</span>
           <span class="tag">ADC</span>
@@ -364,7 +537,78 @@
           <span class="tag">Wi-Fi</span>
         </div>
       </div>
-      <p>Pico W 適合做低成本感測器、控制器與 IoT 節點。教學上最常用的是 GP0~GP5、ADC 腳、3V3、VSYS、GND，以及 I2C/SPI/UART 對應腳位。</p>
+      <p>Pico W 適合做低成本感測器、控制器與 IoT 節點。下圖以開發板「左右兩排 pin」方式呈現，讓學生可直接對照實際板子。</p>
+      <div class="spec-grid">
+        <div class="spec-box"><strong>常見入門 GPIO</strong>GP0、GP1、GP2、GP3、GP4、GP5</div>
+        <div class="spec-box"><strong>類比輸入</strong>GP26(ADC0)、GP27(ADC1)、GP28(ADC2)</div>
+        <div class="spec-box"><strong>I2C 建議組合</strong>GP4 SDA、GP5 SCL</div>
+        <div class="spec-box"><strong>UART 建議組合</strong>GP0 TX、GP1 RX</div>
+      </div>
+      <div class="diagram-shell">
+        <div class="board-vertical">
+          <div class="pin-stack">
+            <div class="pin-chip uart">GP0<small>UART0 TX</small></div>
+            <div class="pin-chip uart">GP1<small>UART0 RX</small></div>
+            <div class="pin-chip gpio">GP2</div>
+            <div class="pin-chip gpio">GP3</div>
+            <div class="pin-chip i2c">GP4<small>I2C SDA</small></div>
+            <div class="pin-chip i2c">GP5<small>I2C SCL</small></div>
+            <div class="pin-chip gpio">GP6</div>
+            <div class="pin-chip gpio">GP7</div>
+            <div class="pin-chip gpio">GP8</div>
+            <div class="pin-chip gpio">GP9</div>
+            <div class="pin-chip gnd">GND</div>
+            <div class="pin-chip gpio">GP10</div>
+            <div class="pin-chip gpio">GP11</div>
+            <div class="pin-chip gpio">GP12</div>
+            <div class="pin-chip gpio">GP13</div>
+          </div>
+          <div class="board-body pico-board">
+            <div>
+              <div class="usb-port"></div>
+              <h3>Raspberry Pi Pico W</h3>
+              <p>RP2040 + Wi-Fi</p>
+            </div>
+            <div class="board-core">
+              <strong>教學常用區</strong>
+              <div class="chip-cluster">
+                <div class="chip-box">左上角 GP0 / GP1：最適合先做 UART 與序列通訊。</div>
+                <div class="chip-box">GP4 / GP5：常固定拿來做 I2C 感測器與 OLED。</div>
+                <div class="chip-box">GP26 / GP27 / GP28：ADC 類比感測輸入。</div>
+              </div>
+              <div class="mini-grid">
+                <span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span>
+                <span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span>
+              </div>
+            </div>
+            <div>
+              <span class="tag">3.3V 邏輯</span>
+              <span class="tag">低功耗</span>
+            </div>
+            <span class="board-dot one"></span>
+            <span class="board-dot two"></span>
+            <span class="board-dot three"></span>
+          </div>
+          <div class="pin-stack">
+            <div class="pin-chip gpio">GP14</div>
+            <div class="pin-chip gpio">GP15</div>
+            <div class="pin-chip spi">GP16<small>SPI RX</small></div>
+            <div class="pin-chip spi">GP17<small>SPI CS</small></div>
+            <div class="pin-chip spi">GP18<small>SPI SCK</small></div>
+            <div class="pin-chip spi">GP19<small>SPI TX</small></div>
+            <div class="pin-chip gpio">GP20</div>
+            <div class="pin-chip gpio">GP21</div>
+            <div class="pin-chip gnd">GND</div>
+            <div class="pin-chip gpio">GP22</div>
+            <div class="pin-chip power">RUN / EN</div>
+            <div class="pin-chip adc">GP26<small>ADC0</small></div>
+            <div class="pin-chip adc">GP27<small>ADC1</small></div>
+            <div class="pin-chip adc">GP28<small>ADC2</small></div>
+            <div class="pin-chip power">3V3 / VSYS</div>
+          </div>
+        </div>
+        <div class="diagram-caption">Pico W 有部分周邊功能可映射到不同 GPIO。教學上建議固定使用 GP0/1、GP4/5、GP16/18/19、GP26/27/28 這幾組最容易教學的腳位。</div>
+      </div>
       <table>
         <thead>
           <tr>
@@ -377,23 +621,17 @@
           <tr><td>電源</td><td>VSYS、VBUS、3V3(OUT)、GND</td><td>GPIO 邏輯為 3.3V</td></tr>
           <tr><td>UART</td><td>GP0(TX)、GP1(RX)</td><td>常作序列通訊示範</td></tr>
           <tr><td>I2C</td><td>GP4(SDA)、GP5(SCL)</td><td>適合接 OLED、溫濕度感測器</td></tr>
-          <tr><td>SPI</td><td>GP16/18/19 或其他可重映射腳位</td><td>常接 SPI 顯示器或高速模組</td></tr>
+          <tr><td>SPI</td><td>GP16 / GP18 / GP19 或其他可重映射腳位</td><td>常接 SPI 顯示器或高速模組</td></tr>
           <tr><td>ADC</td><td>GP26、GP27、GP28</td><td>可接光敏電阻、可變電阻、類比感測器</td></tr>
           <tr><td>PWM</td><td>多數 GPIO 皆可</td><td>常用於 LED 調光與伺服控制</td></tr>
         </tbody>
       </table>
-      <div class="spec-grid">
-        <div class="spec-box"><strong>最常見入門 GPIO</strong>GP0、GP1、GP2、GP3、GP4、GP5</div>
-        <div class="spec-box"><strong>類比輸入</strong>GP26(ADC0)、GP27(ADC1)、GP28(ADC2)</div>
-        <div class="spec-box"><strong>I2C 建議組合</strong>GP4 SDA、GP5 SCL</div>
-        <div class="spec-box"><strong>UART 建議組合</strong>GP0 TX、GP1 RX</div>
-      </div>
       <div class="note">Pico W 的介面功能較有彈性，許多周邊功能可映射到不同 GPIO。若課程需要簡化，建議固定使用一組標準教學腳位。</div>
     </section>
 
     <section class="card" id="esp32">
       <div class="board-head">
-        <h2>五、ESP32 DevKit 速查</h2>
+        <h2>六、ESP32 DevKit 圖形速查</h2>
         <div>
           <span class="tag">Wi-Fi</span>
           <span class="tag">Bluetooth</span>
@@ -401,7 +639,68 @@
           <span class="tag">PWM</span>
         </div>
       </div>
-      <p>ESP32 是 IoT 教學中非常常見的無線微控制器。不同 DevKit 腳位排列略有差異，但下列腳位是課堂中最常接觸的核心功能。</p>
+      <p>ESP32 是 IoT 教學中非常常見的無線微控制器。不同 DevKit 腳位排列略有差異，下圖以最常見的教學用途腳位群做視覺整理。</p>
+      <div class="diagram-shell">
+        <div class="board-vertical">
+          <div class="pin-stack">
+            <div class="pin-chip power">3V3</div>
+            <div class="pin-chip power">EN</div>
+            <div class="pin-chip adc">VP<small>GPIO36</small></div>
+            <div class="pin-chip adc">VN<small>GPIO39</small></div>
+            <div class="pin-chip adc">GPIO34</div>
+            <div class="pin-chip adc">GPIO35</div>
+            <div class="pin-chip gpio">GPIO32</div>
+            <div class="pin-chip gpio">GPIO33</div>
+            <div class="pin-chip gpio">GPIO25</div>
+            <div class="pin-chip gpio">GPIO26</div>
+            <div class="pin-chip gpio">GPIO27</div>
+            <div class="pin-chip gnd">GND</div>
+            <div class="pin-chip power">VIN</div>
+          </div>
+          <div class="board-body esp32-board">
+            <div>
+              <div class="antenna"></div>
+              <h3>ESP32 DevKit</h3>
+              <p>Wi-Fi + Bluetooth</p>
+            </div>
+            <div class="board-core">
+              <strong>教學常用區</strong>
+              <div class="chip-cluster">
+                <div class="chip-box">GPIO21 / 22：最常拿來接 I2C 感測器。</div>
+                <div class="chip-box">GPIO23 / 19 / 18 / 5：SPI 顯示器與 SD 卡常用。</div>
+                <div class="chip-box">GPIO32 / 33：可當 ADC，也常做一般輸入輸出。</div>
+              </div>
+              <div class="mini-grid">
+                <span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span>
+                <span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span><span class="mini-hole"></span>
+              </div>
+            </div>
+            <div>
+              <span class="tag">3.3V 邏輯</span>
+              <span class="tag">無線通訊</span>
+            </div>
+            <span class="board-dot one"></span>
+            <span class="board-dot two"></span>
+            <span class="board-dot three"></span>
+          </div>
+          <div class="pin-stack">
+            <div class="pin-chip gpio">GPIO23<small>MOSI</small></div>
+            <div class="pin-chip gpio">GPIO22<small>SCL</small></div>
+            <div class="pin-chip gpio">TX0<small>GPIO1</small></div>
+            <div class="pin-chip gpio">RX0<small>GPIO3</small></div>
+            <div class="pin-chip gpio">GPIO21<small>SDA</small></div>
+            <div class="pin-chip gnd">GND</div>
+            <div class="pin-chip gpio">GPIO19<small>MISO</small></div>
+            <div class="pin-chip gpio">GPIO18<small>SCK</small></div>
+            <div class="pin-chip spi">GPIO5<small>CS</small></div>
+            <div class="pin-chip gpio">GPIO17</div>
+            <div class="pin-chip gpio">GPIO16</div>
+            <div class="pin-chip gpio">GPIO4</div>
+            <div class="pin-chip gpio">GPIO2</div>
+          </div>
+        </div>
+        <div class="diagram-caption">ESP32 某些腳位屬於 boot strapping pins。課堂實驗建議優先使用 GPIO21、22、23、19、18、5、25、26、27、32、33，較能避免開機衝突。</div>
+      </div>
       <table>
         <thead>
           <tr>
@@ -419,13 +718,12 @@
           <tr><td>PWM</td><td>多數可輸出腳位</td><td>LED 調光、馬達控制</td></tr>
         </tbody>
       </table>
-      <div class="warning">ESP32 某些腳位屬於 boot strapping pins，若接錯外部電路可能造成無法正常開機。入門教學可優先使用 GPIO21、22、23、19、18、5、25、26、27、32、33。</div>
-      <div class="note">若學生使用不同廠商的 ESP32 板子，請先確認板上標示是 GPIO 編號，不要把「Dxx」標法與其他開發板混用。</div>
+      <div class="warning">若學生使用不同廠商的 ESP32 板子，請先確認板上標示是 GPIO 編號，不要把「Dxx」標法與其他開發板混用。</div>
     </section>
 
     <section class="card" id="uno">
       <div class="board-head">
-        <h2>六、Arduino Uno R3 速查</h2>
+        <h2>七、Arduino Uno R3 圖形速查</h2>
         <div>
           <span class="tag">5V</span>
           <span class="tag">ADC</span>
@@ -433,7 +731,62 @@
           <span class="tag">入門友善</span>
         </div>
       </div>
-      <p>Arduino Uno R3 非常適合程式設計與電子實作初學者。腳位命名清楚，教學活動容易安排，常見模組支援也最完整。</p>
+      <p>Arduino Uno R3 腳位命名清楚，最適合入門實驗。下圖把數位排針與類比 / 電源排針一起攤開，方便看清 PWM、UART、SPI、I2C 的位置。</p>
+      <div class="diagram-shell uno-layout">
+        <div class="uno-top">
+          <div class="pin-chip uart">D0<small>RX</small></div>
+          <div class="pin-chip uart">D1<small>TX</small></div>
+          <div class="pin-chip gpio">D2</div>
+          <div class="pin-chip adc">D3<small>PWM</small></div>
+          <div class="pin-chip gpio">D4</div>
+          <div class="pin-chip adc">D5<small>PWM</small></div>
+          <div class="pin-chip adc">D6<small>PWM</small></div>
+          <div class="pin-chip gpio">D7</div>
+          <div class="pin-chip gpio">D8</div>
+          <div class="pin-chip adc">D9<small>PWM</small></div>
+          <div class="pin-chip spi">D10<small>SS/PWM</small></div>
+          <div class="pin-chip spi">D11<small>MOSI/PWM</small></div>
+          <div class="pin-chip spi">D12<small>MISO</small></div>
+          <div class="pin-chip spi">D13<small>SCK</small></div>
+        </div>
+        <div class="uno-body-wrap">
+          <div class="board-body uno-board">
+            <div>
+              <h3>Arduino Uno R3</h3>
+              <p>ATmega328P 教學經典板</p>
+            </div>
+            <div class="uno-chip-area">
+              <div class="uno-chip">ATmega328P 主控區：最適合教 LED、按鈕、蜂鳴器、可變電阻與超音波感測器。</div>
+              <div class="uno-chip">I2C 常用腳位：A4 / SDA、A5 / SCL。SPI 常用腳位：D10~D13。</div>
+            </div>
+            <div>
+              <span class="tag">5V 教學友善</span>
+              <span class="tag">模組多</span>
+            </div>
+          </div>
+          <div class="uno-chip-area">
+            <div class="spec-box"><strong>數位腳</strong>D0 ~ D13，可做一般輸入輸出</div>
+            <div class="spec-box"><strong>PWM</strong>D3、D5、D6、D9、D10、D11</div>
+            <div class="spec-box"><strong>類比輸入</strong>A0 ~ A5</div>
+            <div class="spec-box"><strong>電源腳</strong>VIN、5V、3.3V、GND、RESET</div>
+          </div>
+        </div>
+        <div class="uno-bottom">
+          <div class="pin-chip power">RESET</div>
+          <div class="pin-chip power">3.3V</div>
+          <div class="pin-chip power">5V</div>
+          <div class="pin-chip gnd">GND</div>
+          <div class="pin-chip gnd">GND</div>
+          <div class="pin-chip power">VIN</div>
+          <div class="pin-chip adc">A0</div>
+          <div class="pin-chip adc">A1</div>
+          <div class="pin-chip adc">A2</div>
+          <div class="pin-chip adc">A3</div>
+          <div class="pin-chip i2c">A4<small>SDA</small></div>
+          <div class="pin-chip i2c">A5<small>SCL</small></div>
+        </div>
+        <div class="diagram-caption">Uno 的教學優勢在於 pin 名稱直接、模組資源多。若是第一堂實作課，這張圖通常最容易讓學生建立腳位概念。</div>
+      </div>
       <table>
         <thead>
           <tr>
@@ -443,7 +796,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>數位輸出入</td><td>D0 ~ D13</td><td>一般數位 I/O，D0/D1 兼 UART</td></tr>
+          <tr><td>數位輸出入</td><td>D0 ~ D13</td><td>一般數位 I/O，D0 / D1 兼 UART</td></tr>
           <tr><td>PWM</td><td>D3、D5、D6、D9、D10、D11</td><td>適合 LED 調光與伺服馬達</td></tr>
           <tr><td>SPI</td><td>D10(SS)、D11(MOSI)、D12(MISO)、D13(SCK)</td><td>常接 SPI 模組</td></tr>
           <tr><td>I2C</td><td>A4(SDA)、A5(SCL)</td><td>Uno 常見 I2C 教學腳位</td></tr>
@@ -454,8 +807,8 @@
       <div class="note">若是第一堂實作課，Arduino Uno 最適合拿來教 LED、按鈕、蜂鳴器、可變電阻與超音波感測器。</div>
     </section>
 
-    <section class="card compare">
-      <h2>七、常用通訊腳位總整理</h2>
+    <section class="card compare" id="compare">
+      <h2>八、常用通訊腳位總整理</h2>
       <table>
         <thead>
           <tr>
@@ -479,7 +832,7 @@
     </section>
 
     <section class="card" id="safety">
-      <h2>八、接線安全提醒</h2>
+      <h2>九、接線安全提醒</h2>
       <ol>
         <li>先確認板子的邏輯電壓是 3.3V 還是 5V。</li>
         <li>接線前先拔除 USB 或外部電源，避免誤碰短路。</li>
@@ -492,7 +845,7 @@
     </section>
 
     <div class="footer">
-      Board_Pinout_Quick_Reference.html — IoT 2026 主要開發板 pinout 速查教材
+      Board_Pinout_Quick_Reference.html — IoT 2026 主要開發板 pinout 圖形速查教材
     </div>
   </div>
 </body>
