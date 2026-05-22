@@ -209,6 +209,55 @@ sudo systemctl status nodered.service</code></pre>
     </section>
 
     <section class="card">
+      <h2>三之一、若要遠端連線到 Node-RED，先完成必要設定</h2>
+      <p>如果 Node-RED 不只是本機或同一個區域網路使用，而是要讓教室外、家中或其他網段的裝置連線，除了知道 IP 位置之外，還要先完成 Node-RED 與主機端的網路與安全設定。</p>
+
+      <h3>1. 讓 Node-RED 監聽外部網路介面</h3>
+      <p>編輯 <code>~/.node-red/settings.js</code>，確認 <code>uiHost</code> 不是只有綁在 <code>127.0.0.1</code>：</p>
+      <pre><code>uiHost: "0.0.0.0",
+uiPort: process.env.PORT || 1880,</code></pre>
+      <p>這樣 Node-RED 才能接受其他電腦或手機連進來。若仍是 <code>127.0.0.1</code>，就只能本機開瀏覽器存取。</p>
+
+      <h3>2. 重新啟動 Node-RED</h3>
+      <pre><code>node-red-restart
+# 或
+sudo systemctl restart nodered.service</code></pre>
+
+      <h3>3. 確認防火牆與連接埠</h3>
+      <ul>
+        <li>Node-RED 預設使用 <code>1880</code> port</li>
+        <li>若主機有啟用防火牆，需允許 TCP <code>1880</code></li>
+        <li>若要從網際網路連回家中或實驗室主機，通常還需要路由器做 port forwarding，或改用 VPN / Tailscale</li>
+      </ul>
+
+      <h3>4. 遠端登入時建議啟用帳號密碼保護</h3>
+      <p>若 Node-RED 要給遠端使用，不建議裸露未保護的編輯介面。可在 <code>settings.js</code> 設定 <code>adminAuth</code>：</p>
+      <pre><code>adminAuth: {
+    type: "credentials",
+    users: [{
+        username: "teacher",
+        password: "請改成雜湊後密碼",
+        permissions: "*"
+    }]
+},</code></pre>
+      <div class="warning">正式對外開放時，建議至少做到：帳號密碼保護、不要使用預設弱密碼、最好再加上 HTTPS 或 VPN。</div>
+
+      <h3>5. Dashboard 的遠端網址</h3>
+      <p>如果只要讓學生看儀表板而不是修改流程，可提供：</p>
+      <pre><code>http://主機公開IP或網域名稱:1880/ui</code></pre>
+      <p>若要進入編輯畫面則是：</p>
+      <pre><code>http://主機公開IP或網域名稱:1880</code></pre>
+
+      <h3>6. MQTT Broker 若也在遠端主機，Node-RED 端要一起修改</h3>
+      <ul>
+        <li><code>mqtt in</code> / <code>mqtt out</code> 節點中的 Broker 位址不能再填 <code>localhost</code></li>
+        <li>應改成遠端 Broker 的 IP 或網域名稱</li>
+        <li>若 Broker 有帳號密碼，也要在 Node-RED 的 Broker 設定中補上</li>
+      </ul>
+      <div class="note">教學上可提醒學生區分兩件事：一個是「瀏覽器怎麼連到 Node-RED 網頁」，另一個是「Node-RED 怎麼連到 MQTT Broker」。這兩個位址不一定相同。</div>
+    </section>
+
+    <section class="card">
       <h2>四、先確認 MQTT Broker 已可用</h2>
       <p>Node-RED 常搭配 Mosquitto 使用。若先前已在 Raspberry Pi 安裝 Mosquitto，可先測試：</p>
       <pre><code>mosquitto_sub -h localhost -t iot/ece2026/test
@@ -475,6 +524,7 @@ return [
         </thead>
         <tbody>
           <tr><td>Node-RED 無法連到 MQTT Broker</td><td>IP 或 Port 錯誤</td><td>確認 Broker 設定與網路連線</td></tr>
+          <tr><td>遠端瀏覽器無法開啟 Node-RED 頁面</td><td><code>uiHost</code> 仍綁在 <code>127.0.0.1</code>、防火牆未開放或未做 port forwarding</td><td>檢查 <code>settings.js</code>、TCP 1880、防火牆與路由器設定</td></tr>
           <tr><td>Dashboard 沒資料</td><td>Topic 不一致</td><td>確認裝置端與 Node-RED 使用同一 topic</td></tr>
           <tr><td>ui 元件沒出現</td><td>尚未安裝 dashboard 套件</td><td>安裝 <code>node-red-dashboard</code></td></tr>
           <tr><td>Deploy 後無反應</td><td>流程未正確連線</td><td>檢查節點是否已連接並查看 debug 視窗</td></tr>
