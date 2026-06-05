@@ -1,501 +1,500 @@
-     1|<!DOCTYPE html>
-     2|<html lang="zh-Hant">
-     3|<head>
-     4|  <meta charset="UTF-8">
-     5|  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     6|  <title>常見介面 I2C, SPI, UART 教材</title>
-     7|  <style>
-     8|    :root {
-     9|      --bg: #f6f8fb;
-    10|      --card: #ffffff;
-    11|      --text: #1f2937;
-    12|      --muted: #6b7280;
-    13|      --accent: #7c2d12;
-    14|      --accent-soft: #ffedd5;
-    15|      --border: #dbe3ef;
-    16|      --code-bg: #0f172a;
-    17|      --code-text: #e5eefc;
-    18|      --ok-bg: #ecfdf5;
-    19|      --ok-text: #065f46;
-    20|      --warn-bg: #fff7ed;
-    21|      --warn-text: #9a3412;
-    22|      --info-bg: #eff6ff;
-    23|      --info-text: #1d4ed8;
-    24|    }
-    25|    * { box-sizing: border-box; }
-    26|    body {
-    27|      margin: 0;
-    28|      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
-    29|      background: var(--bg);
-    30|      color: var(--text);
-    31|      line-height: 1.75;
-    32|    }
-    33|    .container {
-    34|      max-width: 1180px;
-    35|      margin: 0 auto;
-    36|      padding: 32px 20px 64px;
-    37|    }
-    38|    .hero {
-    39|      background: linear-gradient(135deg, #7c2d12, #111827);
-    40|      color: #fff;
-    41|      border-radius: 20px;
-    42|      padding: 36px 32px;
-    43|      margin-bottom: 24px;
-    44|      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
-    45|    }
-    46|    .hero h1 { margin: 0 0 8px; font-size: 2.15rem; }
-    47|    .hero p { margin: 8px 0; color: rgba(255,255,255,0.92); }
-    48|    .grid {
-    49|      display: grid;
-    50|      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    51|      gap: 18px;
-    52|      margin-bottom: 24px;
-    53|    }
-    54|    .card {
-    55|      background: var(--card);
-    56|      border: 1px solid var(--border);
-    57|      border-radius: 18px;
-    58|      padding: 22px;
-    59|      margin-bottom: 20px;
-    60|      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
-    61|    }
-    62|    h2, h3 { color: #111827; }
-    63|    h2 {
-    64|      margin-top: 0;
-    65|      border-left: 5px solid var(--accent);
-    66|      padding-left: 12px;
-    67|    }
-    68|    ul, ol { padding-left: 22px; }
-    69|    li + li { margin-top: 6px; }
-    70|    code {
-    71|      background: #eef2ff;
-    72|      color: #312e81;
-    73|      padding: 2px 6px;
-    74|      border-radius: 6px;
-    75|      font-family: "JetBrains Mono", Consolas, monospace;
-    76|      font-size: 0.95em;
-    77|    }
-    78|    pre {
-    79|      background: var(--code-bg);
-    80|      color: var(--code-text);
-    81|      padding: 16px;
-    82|      border-radius: 14px;
-    83|      overflow-x: auto;
-    84|      border: 1px solid #1e293b;
-    85|    }
-    86|    pre code { background: transparent; color: inherit; padding: 0; }
-    87|    table {
-    88|      width: 100%;
-    89|      border-collapse: collapse;
-    90|      margin-top: 12px;
-    91|      font-size: 0.96rem;
-    92|    }
-    93|    th, td {
-    94|      border: 1px solid var(--border);
-    95|      padding: 10px 12px;
-    96|      text-align: left;
-    97|      vertical-align: top;
-    98|    }
-    99|    th { background: #fff7ed; }
-   100|    .tag {
-   101|      display: inline-block;
-   102|      padding: 4px 10px;
-   103|      border-radius: 999px;
-   104|      font-size: 0.85rem;
-   105|      margin-right: 8px;
-   106|      margin-bottom: 8px;
-   107|      background: var(--accent-soft);
-   108|      color: var(--accent);
-   109|      font-weight: 600;
-   110|    }
-   111|    .note, .warning, .info {
-   112|      padding: 14px 16px;
-   113|      border-radius: 14px;
-   114|      margin: 12px 0;
-   115|    }
-   116|    .note { background: var(--ok-bg); color: var(--ok-text); border: 1px solid #a7f3d0; }
-   117|    .warning { background: var(--warn-bg); color: var(--warn-text); border: 1px solid #fdba74; }
-   118|    .info { background: var(--info-bg); color: var(--info-text); border: 1px solid #bfdbfe; }
-   119|    .footer {
-   120|      margin-top: 28px;
-   121|      color: var(--muted);
-   122|      font-size: 0.95rem;
-   123|      text-align: center;
-   124|    }
-   125|    @media (max-width: 640px) {
-   126|      .hero h1 { font-size: 1.8rem; }
-   127|      .container { padding: 20px 14px 40px; }
-   128|      .hero, .card { padding: 20px; }
-   129|    }
-   130|  </style>
-   131|</head>
-   132|<body>
-   133|  <div class="container">
-   134|    <section class="hero">
-   135|      <h1>常見介面 I2C, SPI, UART 教材</h1>
-   136|      <p>本頁整理嵌入式系統與 IoT 裝置最常見的三種通訊介面：I2C、SPI、UART。內容包含基本原理、接線方式、時序觀念、常見除錯方法，以及 Python / MicroPython 範例與常用模組。</p>
-   137|      <div>
-   138|        <span class="tag">I2C</span>
-   139|        <span class="tag">SPI</span>
-   140|        <span class="tag">UART</span>
-   141|        <span class="tag">Raspberry Pi</span>
-   142|        <span class="tag">Pico W</span>
-   143|        <span class="tag">ESP32</span>
-   144|      </div>
-   145|    </section>
-   146|
-   147|    <div class="grid">
-   148|      <section class="card">
-   149|        <h2>一、為什麼要學通訊介面</h2>
-   150|        <ul>
-   151|          <li>感測器、螢幕、記憶體、GPS、藍牙模組都需要與主控板交換資料。</li>
-   152|          <li>不同模組不一定使用同一種通訊方式。</li>
-   153|          <li>選對介面可以降低接線難度、提升速度，並減少除錯時間。</li>
-   154|          <li>理解介面後，便能從 datasheet、接線圖與時序圖判斷模組的通訊需求。</li>
-   155|        </ul>
-   156|      </section>
-   157|
-   158|      <section class="card">
-   159|        <h2>二、先記住的總結</h2>
-   160|        <ul>
-   161|          <li><strong>I2C：</strong>兩條線、可掛多裝置，常用於多感測器與低速周邊。</li>
-   162|          <li><strong>SPI：</strong>速度快、全雙工、常用於顯示器與高速周邊。</li>
-   163|          <li><strong>UART：</strong>最直觀、最像序列埠，常用於除錯、GNSS、藍牙與數據機模組連接。</li>
-   164|        </ul>
-   165|        <div class="note">建議的學習順序可先從 UART 開始，再進入 I2C，最後學習 SPI，以便循序掌握序列通訊、位址機制與時序控制。</div>
-   166|      </section>
-   167|    </div>
-   168|
-   169|    <section class="card">
-   170|      <h2>三、三種介面的整體比較</h2>
-   171|      <table>
-   172|        <thead>
-   173|          <tr>
-   174|            <th>項目</th>
-   175|            <th>I2C</th>
-   176|            <th>SPI</th>
-   177|            <th>UART</th>
-   178|          </tr>
-   179|        </thead>
-   180|        <tbody>
-   181|          <tr><td>線數</td><td>2 條主線（SDA, SCL）</td><td>至少 4 條（MOSI, MISO, SCLK, CS）</td><td>2 條主線（TX, RX）</td></tr>
-   182|          <tr><td>拓樸</td><td>多主/多從匯流排</td><td>單主多從較常見</td><td>點對點</td></tr>
-   183|          <tr><td>位址機制</td><td>有裝置位址</td><td>通常靠 CS 選擇裝置</td><td>無位址概念</td></tr>
-   184|          <tr><td>速度</td><td>低到中</td><td>高</td><td>中</td></tr>
-   185|          <tr><td>全雙工</td><td>否</td><td>是</td><td>通常可雙向，但不如 SPI 典型</td></tr>
-   186|          <tr><td>適合裝置</td><td>感測器、RTC、EEPROM</td><td>TFT、ADC、Flash、RF 模組</td><td>GPS、藍牙、序列除錯</td></tr>
-   187|          <tr><td>上手門檻</td><td>中</td><td>中偏高</td><td>低</td></tr>
-   188|        </tbody>
-   189|      </table>
-   190|    </section>
-   191|
-   192|    <section class="card">
-   193|      <h2>四、I2C 介面</h2>
-   194|      <h3>1. 基本觀念</h3>
-   195|      <ul>
-   196|        <li><code>SDA</code>：資料線</li>
-   197|        <li><code>SCL</code>：時脈線</li>
-   198|        <li>每個裝置都有位址，常見為 7-bit 位址。</li>
-   199|        <li>多個裝置可以掛在同一組 SDA / SCL 上。</li>
-   200|      </ul>
-   201|
-   202|      <h3>2. I2C 為什麼常用於感測器</h3>
-   203|      <ul>
-   204|        <li>接線少</li>
-   205|        <li>可讓一台主控板同時連接多個環境感測器</li>
-   206|        <li>許多常見模組都提供 I2C 介面與現成函式庫</li>
-   207|      </ul>
-   208|
-   209|      <h3>3. 常見問題</h3>
-   210|      <ul>
-   211|        <li>忘了接上拉電阻（pull-up resistor）</li>
-   212|        <li>位址衝突：兩個裝置位址相同</li>
-   213|        <li>電壓不相容：3.3V 裝置與 5V 裝置直接混接</li>
-   214|        <li>線太長、干擾太大導致通訊不穩</li>
-   215|      </ul>
-   216|
-   217|      <h3>4. 重要術語</h3>
-   218|      <table>
-   219|        <thead>
-   220|          <tr><th>術語</th><th>說明</th></tr>
-   221|        </thead>
-   222|        <tbody>
-   223|          <tr><td>Start Condition</td><td>主機開始一筆 I2C 傳輸的訊號。</td></tr>
-   224|          <tr><td>Stop Condition</td><td>主機結束一筆 I2C 傳輸的訊號。</td></tr>
-   225|          <tr><td>ACK / NACK</td><td>接收端是否確認收到資料。</td></tr>
-   226|          <tr><td>7-bit address</td><td>最常見的裝置位址格式。</td></tr>
-   227|          <tr><td>Pull-up resistor</td><td>SDA、SCL 常需要上拉到高電位。</td></tr>
-   228|        </tbody>
-   229|      </table>
-   230|
-   231|      <h3>5. Raspberry Pi Python 範例概念</h3>
-   232|      <pre><code>from smbus2 import SMBus
-   233|
-   234|I2C_BUS = 1
-   235|DEVICE_ADDR = 0x48
-   236|REGISTER = 0x00
-   237|
-   238|with SMBus(I2C_BUS) as bus:
-   239|    data = bus.read_byte_data(DEVICE_ADDR, REGISTER)
-   240|    print("read:", data)</code></pre>
-   241|
-   242|      <h3>6. Pico W MicroPython 掃描 I2C 位址</h3>
-   243|      <pre><code>from machine import Pin, I2C
-   244|
-   245|i2c = I2C(0, scl=Pin(1), sda=Pin(0), freq=400000)
-   246|print('devices:', [hex(x) for x in i2c.scan()])</code></pre>
-   247|
-   248|      <div class="note">實作時可先使用 <code>i2c.scan()</code> 確認匯流排上可偵測到的裝置位址，再進入寄存器讀寫。</div>
-   249|    </section>
-   250|
-   251|    <section class="card">
-   252|      <h2>五、SPI 介面</h2>
-   253|      <h3>1. 基本觀念</h3>
-   254|      <ul>
-   255|        <li><code>MOSI</code>：Master Out, Slave In</li>
-   256|        <li><code>MISO</code>：Master In, Slave Out</li>
-   257|        <li><code>SCLK</code>：時脈</li>
-   258|        <li><code>CS / SS</code>：晶片選擇</li>
-   259|      </ul>
-   260|
-   261|      <h3>2. SPI 的特點</h3>
-   262|      <ul>
-   263|        <li>速度通常比 I2C 快</li>
-   264|        <li>常見於顯示器、外部 Flash、高速 ADC</li>
-   265|        <li>每個從屬裝置通常需要一條獨立的 CS 線</li>
-   266|      </ul>
-   267|
-   268|      <h3>3. 為什麼 SPI 比較快</h3>
-   269|      <ul>
-   270|        <li>沒有 I2C 的位址仲裁與 ACK/NACK 流程負擔</li>
-   271|        <li>可全雙工傳輸</li>
-   272|        <li>時序結構相對直接</li>
-   273|      </ul>
-   274|
-   275|      <h3>4. 實作時要特別注意</h3>
-   276|      <ul>
-   277|        <li>SPI 沒有統一的「位址掃描」概念</li>
-   278|        <li>不同裝置的 <code>CPOL</code>、<code>CPHA</code> 可能不同</li>
-   279|        <li>CS 拉低與拉高的時機很重要</li>
-   280|      </ul>
-   281|
-   282|      <h3>5. SPI Mode 概念</h3>
-   283|      <table>
-   284|        <thead>
-   285|          <tr><th>Mode</th><th>CPOL</th><th>CPHA</th><th>說明</th></tr>
-   286|        </thead>
-   287|        <tbody>
-   288|          <tr><td>Mode 0</td><td>0</td><td>0</td><td>最常見，時脈閒置低，前緣取樣</td></tr>
-   289|          <tr><td>Mode 1</td><td>0</td><td>1</td><td>時脈閒置低，後緣取樣</td></tr>
-   290|          <tr><td>Mode 2</td><td>1</td><td>0</td><td>時脈閒置高，前緣取樣</td></tr>
-   291|          <tr><td>Mode 3</td><td>1</td><td>1</td><td>時脈閒置高，後緣取樣</td></tr>
-   292|        </tbody>
-   293|      </table>
-   294|
-   295|      <h3>6. MicroPython 範例</h3>
-   296|      <pre><code>from machine import Pin, SPI
-   297|
-   298|spi = SPI(0, baudrate=1000000, polarity=0, phase=0,
-   299|          sck=Pin(18), mosi=Pin(19), miso=Pin(16))
-   300|cs = Pin(17, Pin.OUT)
-   301|
-   302|cs.value(0)
-   303|spi.write(b'\x9F')
-   304|chip_id = spi.read(3)
-   305|cs.value(1)
-   306|
-   307|print(chip_id)</code></pre>
-   308|
-   309|      <div class="warning">SPI 裝置最常見的錯誤不是「完全沒接好」，而是 mode 設錯、CS 切換時機不對、或 baudrate 太高。</div>
-   310|    </section>
-   311|
-   312|    <section class="card">
-   313|      <h2>六、UART 介面</h2>
-   314|      <h3>1. 基本觀念</h3>
-   315|      <ul>
-   316|        <li><code>TX</code>：傳送線</li>
-   317|        <li><code>RX</code>：接收線</li>
-   318|        <li>接線規則通常是 <code>TX → RX</code>、<code>RX → TX</code></li>
-   319|        <li>雙方要設定相同 baud rate</li>
-   320|      </ul>
-   321|
-   322|      <h3>2. UART 最常見的參數</h3>
-   323|      <table>
-   324|        <thead>
-   325|          <tr><th>參數</th><th>常見值</th><th>說明</th></tr>
-   326|        </thead>
-   327|        <tbody>
-   328|          <tr><td>Baud rate</td><td>9600, 115200</td><td>每秒傳輸符號速率</td></tr>
-   329|          <tr><td>Data bits</td><td>8</td><td>資料位元數</td></tr>
-   330|          <tr><td>Parity</td><td>None / Even / Odd</td><td>同位檢查</td></tr>
-   331|          <tr><td>Stop bits</td><td>1 或 2</td><td>結束位元</td></tr>
-   332|        </tbody>
-   333|      </table>
-   334|
-   335|      <h3>3. UART 適合哪些場景</h3>
-   336|      <ul>
-   337|        <li>連接 GPS 模組</li>
-   338|        <li>連接藍牙模組</li>
-   339|        <li>序列除錯輸出</li>
-   340|        <li>兩塊板子之間傳送簡單字串或封包</li>
-   341|      </ul>
-   342|
-   343|      <h3>4. MicroPython 範例</h3>
-   344|      <pre><code>from machine import UART, Pin
-   345|import time
-   346|
-   347|uart = UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))
-   348|
-   349|while True:
-   350|    uart.write('hello from pico\n')
-   351|    if uart.any():
-   352|        msg = uart.read()
-   353|        print(msg)
-   354|    time.sleep(1)</code></pre>
-   355|
-   356|      <h3>5. Raspberry Pi Python 範例</h3>
-   357|      <pre><code>import serial
-   358|
-   359|ser = serial.Serial('/dev/serial0', 115200, timeout=1)
-   360|ser.write(b'hello from pi\n')
-   361|print(ser.readline().decode(errors='ignore'))</code></pre>
-   362|
-   363|      <div class="note">UART 很適合用於「Pico W 傳資料給 Raspberry Pi」這類情境，因為資料內容可直接以字串形式觀察與除錯。</div>
-   364|    </section>
-   365|
-   366|    <section class="card">
-   367|      <h2>七、常用元件與模組範例</h2>
-   368|      <p>下面整理一些常見且容易取得的模組。這些連結可作為查閱 datasheet、接線圖與函式庫範例的起點。</p>
-   369|
-   370|      <h3>1. I2C 常用元件</h3>
-   371|      <table>
-   372|        <thead>
-   373|          <tr><th>元件 / 模組</th><th>簡要說明</th><th>參考連結</th></tr>
-   374|        </thead>
-   375|        <tbody>
-   376|          <tr>
-   377|            <td>BME280</td>
-   378|            <td>常見的環境感測器，可量測溫度、濕度與氣壓，常用於 IoT 入門、環境監測與小型氣象站。</td>
-   379|            <td><a href="https://learn.adafruit.com/adafruit-bme280-humidity-barometric-pressure-temperature-sensor-breakout" target="_blank" rel="noopener">Adafruit BME280 資訊</a></td>
-   380|          </tr>
-   381|          <tr>
-   382|            <td>SSD1306 OLED</td>
-   383|            <td>常見的小型單色 OLED 顯示器，常拿來顯示感測值、IP 位址、系統狀態。</td>
-   384|            <td><a href="https://learn.adafruit.com/monochrome-oled-breakouts" target="_blank" rel="noopener">Monochrome OLED Breakouts</a></td>
-   385|          </tr>
-   386|          <tr>
-   387|            <td>ADS1115</td>
-   388|            <td>16-bit ADC 模組，當主控板類比輸入不足或需要較高解析度時很常使用。</td>
-   389|            <td><a href="https://learn.adafruit.com/adafruit-4-channel-adc-breakouts/python-circuitpython" target="_blank" rel="noopener">Adafruit ADS1115 / ADC Breakouts</a></td>
-   390|          </tr>
-   391|        </tbody>
-   392|      </table>
-   393|
-   394|      <h3>2. SPI 常用元件</h3>
-   395|      <table>
-   396|        <thead>
-   397|          <tr><th>元件 / 模組</th><th>簡要說明</th><th>參考連結</th></tr>
-   398|        </thead>
-   399|        <tbody>
-   400|          <tr>
-   401|            <td>MicroSD Card Breakout</td>
-   402|            <td>常用來做資料記錄，例如把感測資料、影像紀錄或實驗結果存入記憶卡。</td>
-   403|            <td><a href="https://learn.adafruit.com/adafruit-microsd-spi-sdio" target="_blank" rel="noopener">Adafruit MicroSD SPI / SDIO Breakout</a></td>
-   404|          </tr>
-   405|          <tr>
-   406|            <td>MCP3008</td>
-   407|            <td>8 通道 10-bit ADC，常見於 Raspberry Pi 需要讀取類比感測器時的入門模組。</td>
-   408|            <td><a href="https://learn.adafruit.com/mcp3008-spi-adc" target="_blank" rel="noopener">MCP3008 SPI ADC 資訊</a></td>
-   409|          </tr>
-   410|          <tr>
-   411|            <td>ST7735 TFT Display</td>
-   412|            <td>彩色 TFT 顯示器，適合做即時數值、圖形介面或小型儀表板。</td>
-   413|            <td><a href="https://learn.adafruit.com/1-8-tft-display" target="_blank" rel="noopener">1.8" TFT Display Breakout</a></td>
-   414|          </tr>
-   415|        </tbody>
-   416|      </table>
-   417|
-   418|      <h3>3. UART 常用元件</h3>
-   419|      <table>
-   420|        <thead>
-   421|          <tr><th>元件 / 模組</th><th>簡要說明</th><th>參考連結</th></tr>
-   422|        </thead>
-   423|        <tbody>
-   424|          <tr>
-   425|            <td>NEO-6M / Ultimate GPS 類 GPS 模組</td>
-   426|            <td>可透過 UART 輸出經緯度、時間、速度等 NMEA 資訊，適合定位與移動物件專題。</td>
-   427|            <td><a href="https://learn.adafruit.com/adafruit-ultimate-gps/overview" target="_blank" rel="noopener">Adafruit Ultimate GPS</a></td>
-   428|          </tr>
-   429|          <tr>
-   430|            <td>HC-05 Bluetooth</td>
-   431|            <td>經典藍牙序列模組，可把 UART 資料轉成藍牙通訊，常用於手機控制與無線序列橋接。</td>
-   432|            <td><a href="https://lastminuteengineers.com/hc05-at-commands-tutorial/" target="_blank" rel="noopener">HC-05 AT Commands Tutorial</a></td>
-   433|          </tr>
-   434|          <tr>
-   435|            <td>SIM800L GSM / GPRS</td>
-   436|            <td>可用 UART 控制發送 SMS、撥號與行動資料連線，適合遠距通知與行動通訊主題。</td>
-   437|            <td><a href="https://lastminuteengineers.com/sim800l-gsm-module-arduino-tutorial/" target="_blank" rel="noopener">SIM800L GSM Module Tutorial</a></td>
-   438|          </tr>
-   439|        </tbody>
-   440|      </table>
-   441|
-   442|      <div class="info">若要建立基礎模組組合，可從 I2C 的 BME280 與 OLED、SPI 的 MicroSD 或 TFT、UART 的 GPS 與藍牙模組開始。</div>
-   443|    </section>
-   444|
-   445|    <section class="card">
-   446|      <h2>八、接線觀念與電壓注意事項</h2>
-   447|      <ul>
-   448|        <li>先確認裝置工作電壓：3.3V 或 5V。</li>
-   449|        <li>Raspberry Pi 與 Pico W 大多是 3.3V 邏輯，不可直接承受 5V GPIO。</li>
-   450|        <li>共地（GND）通常是通訊成功的前提。</li>
-   451|        <li>UART 錯接最常見是 TX/RX 沒交叉；I2C 錯接最常見是 SDA/SCL 對調；SPI 錯接最常見是 CS 沒接或接錯。</li>
-   452|      </ul>
-   453|      <div class="warning">裝置成功供電不代表通訊一定成功；電壓、共地、腳位與協定參數都必須同時正確。</div>
-   454|    </section>
-   455|
-   456|    <section class="card">
-   457|      <h2>九、如何選擇 I2C、SPI、UART</h2>
-   458|      <table>
-   459|        <thead>
-   460|          <tr><th>情境</th><th>建議介面</th><th>原因</th></tr>
-   461|        </thead>
-   462|        <tbody>
-   463|          <tr><td>多個低速感測器</td><td>I2C</td><td>接線省、可共用匯流排</td></tr>
-   464|          <tr><td>高速顯示器或外部記憶體</td><td>SPI</td><td>速度高、時序直接</td></tr>
-   465|          <tr><td>模組除錯與字串傳輸</td><td>UART</td><td>容易理解、終端機可直接觀察</td></tr>
-   466|          <tr><td>兩塊板子先做簡單通訊實驗</td><td>UART</td><td>最容易做出第一個成功結果</td></tr>
-   467|        </tbody>
-   468|      </table>
-   469|    </section>
-   470|
-   471|    <section class="card">
-   472|      <h2>十、常見除錯方法</h2>
-   473|      <h3>1. I2C 除錯</h3>
-   474|      <ul>
-   475|        <li>先掃描位址，看裝置有沒有被偵測到</li>
-   476|        <li>檢查 pull-up 電阻是否存在</li>
-   477|        <li>降低頻率，例如從 400kHz 改成 100kHz</li>
-   478|      </ul>
-   479|
-   480|      <h3>2. SPI 除錯</h3>
-   481|      <ul>
-   482|        <li>確認 datasheet 的 SPI mode</li>
-   483|        <li>先把 baudrate 降低</li>
-   484|        <li>檢查 CS 的拉低/拉高時序</li>
-   485|      </ul>
-   486|
-   487|      <h3>3. UART 除錯</h3>
-   488|      <ul>
-   489|        <li>確認 baud rate 一致</li>
-   490|        <li>確認 TX/RX 有交叉接</li>
-   491|        <li>確認雙方都共地</li>
-   492|      </ul>
-   493|
-   494|      <h3>4. 進階工具</h3>
-   495|      <ul>
-   496|        <li>邏輯分析儀（logic analyzer）</li>
-   497|        <li>示波器</li>
-   498|        <li>序列埠監看工具</li>
-   499|      </ul>
-   500|      <div class="info">加入 logic analyzer 觀察時序波形，有助於對照程式碼、腳位訊號與協定行為。</div>
-   501|
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>常見介面 I2C, SPI, UART 教材</title>
+<style>
+:root {
+--bg: #f6f8fb;
+--card: #ffffff;
+--text: #1f2937;
+--muted: #6b7280;
+--accent: #7c2d12;
+--accent-soft: #ffedd5;
+--border: #dbe3ef;
+--code-bg: #0f172a;
+--code-text: #e5eefc;
+--ok-bg: #ecfdf5;
+--ok-text: #065f46;
+--warn-bg: #fff7ed;
+--warn-text: #9a3412;
+--info-bg: #eff6ff;
+--info-text: #1d4ed8;
+}
+* { box-sizing: border-box; }
+body {
+margin: 0;
+font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+background: var(--bg);
+color: var(--text);
+line-height: 1.75;
+}
+.container {
+max-width: 1180px;
+margin: 0 auto;
+padding: 32px 20px 64px;
+}
+.hero {
+background: linear-gradient(135deg, #7c2d12, #111827);
+color: #fff;
+border-radius: 20px;
+padding: 36px 32px;
+margin-bottom: 24px;
+box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+}
+.hero h1 { margin: 0 0 8px; font-size: 2.15rem; }
+.hero p { margin: 8px 0; color: rgba(255,255,255,0.92); }
+.grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+gap: 18px;
+margin-bottom: 24px;
+}
+.card {
+background: var(--card);
+border: 1px solid var(--border);
+border-radius: 18px;
+padding: 22px;
+margin-bottom: 20px;
+box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+h2, h3 { color: #111827; }
+h2 {
+margin-top: 0;
+border-left: 5px solid var(--accent);
+padding-left: 12px;
+}
+ul, ol { padding-left: 22px; }
+li + li { margin-top: 6px; }
+code {
+background: #eef2ff;
+color: #312e81;
+padding: 2px 6px;
+border-radius: 6px;
+font-family: "JetBrains Mono", Consolas, monospace;
+font-size: 0.95em;
+}
+pre {
+background: var(--code-bg);
+color: var(--code-text);
+padding: 16px;
+border-radius: 14px;
+overflow-x: auto;
+border: 1px solid #1e293b;
+}
+pre code { background: transparent; color: inherit; padding: 0; }
+table {
+width: 100%;
+border-collapse: collapse;
+margin-top: 12px;
+font-size: 0.96rem;
+}
+th, td {
+border: 1px solid var(--border);
+padding: 10px 12px;
+text-align: left;
+vertical-align: top;
+}
+th { background: #fff7ed; }
+.tag {
+display: inline-block;
+padding: 4px 10px;
+border-radius: 999px;
+font-size: 0.85rem;
+margin-right: 8px;
+margin-bottom: 8px;
+background: var(--accent-soft);
+color: var(--accent);
+font-weight: 600;
+}
+.note, .warning, .info {
+padding: 14px 16px;
+border-radius: 14px;
+margin: 12px 0;
+}
+.note { background: var(--ok-bg); color: var(--ok-text); border: 1px solid #a7f3d0; }
+.warning { background: var(--warn-bg); color: var(--warn-text); border: 1px solid #fdba74; }
+.info { background: var(--info-bg); color: var(--info-text); border: 1px solid #bfdbfe; }
+.footer {
+margin-top: 28px;
+color: var(--muted);
+font-size: 0.95rem;
+text-align: center;
+}
+@media (max-width: 640px) {
+.hero h1 { font-size: 1.8rem; }
+.container { padding: 20px 14px 40px; }
+.hero, .card { padding: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<section class="hero">
+<h1>常見介面 I2C, SPI, UART 教材</h1>
+<p>本頁整理嵌入式系統與 IoT 裝置最常見的三種通訊介面：I2C、SPI、UART。內容包含基本原理、接線方式、時序觀念、常見除錯方法，以及 Python / MicroPython 範例與常用模組。</p>
+<div>
+<span class="tag">I2C</span>
+<span class="tag">SPI</span>
+<span class="tag">UART</span>
+<span class="tag">Raspberry Pi</span>
+<span class="tag">Pico W</span>
+<span class="tag">ESP32</span>
+</div>
+</section>
+
+<div class="grid">
+<section class="card">
+<h2>一、為什麼要學通訊介面</h2>
+<ul>
+<li>感測器、螢幕、記憶體、GPS、藍牙模組都需要與主控板交換資料。</li>
+<li>不同模組不一定使用同一種通訊方式。</li>
+<li>選對介面可以降低接線難度、提升速度，並減少除錯時間。</li>
+<li>理解介面後，便能從 datasheet、接線圖與時序圖判斷模組的通訊需求。</li>
+</ul>
+</section>
+
+<section class="card">
+<h2>二、先記住的總結</h2>
+<ul>
+<li><strong>I2C：</strong>兩條線、可掛多裝置，常用於多感測器與低速周邊。</li>
+<li><strong>SPI：</strong>速度快、全雙工、常用於顯示器與高速周邊。</li>
+<li><strong>UART：</strong>最直觀、最像序列埠，常用於除錯、GNSS、藍牙與數據機模組連接。</li>
+</ul>
+<div class="note">建議的學習順序可先從 UART 開始，再進入 I2C，最後學習 SPI，以便循序掌握序列通訊、位址機制與時序控制。</div>
+</section>
+</div>
+
+<section class="card">
+<h2>三、三種介面的整體比較</h2>
+<table>
+<thead>
+<tr>
+<th>項目</th>
+<th>I2C</th>
+<th>SPI</th>
+<th>UART</th>
+</tr>
+</thead>
+<tbody>
+<tr><td>線數</td><td>2 條主線（SDA, SCL）</td><td>至少 4 條（MOSI, MISO, SCLK, CS）</td><td>2 條主線（TX, RX）</td></tr>
+<tr><td>拓樸</td><td>多主/多從匯流排</td><td>單主多從較常見</td><td>點對點</td></tr>
+<tr><td>位址機制</td><td>有裝置位址</td><td>通常靠 CS 選擇裝置</td><td>無位址概念</td></tr>
+<tr><td>速度</td><td>低到中</td><td>高</td><td>中</td></tr>
+<tr><td>全雙工</td><td>否</td><td>是</td><td>通常可雙向，但不如 SPI 典型</td></tr>
+<tr><td>適合裝置</td><td>感測器、RTC、EEPROM</td><td>TFT、ADC、Flash、RF 模組</td><td>GPS、藍牙、序列除錯</td></tr>
+<tr><td>上手門檻</td><td>中</td><td>中偏高</td><td>低</td></tr>
+</tbody>
+</table>
+</section>
+
+<section class="card">
+<h2>四、I2C 介面</h2>
+<h3>1. 基本觀念</h3>
+<ul>
+<li><code>SDA</code>：資料線</li>
+<li><code>SCL</code>：時脈線</li>
+<li>每個裝置都有位址，常見為 7-bit 位址。</li>
+<li>多個裝置可以掛在同一組 SDA / SCL 上。</li>
+</ul>
+
+<h3>2. I2C 為什麼常用於感測器</h3>
+<ul>
+<li>接線少</li>
+<li>可讓一台主控板同時連接多個環境感測器</li>
+<li>許多常見模組都提供 I2C 介面與現成函式庫</li>
+</ul>
+
+<h3>3. 常見問題</h3>
+<ul>
+<li>忘了接上拉電阻（pull-up resistor）</li>
+<li>位址衝突：兩個裝置位址相同</li>
+<li>電壓不相容：3.3V 裝置與 5V 裝置直接混接</li>
+<li>線太長、干擾太大導致通訊不穩</li>
+</ul>
+
+<h3>4. 重要術語</h3>
+<table>
+<thead>
+<tr><th>術語</th><th>說明</th></tr>
+</thead>
+<tbody>
+<tr><td>Start Condition</td><td>主機開始一筆 I2C 傳輸的訊號。</td></tr>
+<tr><td>Stop Condition</td><td>主機結束一筆 I2C 傳輸的訊號。</td></tr>
+<tr><td>ACK / NACK</td><td>接收端是否確認收到資料。</td></tr>
+<tr><td>7-bit address</td><td>最常見的裝置位址格式。</td></tr>
+<tr><td>Pull-up resistor</td><td>SDA、SCL 常需要上拉到高電位。</td></tr>
+</tbody>
+</table>
+
+<h3>5. Raspberry Pi Python 範例概念</h3>
+<pre><code>from smbus2 import SMBus
+
+I2C_BUS = 1
+DEVICE_ADDR = 0x48
+REGISTER = 0x00
+
+with SMBus(I2C_BUS) as bus:
+data = bus.read_byte_data(DEVICE_ADDR, REGISTER)
+print("read:", data)</code></pre>
+
+<h3>6. Pico W MicroPython 掃描 I2C 位址</h3>
+<pre><code>from machine import Pin, I2C
+
+i2c = I2C(0, scl=Pin(1), sda=Pin(0), freq=400000)
+print('devices:', [hex(x) for x in i2c.scan()])</code></pre>
+
+<div class="note">實作時可先使用 <code>i2c.scan()</code> 確認匯流排上可偵測到的裝置位址，再進入寄存器讀寫。</div>
+</section>
+
+<section class="card">
+<h2>五、SPI 介面</h2>
+<h3>1. 基本觀念</h3>
+<ul>
+<li><code>MOSI</code>：Master Out, Slave In</li>
+<li><code>MISO</code>：Master In, Slave Out</li>
+<li><code>SCLK</code>：時脈</li>
+<li><code>CS / SS</code>：晶片選擇</li>
+</ul>
+
+<h3>2. SPI 的特點</h3>
+<ul>
+<li>速度通常比 I2C 快</li>
+<li>常見於顯示器、外部 Flash、高速 ADC</li>
+<li>每個從屬裝置通常需要一條獨立的 CS 線</li>
+</ul>
+
+<h3>3. 為什麼 SPI 比較快</h3>
+<ul>
+<li>沒有 I2C 的位址仲裁與 ACK/NACK 流程負擔</li>
+<li>可全雙工傳輸</li>
+<li>時序結構相對直接</li>
+</ul>
+
+<h3>4. 實作時要特別注意</h3>
+<ul>
+<li>SPI 沒有統一的「位址掃描」概念</li>
+<li>不同裝置的 <code>CPOL</code>、<code>CPHA</code> 可能不同</li>
+<li>CS 拉低與拉高的時機很重要</li>
+</ul>
+
+<h3>5. SPI Mode 概念</h3>
+<table>
+<thead>
+<tr><th>Mode</th><th>CPOL</th><th>CPHA</th><th>說明</th></tr>
+</thead>
+<tbody>
+<tr><td>Mode 0</td><td>0</td><td>0</td><td>最常見，時脈閒置低，前緣取樣</td></tr>
+<tr><td>Mode 1</td><td>0</td><td>1</td><td>時脈閒置低，後緣取樣</td></tr>
+<tr><td>Mode 2</td><td>1</td><td>0</td><td>時脈閒置高，前緣取樣</td></tr>
+<tr><td>Mode 3</td><td>1</td><td>1</td><td>時脈閒置高，後緣取樣</td></tr>
+</tbody>
+</table>
+
+<h3>6. MicroPython 範例</h3>
+<pre><code>from machine import Pin, SPI
+
+spi = SPI(0, baudrate=1000000, polarity=0, phase=0,
+sck=Pin(18), mosi=Pin(19), miso=Pin(16))
+cs = Pin(17, Pin.OUT)
+
+cs.value(0)
+spi.write(b'\x9F')
+chip_id = spi.read(3)
+cs.value(1)
+
+print(chip_id)</code></pre>
+
+<div class="warning">SPI 裝置最常見的錯誤不是「完全沒接好」，而是 mode 設錯、CS 切換時機不對、或 baudrate 太高。</div>
+</section>
+
+<section class="card">
+<h2>六、UART 介面</h2>
+<h3>1. 基本觀念</h3>
+<ul>
+<li><code>TX</code>：傳送線</li>
+<li><code>RX</code>：接收線</li>
+<li>接線規則通常是 <code>TX → RX</code>、<code>RX → TX</code></li>
+<li>雙方要設定相同 baud rate</li>
+</ul>
+
+<h3>2. UART 最常見的參數</h3>
+<table>
+<thead>
+<tr><th>參數</th><th>常見值</th><th>說明</th></tr>
+</thead>
+<tbody>
+<tr><td>Baud rate</td><td>9600, 115200</td><td>每秒傳輸符號速率</td></tr>
+<tr><td>Data bits</td><td>8</td><td>資料位元數</td></tr>
+<tr><td>Parity</td><td>None / Even / Odd</td><td>同位檢查</td></tr>
+<tr><td>Stop bits</td><td>1 或 2</td><td>結束位元</td></tr>
+</tbody>
+</table>
+
+<h3>3. UART 適合哪些場景</h3>
+<ul>
+<li>連接 GPS 模組</li>
+<li>連接藍牙模組</li>
+<li>序列除錯輸出</li>
+<li>兩塊板子之間傳送簡單字串或封包</li>
+</ul>
+
+<h3>4. MicroPython 範例</h3>
+<pre><code>from machine import UART, Pin
+import time
+
+uart = UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))
+
+while True:
+uart.write('hello from pico\n')
+if uart.any():
+msg = uart.read()
+print(msg)
+time.sleep(1)</code></pre>
+
+<h3>5. Raspberry Pi Python 範例</h3>
+<pre><code>import serial
+
+ser = serial.Serial('/dev/serial0', 115200, timeout=1)
+ser.write(b'hello from pi\n')
+print(ser.readline().decode(errors='ignore'))</code></pre>
+
+<div class="note">UART 很適合用於「Pico W 傳資料給 Raspberry Pi」這類情境，因為資料內容可直接以字串形式觀察與除錯。</div>
+</section>
+
+<section class="card">
+<h2>七、常用元件與模組範例</h2>
+<p>下面整理一些常見且容易取得的模組。這些連結可作為查閱 datasheet、接線圖與函式庫範例的起點。</p>
+
+<h3>1. I2C 常用元件</h3>
+<table>
+<thead>
+<tr><th>元件 / 模組</th><th>簡要說明</th><th>參考連結</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>BME280</td>
+<td>常見的環境感測器，可量測溫度、濕度與氣壓，常用於 IoT 入門、環境監測與小型氣象站。</td>
+<td><a href="https://learn.adafruit.com/adafruit-bme280-humidity-barometric-pressure-temperature-sensor-breakout" target="_blank" rel="noopener">Adafruit BME280 資訊</a></td>
+</tr>
+<tr>
+<td>SSD1306 OLED</td>
+<td>常見的小型單色 OLED 顯示器，常拿來顯示感測值、IP 位址、系統狀態。</td>
+<td><a href="https://learn.adafruit.com/monochrome-oled-breakouts" target="_blank" rel="noopener">Monochrome OLED Breakouts</a></td>
+</tr>
+<tr>
+<td>ADS1115</td>
+<td>16-bit ADC 模組，當主控板類比輸入不足或需要較高解析度時很常使用。</td>
+<td><a href="https://learn.adafruit.com/adafruit-4-channel-adc-breakouts/python-circuitpython" target="_blank" rel="noopener">Adafruit ADS1115 / ADC Breakouts</a></td>
+</tr>
+</tbody>
+</table>
+
+<h3>2. SPI 常用元件</h3>
+<table>
+<thead>
+<tr><th>元件 / 模組</th><th>簡要說明</th><th>參考連結</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>MicroSD Card Breakout</td>
+<td>常用來做資料記錄，例如把感測資料、影像紀錄或實驗結果存入記憶卡。</td>
+<td><a href="https://learn.adafruit.com/adafruit-microsd-spi-sdio" target="_blank" rel="noopener">Adafruit MicroSD SPI / SDIO Breakout</a></td>
+</tr>
+<tr>
+<td>MCP3008</td>
+<td>8 通道 10-bit ADC，常見於 Raspberry Pi 需要讀取類比感測器時的入門模組。</td>
+<td><a href="https://learn.adafruit.com/mcp3008-spi-adc" target="_blank" rel="noopener">MCP3008 SPI ADC 資訊</a></td>
+</tr>
+<tr>
+<td>ST7735 TFT Display</td>
+<td>彩色 TFT 顯示器，適合做即時數值、圖形介面或小型儀表板。</td>
+<td><a href="https://learn.adafruit.com/1-8-tft-display" target="_blank" rel="noopener">1.8" TFT Display Breakout</a></td>
+</tr>
+</tbody>
+</table>
+
+<h3>3. UART 常用元件</h3>
+<table>
+<thead>
+<tr><th>元件 / 模組</th><th>簡要說明</th><th>參考連結</th></tr>
+</thead>
+<tbody>
+<tr>
+<td>NEO-6M / Ultimate GPS 類 GPS 模組</td>
+<td>可透過 UART 輸出經緯度、時間、速度等 NMEA 資訊，適合定位與移動物件專題。</td>
+<td><a href="https://learn.adafruit.com/adafruit-ultimate-gps/overview" target="_blank" rel="noopener">Adafruit Ultimate GPS</a></td>
+</tr>
+<tr>
+<td>HC-05 Bluetooth</td>
+<td>經典藍牙序列模組，可把 UART 資料轉成藍牙通訊，常用於手機控制與無線序列橋接。</td>
+<td><a href="https://lastminuteengineers.com/hc05-at-commands-tutorial/" target="_blank" rel="noopener">HC-05 AT Commands Tutorial</a></td>
+</tr>
+<tr>
+<td>SIM800L GSM / GPRS</td>
+<td>可用 UART 控制發送 SMS、撥號與行動資料連線，適合遠距通知與行動通訊主題。</td>
+<td><a href="https://lastminuteengineers.com/sim800l-gsm-module-arduino-tutorial/" target="_blank" rel="noopener">SIM800L GSM Module Tutorial</a></td>
+</tr>
+</tbody>
+</table>
+
+<div class="info">若要建立基礎模組組合，可從 I2C 的 BME280 與 OLED、SPI 的 MicroSD 或 TFT、UART 的 GPS 與藍牙模組開始。</div>
+</section>
+
+<section class="card">
+<h2>八、接線觀念與電壓注意事項</h2>
+<ul>
+<li>先確認裝置工作電壓：3.3V 或 5V。</li>
+<li>Raspberry Pi 與 Pico W 大多是 3.3V 邏輯，不可直接承受 5V GPIO。</li>
+<li>共地（GND）通常是通訊成功的前提。</li>
+<li>UART 錯接最常見是 TX/RX 沒交叉；I2C 錯接最常見是 SDA/SCL 對調；SPI 錯接最常見是 CS 沒接或接錯。</li>
+</ul>
+<div class="warning">裝置成功供電不代表通訊一定成功；電壓、共地、腳位與協定參數都必須同時正確。</div>
+</section>
+
+<section class="card">
+<h2>九、如何選擇 I2C、SPI、UART</h2>
+<table>
+<thead>
+<tr><th>情境</th><th>建議介面</th><th>原因</th></tr>
+</thead>
+<tbody>
+<tr><td>多個低速感測器</td><td>I2C</td><td>接線省、可共用匯流排</td></tr>
+<tr><td>高速顯示器或外部記憶體</td><td>SPI</td><td>速度高、時序直接</td></tr>
+<tr><td>模組除錯與字串傳輸</td><td>UART</td><td>容易理解、終端機可直接觀察</td></tr>
+<tr><td>兩塊板子先做簡單通訊實驗</td><td>UART</td><td>最容易做出第一個成功結果</td></tr>
+</tbody>
+</table>
+</section>
+
+<section class="card">
+<h2>十、常見除錯方法</h2>
+<h3>1. I2C 除錯</h3>
+<ul>
+<li>先掃描位址，看裝置有沒有被偵測到</li>
+<li>檢查 pull-up 電阻是否存在</li>
+<li>降低頻率，例如從 400kHz 改成 100kHz</li>
+</ul>
+
+<h3>2. SPI 除錯</h3>
+<ul>
+<li>確認 datasheet 的 SPI mode</li>
+<li>先把 baudrate 降低</li>
+<li>檢查 CS 的拉低/拉高時序</li>
+</ul>
+
+<h3>3. UART 除錯</h3>
+<ul>
+<li>確認 baud rate 一致</li>
+<li>確認 TX/RX 有交叉接</li>
+<li>確認雙方都共地</li>
+</ul>
+
+<h3>4. 進階工具</h3>
+<ul>
+<li>邏輯分析儀（logic analyzer）</li>
+<li>示波器</li>
+<li>序列埠監看工具</li>
+</ul>
+<div class="info">加入 logic analyzer 觀察時序波形，有助於對照程式碼、腳位訊號與協定行為。</div>
