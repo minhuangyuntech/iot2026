@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DDS 與 RTI Connext DDS 教材：Raspberry Pi 5 與 Pico W2 實作</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #0f766e;
+      --accent-soft: #ccfbf1;
+      --border: #dbe3ef;
+      --code-bg: #0f172a;
+      --code-text: #e5eefc;
+      --ok: #065f46;
+      --warn: #92400e;
+      --info: #1d4ed8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0f766e, #111827);
+      color: #fff;
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2.1rem;
+    }
+    .hero p {
+      margin: 8px 0;
+      color: rgba(255,255,255,0.92);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      margin-bottom: 20px;
+    }
+    h2, h3 {
+      color: #111827;
+    }
+    h2 {
+      margin-top: 0;
+      border-left: 5px solid var(--accent);
+      padding-left: 12px;
+    }
+    ul, ol {
+      padding-left: 22px;
+    }
+    li + li { margin-top: 6px; }
+    code {
+      background: #eef2ff;
+      color: #312e81;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", "Consolas", monospace;
+      font-size: 0.95em;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.96rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #ecfeff; }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .note, .warning, .info {
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin: 12px 0;
+    }
+    .note {
+      background: #ecfdf5;
+      color: var(--ok);
+      border: 1px solid #a7f3d0;
+    }
+    .warning {
+      background: #fff7ed;
+      color: var(--warn);
+      border: 1px solid #fdba74;
+    }
+    .info {
+      background: #eff6ff;
+      color: var(--info);
+      border: 1px solid #bfdbfe;
+    }
+    .footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.75rem; }
+      .container { padding: 20px 14px 40px; }
+      .hero, .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>DDS 與 RTI Connext DDS 教材：Raspberry Pi 5 與 Pico W2 實作</h1>
+      <p>本教材以 RTI Connext DDS 的免費取得方案為基礎，說明 DDS 的核心概念、在 Raspberry Pi 5 上建立 DDS 節點的方法，以及在 Pico W2 上建立 DDS 應用程式時的可行架構。</p>
+      <p>教學安排以 Python 為主；若微控制器端沒有可直接使用的 Python / MicroPython DDS Framework，則補充 C 語言與 Connext Micro 的實作方向。</p>
+      <div style="margin-top:16px;">
+        <span class="tag">DDS</span>
+        <span class="tag">RTI Connext DDS</span>
+        <span class="tag">Raspberry Pi 5</span>
+        <span class="tag">Pico W2</span>
+        <span class="tag">Python</span>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>一、教學目標</h2>
+        <ul>
+          <li>理解 DDS 與 MQTT 在架構思維上的差異</li>
+          <li>理解 Topic、Domain、Publisher、Subscriber、QoS 的基本角色</li>
+          <li>能在 Raspberry Pi 5 上安裝 RTI Connext DDS 並執行 Python 範例</li>
+          <li>能規劃 Pico W2 與 DDS 系統整合的方法</li>
+          <li>知道何時適合用 Python，何時必須改用 C / C++</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>二、先講結論</h2>
+        <ul>
+          <li><strong>Raspberry Pi 5：</strong>適合直接跑 RTI Connext DDS Professional，並可使用官方 Python API。</li>
+          <li><strong>Pico W2：</strong>若要做真正的原生 DDS 端點，較合理的方向是 C / C++ 搭配 Connext Micro，而不是 MicroPython。</li>
+          <li><strong>課堂實作建議：</strong>Pi 5 當 DDS 主節點，Pico W2 當感測/控制端；先做橋接式架構，再評估是否進一步做原生微控制器 DDS。</li>
+        </ul>
+        <div class="warning">我查閱 RTI 官方文件與公開頁面後，未看到提供給 Raspberry Pi Pico W / Pico 2 W 的現成 MicroPython DDS Framework；因此課堂上若要快速完成，建議優先採「Pi 5 原生 DDS + Pico W2 橋接」模式。</div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>三、什麼是 DDS？</h2>
+      <p>DDS（Data Distribution Service）是一種資料導向、即時、去中心化的通訊架構。它很常用在機器人、自駕車、工業控制、分散式感測系統與需要低延遲協作的系統中。</p>
+      <table>
+        <thead>
+          <tr>
+            <th>觀念</th>
+            <th>說明</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Domain</td><td>一個邏輯通訊空間，不同 Domain 彼此隔離。</td></tr>
+          <tr><td>Topic</td><td>資料主題，例如 <code>Temperature</code>、<code>MotorCommand</code>。</td></tr>
+          <tr><td>Publisher / DataWriter</td><td>負責送出資料。</td></tr>
+          <tr><td>Subscriber / DataReader</td><td>負責接收資料。</td></tr>
+          <tr><td>QoS</td><td>控制可靠性、歷史深度、deadline、durability 等行為。</td></tr>
+          <tr><td>Discovery</td><td>DDS 節點可自動發現彼此，不一定需要集中式 Broker。</td></tr>
+        </tbody>
+      </table>
+      <div class="note">和 MQTT 不同，DDS 常常直接讓節點彼此交換資料，並把通訊品質與時效要求做成可設定的 QoS。</div>
+    </section>
+
+    <section class="card">
+      <h2>四、DDS 與 MQTT 的差異</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>比較項目</th>
+            <th>DDS</th>
+            <th>MQTT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>核心架構</td><td>去中心化資料匯流排</td><td>以 Broker 為中心</td></tr>
+          <tr><td>即時性</td><td>高，適合控制與協作</td><td>中等，適合 IoT 遙測</td></tr>
+          <tr><td>QoS 粒度</td><td>細緻且完整</td><td>相對簡化</td></tr>
+          <tr><td>自動發現</td><td>有</td><td>通常由 Broker 管理</td></tr>
+          <tr><td>資源需求</td><td>較高</td><td>較低</td></tr>
+          <tr><td>適合場景</td><td>機器人、車載、工控、數位分身</td><td>教學 IoT、雲端上傳、輕量訊息</td></tr>
+        </tbody>
+      </table>
+      <div class="info">如果是「控制迴路、多節點協作、低延遲資料同步」，DDS 通常更合適；如果是「感測值上傳、簡單遙控、低門檻教學」，MQTT 比較容易上手。</div>
+    </section>
+
+    <section class="card">
+      <h2>五、RTI Connext DDS 為什麼適合拿來教</h2>
+      <ul>
+        <li>RTI 提供 <strong>Get Connext Free</strong> 與學術用途免費授權方案，適合課堂與研究示範。</li>
+        <li>RTI Connext Professional 支援多種語言，官方公開資訊列出 <strong>C、C++、Python、C#、Java</strong> 等。</li>
+        <li>RTI Connext Micro 明確定位為 <strong>resource-constrained systems</strong>，適合延伸到微控制器與小型嵌入式裝置討論。</li>
+      </ul>
+      <div class="note">依 RTI 官方開發者文件，Debian / Ubuntu 類系統可用 <code>apt</code> 安裝 Connext，再用 <code>pip install rti.connext</code> 安裝 Python API，這很適合 Raspberry Pi OS 的課堂示範。</div>
+    </section>
+
+    <section class="card">
+      <h2>六、課堂建議架構</h2>
+      <h3>方案 A：最適合教學、最容易成功</h3>
+      <pre><code>Pico W2 感測器 / 控制器
+   │
+   ├─(UART / HTTP / MQTT / UDP)
+   │
+Raspberry Pi 5 橋接程式（Python）
+   │
+   └─ RTI Connext DDS Domain
+         ├─ Python Subscriber
+         ├─ Python Publisher
+         └─ 其他 DDS 節點</code></pre>
+      <ul>
+        <li>Pi 5 跑原生 DDS。</li>
+        <li>Pico W2 先用熟悉的方式送資料到 Pi 5。</li>
+        <li>Pi 5 再把資料轉發進 DDS Domain。</li>
+      </ul>
+
+      <h3>方案 B：進階主題，做原生微控制器 DDS</h3>
+      <pre><code>Pico W2（C / C++） + 網路堆疊
+   │
+   └─ RTI Connext Micro / 類似 DDS for MCU 架構
+         │
+         └─ DDS Domain with Raspberry Pi 5</code></pre>
+      <ul>
+        <li>這一條路更貼近正式嵌入式系統。</li>
+        <li>但整合難度高，通常不建議放在第一週實作。</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>七、在 Raspberry Pi 5 上安裝 RTI Connext DDS</h2>
+      <h3>1. 系統前提</h3>
+      <ul>
+        <li>Raspberry Pi 5</li>
+        <li>Raspberry Pi OS（Debian 系）</li>
+        <li>可連網</li>
+        <li>建議先安裝 Python 3 與 venv</li>
+      </ul>
+
+      <h3>2. 安裝 RTI 官方 apt repository</h3>
+      <pre><code>sudo curl -sSL -o /usr/share/keyrings/rti-official-archive.gpg \
+  https://packages.rti.com/deb/official/repo.key
+
+printf -- "deb [arch=%s, signed-by=%s] %s %s main\n" \
+  $(dpkg --print-architecture) \
+  /usr/share/keyrings/rti-official-archive.gpg \
+  https://packages.rti.com/deb/official \
+  $(. /etc/os-release && echo ${VERSION_CODENAME}) | \
+  sudo tee /etc/apt/sources.list.d/rti-official.list >/dev/null
+
+sudo apt update</code></pre>
+
+      <h3>3. 安裝 Connext DDS</h3>
+      <pre><code>sudo apt install rti-connext-dds-7.7.0</code></pre>
+
+      <h3>4. 安裝 Python API</h3>
+      <pre><code>python3 -m venv ~/venvs/connext
+source ~/venvs/connext/bin/activate
+pip install --upgrade pip
+pip install rti.connext</code></pre>
+
+      <h3>5. 取得免費授權檔</h3>
+      <ol>
+        <li>到 RTI 的 <code>Get Connext Free</code> 頁面申請。</li>
+        <li>下載授權檔 <code>rti_license.dat</code>。</li>
+        <li>把授權檔放到例如 <code>~/rti/rti_license.dat</code>。</li>
+      </ol>
+
+      <h3>6. 載入環境</h3>
+      <pre><code>eval $(rtienv -l ~/rti/rti_license.dat)</code></pre>
+      <div class="note">依 RTI 官方 apt 安裝教學，設定好 <code>rtienv</code> 與授權檔後，就可以直接跑 Hello World 範例。</div>
+    </section>
+
+    <section class="card">
+      <h2>八、在 Raspberry Pi 5 上建立第一個 DDS Python 範例</h2>
+      <h3>1. 建立 IDL</h3>
+      <p>先在新資料夾建立 <code>HelloWorld.idl</code>：</p>
+      <pre><code>struct HelloWorld
+{
+    int32 value;
+};</code></pre>
+
+      <h3>2. 產生 Python 範例</h3>
+      <pre><code>mkdir -p ~/dds-lab/hello
+cd ~/dds-lab/hello
+cat > HelloWorld.idl &lt;&lt;'EOF'
+struct HelloWorld
+{
+    int32 value;
+};
+EOF
+
+rtiddsgen -language python -example universal HelloWorld.idl</code></pre>
+
+      <h3>3. 執行 Subscriber</h3>
+      <pre><code>source ~/venvs/connext/bin/activate
+cd ~/dds-lab/hello
+eval $(rtienv -l ~/rti/rti_license.dat)
+python HelloWorld_subscriber.py</code></pre>
+
+      <h3>4. 執行 Publisher</h3>
+      <pre><code>source ~/venvs/connext/bin/activate
+cd ~/dds-lab/hello
+eval $(rtienv -l ~/rti/rti_license.dat)
+python HelloWorld_publisher.py</code></pre>
+
+      <h3>5. 預期結果</h3>
+      <ul>
+        <li>Subscriber 端持續收到遞增的 <code>HelloWorld(value=n)</code>。</li>
+        <li>這表示 Pi 5 已成功成為 DDS Domain 中的節點。</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>九、用 Python 改成感測資料範例</h2>
+      <p>課堂上可以把 <code>HelloWorld</code> 換成溫度、濕度、光照等資料結構，例如：</p>
+      <pre><code>struct SensorReading
+{
+    string device_id;
+    float temperature;
+    float humidity;
+    int64 timestamp_ms;
+};</code></pre>
+      <p>之後讓 Pi 5 端的 Python Publisher 寫入這些資料，而另一個 Subscriber 顯示或存入資料庫。</p>
+      <div class="info">若要快速整合既有課程，可把 DDS 的 Subscriber 接到 Flask、Django、MariaDB 或 Node-RED 延伸頁面，做成「即時資料匯流排 + 視覺化」示範。</div>
+    </section>
+
+    <section class="card">
+      <h2>十、Pico W2 可以直接跑 Python DDS 嗎？</h2>
+      <p>就目前查到的 RTI 官方公開文件與頁面來看：</p>
+      <ul>
+        <li>RTI 提供官方 <strong>Python API</strong>，但對象是一般主機端作業系統環境。</li>
+        <li>RTI 另有 <strong>Connext Micro</strong>，定位在資源受限系統與可能沒有作業系統的裝置。</li>
+        <li>未查到 RTI 官方提供給 Raspberry Pi Pico W / Pico 2 W 的現成 <strong>MicroPython DDS Framework</strong>。</li>
+      </ul>
+      <div class="warning">因此若板端是 Pico W2，不能預設它可以像 Raspberry Pi 5 一樣直接 <code>pip install rti.connext</code> 後跑 Python DDS。</div>
+    </section>
+
+    <section class="card">
+      <h2>十一、Pico W2 的兩種設置路線</h2>
+      <h3>路線 1：教學推薦，Pico W2 不直接跑 DDS</h3>
+      <ul>
+        <li>Pico W2 仍使用 MicroPython 或 C 撰寫感測器/控制程式。</li>
+        <li>透過 UART、HTTP、MQTT 或簡單 UDP 把資料送給 Raspberry Pi 5。</li>
+        <li>由 Pi 5 上的 Python 橋接程式將資料轉成 DDS Topic。</li>
+      </ul>
+      <div class="note">這條路最符合「儘量以 Python 為主」的需求，因為 Python 會集中在 Pi 5 端，課堂成功率最高。</div>
+
+      <h3>路線 2：進階，Pico W2 原生 DDS 應用程式</h3>
+      <ul>
+        <li>使用 C / C++ 開發。</li>
+        <li>評估 Connext Micro 與 Pico SDK、網路堆疊、記憶體限制的整合。</li>
+        <li>需要處理編譯鏈、封包、記憶體配置與除錯流程。</li>
+      </ul>
+      <div class="warning">這不是「現成拖進去就能跑」的課堂範例，比較適合作為專題、研究或學期末加分題。</div>
+    </section>
+
+    <section class="card">
+      <h2>十二、Pico W2 橋接式 DDS 實作建議</h2>
+      <h3>1. Pico W2 端工作</h3>
+      <ul>
+        <li>讀取感測器資料</li>
+        <li>組成簡單 JSON 或 CSV</li>
+        <li>送到 Pi 5（HTTP POST、MQTT publish、UDP datagram 皆可）</li>
+      </ul>
+
+      <h3>2. Pi 5 端工作</h3>
+      <ul>
+        <li>Python 程式接收 Pico W2 傳來的資料</li>
+        <li>轉成 DDS Topic 型別</li>
+        <li>用 RTI Connext Python API 發佈到 DDS Domain</li>
+      </ul>
+
+      <h3>3. 教學優點</h3>
+      <ul>
+        <li>不必一開始就處理 MCU 端 DDS porting</li>
+        <li>學生可以先理解 DDS 的資料流與 QoS</li>
+        <li>保留之後升級成原生 DDS MCU 節點的空間</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>十三、若一定要在 Pico W2 上做原生 DDS，C 語言方向怎麼規劃？</h2>
+      <ol>
+        <li>先建立 Pico SDK 的 C / C++ 專案。</li>
+        <li>確認 Wi-Fi / 網路通訊堆疊可正常工作。</li>
+        <li>評估是否以 RTI Connext Micro 作為 DDS middleware。</li>
+        <li>定義最小型的 Topic 資料型別，例如溫度、按鈕狀態、LED 命令。</li>
+        <li>把 MCU 記憶體配置壓到最小，避免一開始就做太多 QoS 與大型型別。</li>
+      </ol>
+
+      <h3>建議最小題目</h3>
+      <ul>
+        <li>Pico W2 送出一筆 <code>temperature</code></li>
+        <li>Pi 5 Subscriber 收到後顯示在終端機</li>
+        <li>Pi 5 再發送 <code>led_command</code> 回來</li>
+        <li>Pico W2 控制 LED 亮滅</li>
+      </ul>
+
+      <div class="info">如果要把這個主題做成正式專題，建議拆成兩階段：先完成橋接式 DDS，再挑戰原生 MCU DDS。</div>
+    </section>
+
+    <section class="card">
+      <h2>十四、建議的課堂實作順序</h2>
+      <ol>
+        <li>先用 Raspberry Pi 5 完成 DDS Hello World（Python）</li>
+        <li>改成感測器資料結構</li>
+        <li>建立第二個 Python Subscriber 做監看</li>
+        <li>讓 Pico W2 用既有方式把資料送到 Pi 5</li>
+        <li>在 Pi 5 寫 Python Bridge，把資料轉成 DDS</li>
+        <li>最後才討論 Pico W2 原生 DDS 的 C 語言進階路線</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>十五、常見問題</h2>
+      <h3>1. DDS 一定要有 Broker 嗎？</h3>
+      <p>不一定。DDS 常見的是節點自動發現彼此，不是像 MQTT 那樣預設依賴 Broker。</p>
+
+      <h3>2. Pi 5 為什麼適合當 DDS 主節點？</h3>
+      <p>因為它有完整 Linux、較多記憶體、可直接安裝 RTI 工具與 Python API，也更容易除錯。</p>
+
+      <h3>3. Pico W2 為什麼不建議一開始就直接跑 DDS？</h3>
+      <p>因為微控制器的開發與除錯成本較高，且目前沒有查到 RTI 官方提供給 Pico W2 的現成 MicroPython DDS 框架。</p>
+
+      <h3>4. 課堂上要選 DDS 還是 MQTT？</h3>
+      <p>如果課程目標是「理解即時分散式系統」，可以加入 DDS；如果是快速完成 IoT 實驗，MQTT 仍然是更低門檻的起點。</p>
+    </section>
+
+    <section class="card">
+      <h2>十六、教師備註與資料來源</h2>
+      <ul>
+        <li>RTI 開發者頁面提供 <strong>Get Connext Free</strong> 與 Debian / Ubuntu 的 <code>apt install</code> 教學。</li>
+        <li>RTI 官方公開資料顯示 Connext Professional 支援 Python API。</li>
+        <li>RTI 官方公開資料顯示 Connext Micro 面向 resource-constrained systems，可作為微控制器進階研究方向。</li>
+      </ul>
+      <div class="note">本頁面特別採「Pi 5 先成功、Pico W2 再延伸」的教學設計，是為了兼顧教學成功率與技術深度。</div>
+    </section>
+
+    <div class="footer">
+      DDS_RTI_Connext_Intro.html, RTI Connext DDS 教學頁面（Pi 5 + Pico W2）
+    </div>
+  </div>
+</body>
+</html>

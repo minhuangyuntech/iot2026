@@ -1,2 +1,465 @@
 <!DOCTYPE html>
-<html lang="zh-Hant"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>常見介面 I2C, SPI, UART 教材</title><style>:root{--bg:#f6f8fb;--card:#fff;--text:#1f2937;--muted:#6b7280;--accent:#7c2d12;--accent-soft:#ffedd5;--border:#dbe3ef;--code-bg:#0f172a;--code-text:#e5eefc}*{box-sizing:border-box}body{margin:0;font-family:"Noto Sans TC","Microsoft JhengHei",sans-serif;background:var(--bg);color:var(--text);line-height:1.75}.container{max-width:1180px;margin:0 auto;padding:32px 20px 64px}.hero{background:linear-gradient(135deg,#7c2d12,#111827);color:#fff;border-radius:20px;padding:36px 32px;margin-bottom:24px}.hero h1{margin:0 0 8px;font-size:2.15rem}.card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:20px}h2{margin-top:0;border-left:5px solid var(--accent);padding-left:12px}code{background:#eef2ff;color:#312e81;padding:2px 6px;border-radius:6px}pre{background:var(--code-bg);color:var(--code-text);padding:16px;border-radius:14px;overflow-x:auto}table{width:100%;border-collapse:collapse;margin-top:12px}th,td{border:1px solid var(--border);padding:10px 12px;text-align:left;vertical-align:top}th{background:#fff7ed}.tag{display:inline-block;padding:4px 10px;border-radius:999px;font-size:.85rem;margin-right:8px;background:var(--accent-soft);color:var(--accent);font-weight:600}.footer{text-align:center;color:var(--muted)}</style></head><body><div class="container"><section class="hero"><h1>常見介面 I2C, SPI, UART 教材</h1><p>介紹嵌入式與 IoT 常見通訊介面，包含 I2C、SPI、UART 的原理、接線方式與適用情境。</p><div><span class="tag">I2C</span><span class="tag">SPI</span><span class="tag">UART</span><span class="tag">介面教學</span></div></section><section class="card"><h2>一、為什麼要學通訊介面</h2><p>感測器、顯示器、模組與微控制器之間，需要共同語言才能交換資料，I2C、SPI、UART 就是最常見的三種。</p></section><section class="card"><h2>二、I2C</h2><ul><li>兩條主要訊號線：SDA、SCL</li><li>可多裝置共用匯流排</li><li>每個裝置有位址</li><li>適合多個感測器共存</li></ul></section><section class="card"><h2>三、SPI</h2><ul><li>常見訊號：MOSI、MISO、SCK、CS</li><li>速度通常比 I2C 快</li><li>接線較多</li><li>適合高速傳輸</li></ul></section><section class="card"><h2>四、UART</h2><ul><li>常見訊號：TX、RX、GND</li><li>點對點通訊</li><li>常用於序列埠、除錯訊息、模組連線</li></ul></section><section class="card"><h2>五、比較表</h2><table><thead><tr><th>介面</th><th>線數</th><th>優點</th><th>缺點</th></tr></thead><tbody><tr><td>I2C</td><td>少</td><td>容易接很多裝置</td><td>速度較慢</td></tr><tr><td>SPI</td><td>較多</td><td>速度快</td><td>接線複雜</td></tr><tr><td>UART</td><td>少</td><td>簡單直觀</td><td>通常只能點對點</td></tr></tbody></table></section><section class="card"><h2>六、教學建議</h2><ul><li>I2C 可搭配 OLED 或 BME280</li><li>SPI 可搭配 TFT 螢幕或 ADC 模組</li><li>UART 可搭配 GPS、藍牙模組、序列監控</li></ul></section><div class="footer">Common_Interfaces_I2C_SPI_UART.html, 常見介面 I2C, SPI, UART 教材</div></div></body></html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>常見介面 I2C, SPI, UART 教材</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #7c2d12;
+      --accent-soft: #ffedd5;
+      --border: #dbe3ef;
+      --code-bg: #0f172a;
+      --code-text: #e5eefc;
+      --ok-bg: #ecfdf5;
+      --ok-text: #065f46;
+      --warn-bg: #fff7ed;
+      --warn-text: #9a3412;
+      --info-bg: #eff6ff;
+      --info-text: #1d4ed8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #7c2d12, #111827);
+      color: #fff;
+      border-radius: 20px;
+      padding: 36px 32px;
+      margin-bottom: 24px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+    }
+    .hero h1 { margin: 0 0 8px; font-size: 2.15rem; }
+    .hero p { margin: 8px 0; color: rgba(255,255,255,0.92); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+    }
+    h2, h3 { color: #111827; }
+    h2 {
+      margin-top: 0;
+      border-left: 5px solid var(--accent);
+      padding-left: 12px;
+    }
+    ul, ol { padding-left: 22px; }
+    li + li { margin-top: 6px; }
+    code {
+      background: #eef2ff;
+      color: #312e81;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", Consolas, monospace;
+      font-size: 0.95em;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.96rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #fff7ed; }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .note, .warning, .info {
+      padding: 14px 16px;
+      border-radius: 14px;
+      margin: 12px 0;
+    }
+    .note { background: var(--ok-bg); color: var(--ok-text); border: 1px solid #a7f3d0; }
+    .warning { background: var(--warn-bg); color: var(--warn-text); border: 1px solid #fdba74; }
+    .info { background: var(--info-bg); color: var(--info-text); border: 1px solid #bfdbfe; }
+    .footer {
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 0.95rem;
+      text-align: center;
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.8rem; }
+      .container { padding: 20px 14px 40px; }
+      .hero, .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>常見介面 I2C, SPI, UART 教材</h1>
+      <p>本頁整理嵌入式系統與 IoT 裝置最常見的三種通訊介面：I2C、SPI、UART。除了基本原理與接線方式，也補充時序觀念、常見除錯方式、Python / MicroPython 範例與教學實驗建議。</p>
+      <div>
+        <span class="tag">I2C</span>
+        <span class="tag">SPI</span>
+        <span class="tag">UART</span>
+        <span class="tag">Raspberry Pi</span>
+        <span class="tag">Pico W</span>
+        <span class="tag">ESP32</span>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>一、為什麼要學通訊介面</h2>
+        <ul>
+          <li>感測器、螢幕、記憶體、GPS、藍牙模組都需要與主控板交換資料。</li>
+          <li>不同模組不一定使用同一種通訊方式。</li>
+          <li>選對介面可以降低接線難度、提升速度，並減少除錯時間。</li>
+          <li>理解介面後，學生才不會只會「照抄範例」，而能真正看懂 datasheet。</li>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h2>二、先記住的總結</h2>
+        <ul>
+          <li><strong>I2C：</strong>兩條線、可掛多裝置、最適合多感測器教學。</li>
+          <li><strong>SPI：</strong>速度快、全雙工、常用於顯示器與高速周邊。</li>
+          <li><strong>UART：</strong>最直觀、最像序列埠、最適合除錯與模組連接。</li>
+        </ul>
+        <div class="note">如果是入門課：先教 UART，再教 I2C，最後教 SPI，學生通常比較容易建立概念。</div>
+      </section>
+    </div>
+
+    <section class="card">
+      <h2>三、三種介面的整體比較</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>項目</th>
+            <th>I2C</th>
+            <th>SPI</th>
+            <th>UART</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>線數</td><td>2 條主線（SDA, SCL）</td><td>至少 4 條（MOSI, MISO, SCLK, CS）</td><td>2 條主線（TX, RX）</td></tr>
+          <tr><td>拓樸</td><td>多主/多從匯流排</td><td>單主多從較常見</td><td>點對點</td></tr>
+          <tr><td>位址機制</td><td>有裝置位址</td><td>通常靠 CS 選擇裝置</td><td>無位址概念</td></tr>
+          <tr><td>速度</td><td>低到中</td><td>高</td><td>中</td></tr>
+          <tr><td>全雙工</td><td>否</td><td>是</td><td>通常可雙向，但不如 SPI 典型</td></tr>
+          <tr><td>適合裝置</td><td>感測器、RTC、EEPROM</td><td>TFT、ADC、Flash、RF 模組</td><td>GPS、藍牙、序列除錯</td></tr>
+          <tr><td>教學難度</td><td>中</td><td>中偏高</td><td>低</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>四、I2C 介面</h2>
+      <h3>1. 基本觀念</h3>
+      <ul>
+        <li><code>SDA</code>：資料線</li>
+        <li><code>SCL</code>：時脈線</li>
+        <li>每個裝置都有位址，常見為 7-bit 位址。</li>
+        <li>多個裝置可以掛在同一組 SDA / SCL 上。</li>
+      </ul>
+
+      <h3>2. I2C 為什麼適合感測器</h3>
+      <ul>
+        <li>接線少</li>
+        <li>很適合一台主控板連多個環境感測器</li>
+        <li>很多教學模組都已內建 I2C 支援</li>
+      </ul>
+
+      <h3>3. 常見問題</h3>
+      <ul>
+        <li>忘了接上拉電阻（pull-up resistor）</li>
+        <li>位址衝突：兩個裝置位址相同</li>
+        <li>電壓不相容：3.3V 裝置與 5V 裝置直接混接</li>
+        <li>線太長、干擾太大導致通訊不穩</li>
+      </ul>
+
+      <h3>4. 重要術語</h3>
+      <table>
+        <thead>
+          <tr><th>術語</th><th>說明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Start Condition</td><td>主機開始一筆 I2C 傳輸的訊號。</td></tr>
+          <tr><td>Stop Condition</td><td>主機結束一筆 I2C 傳輸的訊號。</td></tr>
+          <tr><td>ACK / NACK</td><td>接收端是否確認收到資料。</td></tr>
+          <tr><td>7-bit address</td><td>最常見的裝置位址格式。</td></tr>
+          <tr><td>Pull-up resistor</td><td>SDA、SCL 常需要上拉到高電位。</td></tr>
+        </tbody>
+      </table>
+
+      <h3>5. Raspberry Pi Python 範例概念</h3>
+      <pre><code>from smbus2 import SMBus
+
+I2C_BUS = 1
+DEVICE_ADDR = 0x48
+REGISTER = 0x00
+
+with SMBus(I2C_BUS) as bus:
+    data = bus.read_byte_data(DEVICE_ADDR, REGISTER)
+    print("read:", data)</code></pre>
+
+      <h3>6. Pico W MicroPython 掃描 I2C 位址</h3>
+      <pre><code>from machine import Pin, I2C
+
+i2c = I2C(0, scl=Pin(1), sda=Pin(0), freq=400000)
+print('devices:', [hex(x) for x in i2c.scan()])</code></pre>
+
+      <div class="note">教學上很適合先用 <code>i2c.scan()</code> 讓學生看到裝置位址，再進入寄存器讀寫。</div>
+    </section>
+
+    <section class="card">
+      <h2>五、SPI 介面</h2>
+      <h3>1. 基本觀念</h3>
+      <ul>
+        <li><code>MOSI</code>：Master Out, Slave In</li>
+        <li><code>MISO</code>：Master In, Slave Out</li>
+        <li><code>SCLK</code>：時脈</li>
+        <li><code>CS / SS</code>：晶片選擇</li>
+      </ul>
+
+      <h3>2. SPI 的特點</h3>
+      <ul>
+        <li>速度通常比 I2C 快</li>
+        <li>常見於顯示器、外部 Flash、高速 ADC</li>
+        <li>每個從屬裝置通常需要一條獨立的 CS 線</li>
+      </ul>
+
+      <h3>3. 為什麼 SPI 比較快</h3>
+      <ul>
+        <li>沒有 I2C 的位址仲裁與 ACK/NACK 流程負擔</li>
+        <li>可全雙工傳輸</li>
+        <li>時序結構相對直接</li>
+      </ul>
+
+      <h3>4. 教學上要特別提醒</h3>
+      <ul>
+        <li>SPI 沒有統一的「位址掃描」概念</li>
+        <li>不同裝置的 <code>CPOL</code>、<code>CPHA</code> 可能不同</li>
+        <li>CS 拉低與拉高的時機很重要</li>
+      </ul>
+
+      <h3>5. SPI Mode 概念</h3>
+      <table>
+        <thead>
+          <tr><th>Mode</th><th>CPOL</th><th>CPHA</th><th>說明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Mode 0</td><td>0</td><td>0</td><td>最常見，時脈閒置低，前緣取樣</td></tr>
+          <tr><td>Mode 1</td><td>0</td><td>1</td><td>時脈閒置低，後緣取樣</td></tr>
+          <tr><td>Mode 2</td><td>1</td><td>0</td><td>時脈閒置高，前緣取樣</td></tr>
+          <tr><td>Mode 3</td><td>1</td><td>1</td><td>時脈閒置高，後緣取樣</td></tr>
+        </tbody>
+      </table>
+
+      <h3>6. MicroPython 範例</h3>
+      <pre><code>from machine import Pin, SPI
+
+spi = SPI(0, baudrate=1000000, polarity=0, phase=0,
+          sck=Pin(18), mosi=Pin(19), miso=Pin(16))
+cs = Pin(17, Pin.OUT)
+
+cs.value(0)
+spi.write(b'\x9F')
+chip_id = spi.read(3)
+cs.value(1)
+
+print(chip_id)</code></pre>
+
+      <div class="warning">SPI 裝置最常見的錯誤不是「完全沒接好」，而是 mode 設錯、CS 切換時機不對、或 baudrate 太高。</div>
+    </section>
+
+    <section class="card">
+      <h2>六、UART 介面</h2>
+      <h3>1. 基本觀念</h3>
+      <ul>
+        <li><code>TX</code>：傳送線</li>
+        <li><code>RX</code>：接收線</li>
+        <li>接線規則通常是 <code>TX → RX</code>、<code>RX → TX</code></li>
+        <li>雙方要設定相同 baud rate</li>
+      </ul>
+
+      <h3>2. UART 最常見的參數</h3>
+      <table>
+        <thead>
+          <tr><th>參數</th><th>常見值</th><th>說明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Baud rate</td><td>9600, 115200</td><td>每秒傳輸符號速率</td></tr>
+          <tr><td>Data bits</td><td>8</td><td>資料位元數</td></tr>
+          <tr><td>Parity</td><td>None / Even / Odd</td><td>同位檢查</td></tr>
+          <tr><td>Stop bits</td><td>1 或 2</td><td>結束位元</td></tr>
+        </tbody>
+      </table>
+
+      <h3>3. UART 適合哪些場景</h3>
+      <ul>
+        <li>連接 GPS 模組</li>
+        <li>連接藍牙模組</li>
+        <li>序列除錯輸出</li>
+        <li>兩塊板子之間傳送簡單字串或封包</li>
+      </ul>
+
+      <h3>4. MicroPython 範例</h3>
+      <pre><code>from machine import UART, Pin
+import time
+
+uart = UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))
+
+while True:
+    uart.write('hello from pico\n')
+    if uart.any():
+        msg = uart.read()
+        print(msg)
+    time.sleep(1)</code></pre>
+
+      <h3>5. Raspberry Pi Python 範例</h3>
+      <pre><code>import serial
+
+ser = serial.Serial('/dev/serial0', 115200, timeout=1)
+ser.write(b'hello from pi\n')
+print(ser.readline().decode(errors='ignore'))</code></pre>
+
+      <div class="note">在課堂上，UART 很適合拿來做「Pico W 傳資料給 Raspberry Pi」，因為學生可以直接看見字串與回應。</div>
+    </section>
+
+    <section class="card">
+      <h2>七、接線觀念與電壓注意事項</h2>
+      <ul>
+        <li>先確認裝置工作電壓：3.3V 或 5V。</li>
+        <li>Raspberry Pi 與 Pico W 大多是 3.3V 邏輯，不可直接承受 5V GPIO。</li>
+        <li>共地（GND）通常是通訊成功的前提。</li>
+        <li>UART 錯接最常見是 TX/RX 沒交叉；I2C 錯接最常見是 SDA/SCL 對調；SPI 錯接最常見是 CS 沒接或接錯。</li>
+      </ul>
+      <div class="warning">很多學生會把「供電成功」誤以為「通訊就一定成功」；實際上電壓正確、共地正確、腳位正確、協定參數正確，四者缺一不可。</div>
+    </section>
+
+    <section class="card">
+      <h2>八、如何選擇 I2C、SPI、UART</h2>
+      <table>
+        <thead>
+          <tr><th>情境</th><th>建議介面</th><th>原因</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>多個低速感測器</td><td>I2C</td><td>接線省、可共用匯流排</td></tr>
+          <tr><td>高速顯示器或外部記憶體</td><td>SPI</td><td>速度高、時序直接</td></tr>
+          <tr><td>模組除錯與字串傳輸</td><td>UART</td><td>容易理解、終端機可直接觀察</td></tr>
+          <tr><td>兩塊板子先做簡單通訊實驗</td><td>UART</td><td>最容易做出第一個成功結果</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>九、常見除錯方法</h2>
+      <h3>1. I2C 除錯</h3>
+      <ul>
+        <li>先掃描位址，看裝置有沒有被偵測到</li>
+        <li>檢查 pull-up 電阻是否存在</li>
+        <li>降低頻率，例如從 400kHz 改成 100kHz</li>
+      </ul>
+
+      <h3>2. SPI 除錯</h3>
+      <ul>
+        <li>確認 datasheet 的 SPI mode</li>
+        <li>先把 baudrate 降低</li>
+        <li>檢查 CS 的拉低/拉高時序</li>
+      </ul>
+
+      <h3>3. UART 除錯</h3>
+      <ul>
+        <li>確認 baud rate 一致</li>
+        <li>確認 TX/RX 有交叉接</li>
+        <li>確認雙方都共地</li>
+      </ul>
+
+      <h3>4. 進階工具</h3>
+      <ul>
+        <li>邏輯分析儀（logic analyzer）</li>
+        <li>示波器</li>
+        <li>序列埠監看工具</li>
+      </ul>
+      <div class="info">若課堂允許，加入 logic analyzer 的示範會非常有教學價值，因為學生能直接看見時序而不只是一段程式碼。</div>
+    </section>
+
+    <section class="card">
+      <h2>十、課堂實驗建議</h2>
+      <ol>
+        <li>UART：Pico W 與 Raspberry Pi 互傳字串</li>
+        <li>I2C：掃描感測器位址並讀取一個寄存器</li>
+        <li>SPI：讀取 SPI Flash 或小型顯示器裝置 ID</li>
+        <li>綜合題：比較三種介面的接線、速度與除錯難度</li>
+      </ol>
+      <div class="note">很建議把這頁教材與後續 MQTT、DDS、Node-RED 教材串起來，讓學生知道：硬體資料是先透過 I2C/SPI/UART 進入板子，再往網路層與應用層送出去。</div>
+    </section>
+
+    <section class="card">
+      <h2>十一、與後續 IoT / DDS 教材的連結</h2>
+      <ul>
+        <li>I2C / SPI 常用來「讀取感測資料」</li>
+        <li>UART 常用來「板與板之間」或「除錯」</li>
+        <li>之後可再把取得的資料送到 MQTT 或 DDS 系統</li>
+        <li>例如：Pico W 用 I2C 讀溫濕度 → 用 Wi-Fi HTTP 傳給 Pi 5 → Pi 5 Bridge 發到 DDS</li>
+      </ul>
+    </section>
+
+    <section class="card">
+      <h2>十二、常見問答</h2>
+      <h3>1. I2C 為什麼只用兩條線卻可以掛很多裝置？</h3>
+      <p>因為它用位址區分裝置，所以多個從屬可共用 SDA / SCL。</p>
+
+      <h3>2. SPI 為什麼速度通常比 I2C 快？</h3>
+      <p>因為它的時序較直接，而且常見情況下不需要像 I2C 一樣處理位址與 ACK 流程。</p>
+
+      <h3>3. UART 為什麼常被拿來做除錯？</h3>
+      <p>因為它非常直觀，終端機就能看到輸出結果，對初學者很友善。</p>
+
+      <h3>4. 初學者要先學哪一個？</h3>
+      <p>建議先學 UART，再學 I2C，最後再進入 SPI。</p>
+    </section>
+
+    <div class="footer">
+      Common_Interfaces_I2C_SPI_UART.html — 常見介面教材（深化版）
+    </div>
+  </div>
+</body>
+</html>

@@ -171,10 +171,10 @@
     <section class="hero">
       <h1>IoT 2026 課程教材入口</h1>
       <p>這裡整理本學期所有可直接授課的 HTML 教材，已依主題分類成基礎能力、硬體控制、IoT 通訊、Web 開發與資料庫。</p>
-      <p>目前課程材料包含 Raspberry Pi 5、Raspberry Pi Pico W、ESP32、Arduino Uno、1080p Web CAM、Python、GPIO、MQTT、Node-RED、Flask、Django 與 MariaDB，已足夠構成完整的課堂與專題教學路線。</p>
+      <p>目前課程材料包含 Raspberry Pi 5、Raspberry Pi Pico W / Pico W2、ESP32、Arduino Uno、1080p Web CAM、Python、GPIO、MQTT、DDS、Node-RED、Flask、Django 與 MariaDB，已足夠構成完整的課堂與專題教學路線。</p>
       <div class="stats">
-        <span class="pill">教材頁面 14+</span>
-        <span class="pill">涵蓋 Linux / Python / GPIO / Pinout / Pico W / MQTT / Web</span>
+        <span class="pill">教材頁面 16+</span>
+        <span class="pill">涵蓋 Linux / Python / GPIO / Pinout / Pico W / MQTT / DDS / Web</span>
         <span class="pill">含 Raspberry Pi、Pico W、ESP32、Arduino Uno 速查</span>
       </div>
     </section>
@@ -265,6 +265,18 @@
           <h3>MQTT, Pico W 與 ESP32 實作教學</h3>
           <p>從 MQTT 基本觀念、Mosquitto Broker、Python Subscriber，到 Pico W 與 ESP32 訊息收發範例。</p>
           <a class="btn" href="MQTT_Teaching.html">開啟教材</a>
+        </section>
+        <section class="card highlight">
+          <span class="tag">DDS</span>
+          <h3>DDS 與 RTI Connext DDS：Pi 5 + Pico W2 實作</h3>
+          <p>介紹 DDS 核心概念、RTI Connext 免費取得方式、Pi 5 上的 Python DDS 實作，以及 Pico W2 的橋接與 C 語言進階方向。</p>
+          <a class="btn" href="DDS_RTI_Connext_Intro.html">開啟教材</a>
+        </section>
+        <section class="card highlight">
+          <span class="tag">DDS Lab</span>
+          <h3>Pico W2 → Pi 5 → DDS Bridge 實驗</h3>
+          <p>提供可直接上課的 step-by-step lab，使用 Pico W2 以 HTTP 傳送感測資料，由 Pi 5 Python Bridge 轉發到 RTI Connext DDS。</p>
+          <a class="btn" href="DDS_Pi5_PicoW2_Bridge_Lab.html">開啟教材</a>
         </section>
         <section class="card">
           <span class="tag">Node-RED</span>
