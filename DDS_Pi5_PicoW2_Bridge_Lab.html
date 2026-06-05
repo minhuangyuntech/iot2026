@@ -117,8 +117,8 @@
   <div class="wrap">
     <section class="hero">
       <h1>DDS Bridge Lab：Raspberry Pi 5 與 Pico W2 感測資料整合實作</h1>
-      <p>本實驗頁面提供一條課堂最容易成功的 DDS 實作路線：由 Raspberry Pi 5 執行 RTI Connext DDS 與 Python 橋接程式，Pico W2 負責感測與送資料，最後由 DDS Subscriber 接收並顯示資料。</p>
-      <p>這份內容特別設計給教學現場使用，重點是先讓學生成功建立「Pico W2 → Pi 5 → DDS」資料流，再延伸到 QoS、控制命令與原生 MCU DDS。</p>
+      <p>本實驗頁面提供一條可操作性高的 DDS 實作路線：由 Raspberry Pi 5 執行 RTI Connext DDS 與 Python 橋接程式，Pico W2 負責感測與送資料，最後由 DDS Subscriber 接收並顯示資料。</p>
+      <p>內容重點是先建立「Pico W2 → Pi 5 → DDS」資料流，再延伸到 QoS、控制命令與原生 MCU DDS。</p>
       <div>
         <span class="tag">Python 為主</span>
         <span class="tag">Pi 5</span>
@@ -217,7 +217,7 @@ cd ~/dds-lab/pico-bridge</code></pre>
       <p>產生 Python 型別與範例骨架：</p>
       <pre><code>rtiddsgen -language python -example universal SensorReading.idl</code></pre>
 
-      <div class="info">產生後通常會出現對應的 Python 型別支援檔。課堂上可直接以這個 Topic 作為感測資料交換格式。</div>
+      <div class="info">產生後通常會出現對應的 Python 型別支援檔，可直接以這個 Topic 作為感測資料交換格式。</div>
     </section>
 
     <section class="card">
@@ -344,11 +344,11 @@ while True:
 
     time.sleep(3)</code></pre>
 
-      <div class="warning">若 <code>time.ticks_ms()</code> 只提供開機後經過時間，教師可提醒學生：這不是 Unix timestamp，但對即時資料流示範已足夠。若需要真實時間，可在 Pi 5 端補時間戳。</div>
+      <div class="warning">若 <code>time.ticks_ms()</code> 只提供開機後經過時間，代表它不是 Unix timestamp，但對即時資料流示範已足夠；若需要真實時間，可在 Pi 5 端補上時間戳。</div>
     </section>
 
     <section class="card">
-      <h2>九、課堂操作流程</h2>
+      <h2>九、操作流程</h2>
       <ol>
         <li>Pi 5 啟動 <code>subscriber.py</code></li>
         <li>Pi 5 啟動 <code>bridge_server.py</code></li>
@@ -376,7 +376,7 @@ while True:
     </section>
 
     <section class="card">
-      <h2>十一、可以延伸的課堂活動</h2>
+      <h2>十一、延伸方向</h2>
       <div class="grid">
         <div>
           <h3>A. 加入 QoS 討論</h3>
@@ -410,14 +410,14 @@ while True:
         <li>評估 RTI Connext Micro 與資源限制</li>
         <li>縮小 Topic 型別與記憶體用量</li>
       </ul>
-      <div class="info">這樣的教學設計很適合：前半學期用 Python 完成概念與整合，後半學期再把部分學生帶進嵌入式 DDS 專題。</div>
+      <div class="info">這樣的編排方式可先用 Python 完成概念與整合，再逐步延伸到嵌入式 DDS 實作。</div>
     </section>
 
     <section class="card">
-      <h2>十三、教師提示</h2>
+      <h2>十三、補充提示</h2>
       <ul>
-        <li>如果課堂時間有限，可先省略真實感測器，直接用模擬數值。</li>
-        <li>若學生尚未熟悉 Flask，可先用最小 API 範例，再解釋 bridge 的角色。</li>
+        <li>若暫時沒有實體感測器，可先用模擬數值驗證資料流。</li>
+        <li>若尚未熟悉 Flask，可先從最小 API 範例開始，再理解 bridge 的角色。</li>
         <li>如果網路環境不穩，先讓 Pico W2 與 Pi 5 在同一 AP 下測試。</li>
         <li>若 RTI 授權申請流程較花時間，可先錄好安裝示範影片或準備已配置好的 Pi 映像檔。</li>
       </ul>
