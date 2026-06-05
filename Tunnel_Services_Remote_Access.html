@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>外網轉址與 Tunnel 服務教材：ngrok、Cloudflare Tunnel、Pinggy、LocalTunnel</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #7c3aed;
+      --accent-soft: #ede9fe;
+      --border: #dbe3ef;
+      --code-bg: #0f172a;
+      --code-text: #e5eefc;
+      --info: #1d4ed8;
+      --warn: #92400e;
+      --ok: #065f46;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #7c3aed, #111827);
+      color: #fff;
+      border-radius: 20px;
+      padding: 36px 32px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      margin: 0 0 8px;
+      font-size: 2.05rem;
+    }
+    .hero p {
+      margin: 8px 0;
+      color: rgba(255,255,255,0.92);
+      max-width: 940px;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+    h2, h3 { color: #111827; }
+    h2 {
+      margin-top: 0;
+      border-left: 5px solid var(--accent);
+      padding-left: 12px;
+    }
+    ul, ol { padding-left: 22px; }
+    li + li { margin-top: 6px; }
+    code {
+      background: #eef2ff;
+      color: #312e81;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", "Consolas", monospace;
+      font-size: 0.95em;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.96rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f5f3ff; }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .info, .warning, .success, .note {
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-top: 14px;
+    }
+    .info {
+      background: #eff6ff;
+      color: var(--info);
+      border: 1px solid #bfdbfe;
+    }
+    .warning {
+      background: #fff7ed;
+      color: var(--warn);
+      border: 1px solid #fed7aa;
+    }
+    .success {
+      background: #ecfdf5;
+      color: var(--ok);
+      border: 1px solid #a7f3d0;
+    }
+    .note {
+      background: #f8fafc;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 10px;
+      text-decoration: none;
+      background: var(--accent);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+    .footer {
+      margin-top: 38px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.7rem; }
+      .container { padding: 20px 14px 40px; }
+      .hero, .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>外網轉址與 Tunnel 服務教材</h1>
+      <p>本單元整理 IoT 與 Web 實作中常見的外網轉址工具，包含 ngrok、Cloudflare Tunnel、Pinggy 與 LocalTunnel，說明它們如何把本機或區域網路中的 HTTP 服務暫時發布到外部網路。</p>
+      <p>適合搭配 Raspberry Pi、Pico W / Pico W2、Flask API、Node-RED、Webhook 接收端，以及 DDS Bridge 類型的實驗。</p>
+    </section>
+
+    <section class="card">
+      <h2>一、為什麼需要 Tunnel 服務</h2>
+      <ul>
+        <li>裝置與伺服器不在同一個區域網路。</li>
+        <li>暫時無法設定路由器的 Port Forwarding。</li>
+        <li>需要快速展示本機 API、Webhook 或感測資料接收端。</li>
+        <li>希望用公開 URL 驗證「裝置 → 網際網路 → 本機服務」的完整資料流。</li>
+      </ul>
+      <div class="info">Tunnel 服務通常會建立一個公開的 <code>https://...</code> 位址，再把該位址的流量轉送到本機的指定埠，例如 <code>localhost:5000</code>。</div>
+    </section>
+
+    <section class="card">
+      <h2>二、基本概念</h2>
+      <table>
+        <thead>
+          <tr><th>名詞</th><th>說明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Forwarding</td><td>把公開網址收到的請求轉送到本機服務。</td></tr>
+          <tr><td>Public URL</td><td>外部裝置可以存取的網址，通常是 HTTPS。</td></tr>
+          <tr><td>Local Service</td><td>本機正在執行的應用，例如 Flask、Node-RED、Django 或測試 API。</td></tr>
+          <tr><td>Authtoken / Login</td><td>部分服務需要登入或設定 token 才能啟用更穩定的通道。</td></tr>
+          <tr><td>TLS / HTTPS</td><td>外部網址多半提供加密連線，但本機端可能仍是 HTTP。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>三、使用前的共通準備</h2>
+      <ol>
+        <li>先讓本機服務在電腦內部可正常存取。</li>
+        <li>先用本機測試，例如 <code>curl http://127.0.0.1:5000</code>。</li>
+        <li>確認要對外開放的是哪一個埠，例如 <code>5000</code>、<code>8000</code>、<code>1880</code>。</li>
+        <li>對外發布前，先確認該服務是否需要基本驗證或資料格式檢查。</li>
+      </ol>
+      <pre><code>curl -X POST http://127.0.0.1:5000/sensor \
+  -H "Content-Type: application/json" \
+  -d '{
+    "device_id": "test-local",
+    "temperature": 24.5,
+    "humidity": 58.2,
+    "timestamp_ms": 1710000000000
+  }'</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>四、常見工具比較</h2>
+      <table>
+        <thead>
+          <tr><th>工具</th><th>特點</th><th>適合情境</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ngrok</td><td>知名度高、文件完整、操作簡單。</td><td>課堂展示、API 測試、Webhook 驗證。</td></tr>
+          <tr><td>Cloudflare Tunnel</td><td>可綁自訂網域，適合較正式部署。</td><td>長時間運作的服務、網站或 API 發布。</td></tr>
+          <tr><td>Pinggy</td><td>可直接透過 SSH 建立臨時網址，快速輕量。</td><td>短時間測試、臨時示範。</td></tr>
+          <tr><td>LocalTunnel</td><td>Node.js 生態系常見，安裝簡單。</td><td>前端、Node.js、簡易教學示範。</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>五、ngrok 實作步驟</h2>
+      <span class="tag">適合快速上手</span>
+      <h3>1. 安裝</h3>
+      <pre><code>brew install ngrok/ngrok/ngrok</code></pre>
+      <h3>2. 設定帳號 token</h3>
+      <pre><code>ngrok config add-authtoken &lt;YOUR_AUTHTOKEN&gt;</code></pre>
+      <h3>3. 啟動本機 5000 埠的轉址</h3>
+      <pre><code>ngrok http 5000</code></pre>
+      <h3>4. 取得公開網址</h3>
+      <pre><code>Forwarding  https://abc123.ngrok-free.app  -&gt;  http://localhost:5000</code></pre>
+      <h3>5. 讓裝置或遠端程式改用公開網址</h3>
+      <pre><code>PI5_URL = "https://abc123.ngrok-free.app/sensor"</code></pre>
+      <div class="success">如果本機服務原本已能正確處理 HTTP POST，換成 ngrok 的公開 URL 後，外部裝置即可經由網際網路送資料進來。</div>
+    </section>
+
+    <section class="card">
+      <h2>六、Cloudflare Tunnel 實作步驟</h2>
+      <span class="tag">適合較正式發布</span>
+      <h3>1. 安裝 cloudflared</h3>
+      <pre><code>brew install cloudflared</code></pre>
+      <h3>2. 登入 Cloudflare</h3>
+      <pre><code>cloudflared tunnel login</code></pre>
+      <h3>3. 最快的臨時方式：Quick Tunnel</h3>
+      <pre><code>cloudflared tunnel --url http://localhost:5000</code></pre>
+      <h3>4. 結果</h3>
+      <p>工具會回傳一個可公開存取的網址，例如：</p>
+      <pre><code>https://random-name.trycloudflare.com</code></pre>
+      <div class="note">若要長期使用，可再建立命名 tunnel、綁定 DNS 與自訂網域。</div>
+    </section>
+
+    <section class="card">
+      <h2>七、Pinggy 實作步驟</h2>
+      <span class="tag">適合輕量快速測試</span>
+      <h3>1. 直接用 SSH 建立 HTTP 轉址</h3>
+      <pre><code>ssh -p 443 -R0:localhost:5000 a.pinggy.io</code></pre>
+      <h3>2. 觀察終端機輸出</h3>
+      <p>輸出中會顯示一個臨時公開網址，可把它指定給遠端裝置使用。</p>
+      <h3>3. 結束方式</h3>
+      <p>停止 SSH 連線後，該公開網址通常也會失效。</p>
+      <div class="warning">使用前請先確認當下的 Pinggy 方案、限制與連線規則，因免費方案細節可能調整。</div>
+    </section>
+
+    <section class="card">
+      <h2>八、LocalTunnel 實作步驟</h2>
+      <span class="tag">適合 Node.js 示範</span>
+      <h3>1. 安裝</h3>
+      <pre><code>npm install -g localtunnel</code></pre>
+      <h3>2. 對外發布本機服務</h3>
+      <pre><code>lt --port 5000</code></pre>
+      <h3>3. 若需要自訂子網域</h3>
+      <pre><code>lt --port 5000 --subdomain iot2026-demo</code></pre>
+      <div class="note">實際是否成功使用指定 subdomain，取決於當下可用性與服務端限制。</div>
+    </section>
+
+    <section class="card">
+      <h2>九、搭配 Raspberry Pi 與 Pico W2 的使用方式</h2>
+      <ol>
+        <li>在 Raspberry Pi 上先啟動 Flask / Node-RED / Bridge Server。</li>
+        <li>用本機 <code>curl</code> 先確認 API 正常。</li>
+        <li>選擇一種 tunnel 工具，對外發布 <code>localhost:5000</code>。</li>
+        <li>把 Pico W2 程式中的目標網址改成公開 HTTPS URL。</li>
+        <li>重新上傳程式，觀察 Raspberry Pi 終端機是否收到資料。</li>
+      </ol>
+      <pre><code>PI5_URL = "https://your-public-url.example/sensor"</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十、驗證流程</h2>
+      <ol>
+        <li>先用本機 <code>curl</code> 驗證。</li>
+        <li>再用另一台電腦或手機測試公開網址。</li>
+        <li>最後再讓 Pico W2 或其他外部裝置送資料。</li>
+        <li>確認伺服器日誌、資料庫、DDS Subscriber 或 Node-RED 是否收到資料。</li>
+      </ol>
+      <table>
+        <thead>
+          <tr><th>檢查項目</th><th>成功條件</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>本機 API</td><td>curl 到 <code>127.0.0.1</code> 可成功回應</td></tr>
+          <tr><td>公開網址</td><td>其他裝置可連線並收到合理回應</td></tr>
+          <tr><td>外部裝置發送</td><td>Pico W2 或外部程式可成功 POST</td></tr>
+          <tr><td>後端處理</td><td>伺服器日誌、資料流或資料庫可看到新資料</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>十一、安全注意事項</h2>
+      <ul>
+        <li>公開 URL 不代表可以忽略驗證機制。</li>
+        <li>避免把管理後台、資料庫介面或未保護的控制 API 直接對外開放。</li>
+        <li>展示結束後，應立即停止 tunnel 服務。</li>
+        <li>若資料會寫入 DDS、資料庫或控制 GPIO，建議加入 token、簽章、來源檢查或最少權限設計。</li>
+      </ul>
+      <div class="warning">Tunnel 工具很適合教學與測試，但若要長期正式運作，通常應改用正式網域、反向代理、TLS 憑證管理與完整的存取控制。</div>
+    </section>
+
+    <section class="card">
+      <h2>十二、適合搭配的教材頁</h2>
+      <ul>
+        <li><a href="DDS_Pi5_PicoW2_Bridge_Lab.html">DDS Bridge Lab：Raspberry Pi 5 與 Pico W2 感測資料整合實作</a></li>
+        <li><a href="Flask_Basics.html">Flask 網站基礎教材</a></li>
+        <li><a href="NodeRED_MQTT_Dashboard.html">Node-RED + MQTT 儀表板教學</a></li>
+        <li><a href="Flask_Webcam_Streaming.html">Flask 串流 Webcam 教學</a></li>
+      </ul>
+    </section>
+
+    <div class="footer">
+      Tunnel_Services_Remote_Access.html — 外網轉址與 Tunnel 服務教材
+    </div>
+  </div>
+</body>
+</html>
