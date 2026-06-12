@@ -189,14 +189,24 @@ printf -- "deb [arch=%s, signed-by=%s] %s %s main\n" \
 sudo apt update
 sudo apt install rti-connext-dds-7.7.0</code></pre>
 
-      <h3>2. 建立 Python 環境</h3>
+      <h3>2. 設定授權並載入 RTI 環境</h3>
+      <pre><code>eval $(rtienv -l ~/rti/rti_license.dat)
+echo $NDDSHOME</code></pre>
+      <div class="note">依 RTI Connext DDS Python API 6.0.1 的 Building and Installing 文件，建置 <code>connextdds-py</code> 前要先確認 <code>NDDSHOME</code> 可用。</div>
+
+      <h3>3. 建立 Python 環境與 Linux 建置工具</h3>
       <pre><code>python3 -m venv ~/venvs/ddsbridge
 source ~/venvs/ddsbridge/bin/activate
-pip install --upgrade pip
-pip install rti.connext flask</code></pre>
+pip3 install --upgrade pip
+pip3 install setuptools wheel cmake patchelf-wrapper flask</code></pre>
 
-      <h3>3. 設定授權</h3>
-      <pre><code>eval $(rtienv -l ~/rti/rti_license.dat)</code></pre>
+      <h3>4. 依官方文件建置並安裝 Python API</h3>
+      <pre><code>cd ~/dds-lab
+git clone --recurse-submodules https://github.com/rticommunity/connextdds-py.git
+cd connextdds-py
+python3 configure.py --nddshome "$NDDSHOME" &lt;platform&gt;
+pip3 install .</code></pre>
+      <div class="info"><code>&lt;platform&gt;</code> 需替換成目前 RTI Connext DDS 的平台字串；若後續想預先打包 wheel，可在同目錄執行 <code>pip3 wheel .</code>。</div>
     </section>
 
     <section class="card">

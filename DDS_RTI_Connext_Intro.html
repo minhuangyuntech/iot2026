@@ -301,22 +301,39 @@ sudo apt update</code></pre>
       <h3>3. 安裝 Connext DDS</h3>
       <pre><code>sudo apt install rti-connext-dds-7.7.0</code></pre>
 
-      <h3>4. 安裝 Python API</h3>
-      <pre><code>python3 -m venv ~/venvs/connext
-source ~/venvs/connext/bin/activate
-pip install --upgrade pip
-pip install rti.connext</code></pre>
-
-      <h3>5. 取得免費授權檔</h3>
+      <h3>4. 取得免費授權檔</h3>
       <ol>
         <li>到 RTI 的 <code>Get Connext Free</code> 頁面申請。</li>
         <li>下載授權檔 <code>rti_license.dat</code>。</li>
         <li>把授權檔放到例如 <code>~/rti/rti_license.dat</code>。</li>
       </ol>
 
-      <h3>6. 載入環境</h3>
-      <pre><code>eval $(rtienv -l ~/rti/rti_license.dat)</code></pre>
-      <div class="note">依 RTI 官方 apt 安裝教學，設定好 <code>rtienv</code> 與授權檔後，就可以直接跑 Hello World 範例。</div>
+      <h3>5. 載入 RTI 環境</h3>
+      <pre><code>eval $(rtienv -l ~/rti/rti_license.dat)
+echo $NDDSHOME</code></pre>
+      <div class="note">依 RTI Python API 的 Building and Installing 文件，建置 <code>connextdds-py</code> 前需要先能正確取得 <code>NDDSHOME</code>；若使用 Ubuntu / Debian 類系統，也建議明確使用 <code>python3</code> 與 <code>pip3</code>。</div>
+
+      <h3>6. 建立 Python 虛擬環境與 Linux 建置工具</h3>
+      <pre><code>python3 -m venv ~/venvs/connext
+source ~/venvs/connext/bin/activate
+pip3 install --upgrade pip
+pip3 install setuptools wheel cmake patchelf-wrapper</code></pre>
+
+      <h3>7. 依 RTI Python API 文件建置並安裝 <code>connextdds-py</code></h3>
+      <pre><code>cd ~/dds-lab
+git clone --recurse-submodules https://github.com/rticommunity/connextdds-py.git
+cd connextdds-py
+python3 configure.py --nddshome "$NDDSHOME" &lt;platform&gt;
+pip3 install .</code></pre>
+      <div class="info">其中 <code>&lt;platform&gt;</code> 是 RTI Connext DDS 的目標平台字串，需與目前安裝的 Connext 平台一致；<code>configure.py</code> 也支援 <code>--jobs</code>、<code>--tcp</code>、<code>--monitoring</code>、<code>--secure</code> 與 <code>--debug</code> 等選項。</div>
+
+      <h3>8. 若要預先打包 wheel 或做升級</h3>
+      <pre><code># 建立 wheel
+pip3 wheel .
+
+# 若要升級前先移除舊版
+pip3 uninstall rti -y</code></pre>
+      <div class="note">RTI 6.0.1 的 Python API 文件把 <code>pip install .</code>、<code>pip wheel .</code> 與開發安裝流程分開說明；在 Raspberry Pi 5 課堂環境中，先完成 simple installation 再跑 DDS 範例，通常較容易驗證。</div>
     </section>
 
     <section class="card">
@@ -479,6 +496,7 @@ python HelloWorld_publisher.py</code></pre>
       <h2>十六、資料來源與補充說明</h2>
       <ul>
         <li>RTI 開發者頁面提供 <strong>Get Connext Free</strong> 與 Debian / Ubuntu 的 <code>apt install</code> 說明。</li>
+        <li>RTI Connext DDS Python API 6.0.1 文件〈<code>Building and Installing</code>〉說明了 <code>connextdds-py</code> 的需求條件、<code>configure.py</code>、<code>pip install .</code>、<code>pip wheel .</code> 與開發安裝流程。</li>
         <li>RTI 官方公開資料顯示 Connext Professional 支援 Python API。</li>
         <li>RTI 官方公開資料顯示 Connext Micro 面向 resource-constrained systems，可作為微控制器進階研究方向。</li>
       </ul>
