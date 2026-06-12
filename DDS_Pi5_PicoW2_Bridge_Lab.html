@@ -397,30 +397,35 @@ while True:
     </section>
 
     <section class="card">
-      <h2>十二、延伸方向</h2>
+      <h2>十二、延伸方向（參考 rticonnextdds-examples 的 Python 教學路線）</h2>
       <div class="grid">
         <div>
-          <h3>A. 加入 QoS 討論</h3>
+          <h3>A. 先做 QoS 與 Partitions</h3>
           <ul>
-            <li>比較 Best Effort 與 Reliable</li>
-            <li>討論感測資料是否需要歷史保留</li>
+            <li>在 Pi 5 先跑 <code>using_qos_profiles/py</code> 與 <code>partitions/py</code> 範例。</li>
+            <li>讓學生理解資料可靠度、歷史保留、late joiner 與邏輯分群。</li>
+            <li>之後再把 Bridge publisher 套用相同的 QoS 思維。</li>
           </ul>
         </div>
         <div>
-          <h3>B. 反向控制</h3>
+          <h3>B. 再做條件式接收與事件驅動</h3>
           <ul>
-            <li>新增 <code>LedCommand</code> Topic</li>
-            <li>Pi 5 發控制命令，Pico W2 接收後控制 LED</li>
+            <li>利用 <code>content_filtered_topic/py</code> 示範只接收指定範圍資料。</li>
+            <li>利用 <code>waitset_query_cond/py</code> 示範告警條件與事件等待。</li>
+            <li>這兩組範例都很適合改造成感測器門檻監控實驗。</li>
           </ul>
         </div>
         <div>
-          <h3>C. Web 儀表板</h3>
+          <h3>C. 最後再加服務互動與儀表板</h3>
           <ul>
-            <li>Subscriber 接到 Flask / Node-RED</li>
-            <li>即時顯示圖表與裝置狀態</li>
+            <li>用 <code>request_reply/py</code> 理解 DDS 也能做 request / reply。</li>
+            <li>把 Subscriber 接到 Flask / Node-RED / Web 儀表板。</li>
+            <li>形成「Pico W2 感測 → Pi 5 bridge → DDS → Web / 控制回應」的完整教學案例。</li>
           </ul>
         </div>
       </div>
+
+      <div class="info">建議不要一開始就把 Pico W2、QoS、條件過濾、告警與 Web 全部混在一起。先讓學生在 Pi 5 上跑 RTI 官方 Python 範例，再逐步把 bridge 取代其中的 publisher，成功率會高很多。</div>
     </section>
 
     <section class="card">

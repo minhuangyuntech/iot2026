@@ -431,9 +431,9 @@ python HelloWorld_publisher.py</code></pre>
 
       <h3>2. Pi 5 端工作</h3>
       <ul>
-        <li>Python 程式接收 Pico W2 傳來的資料</li>
-        <li>轉成 DDS Topic 型別</li>
-        <li>用 RTI Connext Python API 發佈到 DDS Domain</li>
+        <li>先在 Pi 5 上用純 Python 跑 RTI 官方範例，確認 DomainParticipant、Topic、DataWriter、DataReader 的基本觀念。</li>
+        <li>再把 Pico W2 傳來的 JSON / CSV 轉成 DDS Topic 型別。</li>
+        <li>最後把 bridge 程式取代原本的 publisher，讓既有 Subscriber、資料庫或 Web 程式直接接收 DDS 資料。</li>
       </ul>
 
       <h3>3. 架構優點</h3>
@@ -442,6 +442,8 @@ python HelloWorld_publisher.py</code></pre>
         <li>可先掌握 DDS 的資料流與 QoS 概念</li>
         <li>保留之後升級成原生 DDS MCU 節點的空間</li>
       </ul>
+
+      <div class="note">實務上可把 <code>rticonnextdds-examples</code> 的 Python publisher 視為「模擬感測器」；等學生看懂範例後，再把 publisher 換成 Pico W2 → Pi 5 bridge。</div>
     </section>
 
     <section class="card">
@@ -466,15 +468,40 @@ python HelloWorld_publisher.py</code></pre>
     </section>
 
     <section class="card">
-      <h2>十四、建議的實作順序</h2>
+      <h2>十四、建議的 Python 教學順序（參考 rticonnextdds-examples）</h2>
       <ol>
-        <li>先用 Raspberry Pi 5 完成 DDS Hello World（Python）</li>
-        <li>改成感測器資料結構</li>
-        <li>建立第二個 Python Subscriber 做監看</li>
-        <li>讓 Pico W2 用既有方式把資料送到 Pi 5</li>
-        <li>在 Pi 5 寫 Python Bridge，把資料轉成 DDS</li>
-        <li>最後才討論 Pico W2 原生 DDS 的 C 語言進階路線</li>
+        <li><strong>先做 Hello World 與 IDL</strong>：先用 <code>rtiddsgen</code> 產生 Python 範例，讓學生熟悉 Topic 型別、Publisher / Subscriber 與 Domain ID。</li>
+        <li><strong>再做 QoS Profiles</strong>：從 <code>examples/connext_dds/using_qos_profiles/py</code> 執行官方範例，學會用 <code>dds.QosProvider("my_custom_qos_profiles.xml")</code> 載入 XML QoS，並比較 <code>transient_local</code> 與 <code>volatile</code> 的差異。</li>
+        <li><strong>接著做 Partitions</strong>：從 <code>examples/connext_dds/partitions/py</code> 執行範例，理解「同一個 Topic 也能用 partition 做邏輯分群」，很適合拿來模擬不同小組、不同教室或不同設備群。</li>
+        <li><strong>第四步做 Content-Filtered Topic</strong>：從 <code>examples/connext_dds/content_filtered_topic/py</code> 執行 publisher / subscriber，觀察 subscriber 端如何只接收符合條件的資料，並在程式中動態修改 <code>topic.filter_parameters</code>。</li>
+        <li><strong>第五步做 WaitSet / QueryCondition</strong>：從 <code>examples/connext_dds/waitset_query_cond/py</code> 執行範例，理解事件驅動式等待與條件篩選，適合銜接即時監控、告警條件與邊緣分析。</li>
+        <li><strong>第六步做 Request-Reply</strong>：從 <code>examples/connext_dds/request_reply/py</code> 執行 <code>primes_replier.py</code> 與 <code>primes_requester.py 100</code>，理解 DDS 不只可做資料發布，也能做服務式互動。</li>
+        <li><strong>最後才接 Pico W2 Bridge</strong>：把前面範例的 publisher 角色換成 Pico W2 → Pi 5 bridge，讓學生先穩定掌握 DDS，再進入 IoT 整合。</li>
       </ol>
+
+      <h3>推薦的課堂執行指令</h3>
+      <pre><code>git clone --depth 1 https://github.com/rticommunity/rticonnextdds-examples.git
+cd rticonnextdds-examples/examples/connext_dds/using_qos_profiles/py
+python3 profiles_program.py --pub
+python3 profiles_program.py --sub
+
+cd ../../partitions/py
+python3 partitions_program.py -p
+python3 partitions_program.py -s
+
+cd ../../content_filtered_topic/py
+python3 cft_publisher.py
+python3 cft_subscriber.py
+
+cd ../../waitset_query_cond/py
+python3 waitset_query_cond_publisher.py
+python3 waitset_query_cond_subscriber.py
+
+cd ../../request_reply/py
+python3 primes_replier.py
+python3 primes_requester.py 100</code></pre>
+
+      <div class="info">官方 Python 範例常搭配目前目錄中的 <code>USER_QOS_PROFILES.xml</code> 或自訂 XML 檔；因此上課時要提醒學生「必須在範例自己的目錄中執行」，否則 QoS 設定可能不會被正確載入。</div>
     </section>
 
     <section class="card">
@@ -497,6 +524,8 @@ python HelloWorld_publisher.py</code></pre>
       <ul>
         <li>RTI 開發者頁面提供 <strong>Get Connext Free</strong> 與 Debian / Ubuntu 的 <code>apt install</code> 說明。</li>
         <li>RTI Connext DDS Python API 6.0.1 文件〈<code>Building and Installing</code>〉說明了 <code>connextdds-py</code> 的需求條件、<code>configure.py</code>、<code>pip install .</code>、<code>pip wheel .</code> 與開發安裝流程。</li>
+        <li><code>rticommunity/rticonnextdds-examples</code> repo 提供多個可直接用於 Python 教學的範例，特別適合安排成 QoS、Partitions、ContentFilteredTopic、WaitSet 與 Request-Reply 的循序課程。</li>
+        <li>分析官方範例後可觀察到：許多 Python 範例仰賴所在目錄中的 <code>USER_QOS_PROFILES.xml</code> 或自訂 XML，因此教學時必須強調執行目錄與 QoS 載入方式。</li>
         <li>RTI 官方公開資料顯示 Connext Professional 支援 Python API。</li>
         <li>RTI 官方公開資料顯示 Connext Micro 面向 resource-constrained systems，可作為微控制器進階研究方向。</li>
       </ul>
