@@ -12,19 +12,35 @@
 </head>
 <body><div class="container"><section class="hero"><h1>Raspberry Pi 感測器整合教材</h1><p>介紹 Raspberry Pi 與常見感測器模組整合方式，包含溫濕度、光敏、超音波、PIR 人體感測等。</p><p>適合 IoT、感測器介接、智慧裝置與 Python 控制課程。</p><div><span class="tag">Raspberry Pi</span><span class="tag">感測器</span><span class="tag">Python</span><span class="tag">IoT</span></div></section>
 <section class="card"><h2>一、教學目標</h2><ul><li>理解感測器與 Raspberry Pi 的整合概念</li><li>學會基本接線與安全注意事項</li><li>能使用 Python 讀取常見感測器資料</li><li>理解如何將感測資料應用於 IoT 系統</li></ul></section>
-<section class="card"><h2>二、常見感測器</h2><table><thead><tr><th>感測器</th><th>用途</th><th>介面</th></tr></thead><tbody><tr><td>DHT11 / DHT22</td><td>溫濕度</td><td>數位</td></tr><tr><td>LDR 光敏電阻</td><td>光線強弱</td><td>類比模組或數位模組</td></tr><tr><td>HC-SR04</td><td>距離量測</td><td>Trig / Echo</td></tr><tr><td>PIR</td><td>人體移動偵測</td><td>數位</td></tr><tr><td>MQ 系列</td><td>氣體偵測</td><td>模組化輸出</td></tr></tbody></table></section>
-<section class="card"><h2>三、DHT11 / DHT22 範例</h2><pre><code>import Adafruit_DHT
-sensor = Adafruit_DHT.DHT11
+<section class="card"><h2>二、常見感測器</h2><p>Raspberry Pi 的 GPIO 腳位主要處理數位輸入/輸出，因此感測器可分為「可直接接 GPIO 的數位型模組」與「需要額外轉換的類比型模組」。實作前先確認模組的工作電壓、輸出型態與是否內建比較器。</p><table><thead><tr><th>感測器</th><th>用途</th><th>介面</th><th>實作重點</th></tr></thead><tbody><tr><td>DHT11 / DHT22</td><td>溫濕度</td><td>數位</td><td>DHT22 精度較高；資料腳通常需上拉電阻。</td></tr><tr><td>LDR 光敏電阻</td><td>光線強弱</td><td>類比模組或數位模組</td><td>Pi 無原生 ADC，若是純類比電阻需搭配 ADC；若是 LM393 類模組可直接讀數位門檻輸出。</td></tr><tr><td>HC-SR04</td><td>距離量測</td><td>Trig / Echo</td><td>Echo 端為 5V，必須降壓後再接到 Pi。</td></tr><tr><td>PIR</td><td>人體移動偵測</td><td>數位</td><td>輸出通常只有高/低電位，適合事件觸發。</td></tr><tr><td>MQ 系列</td><td>氣體偵測</td><td>模組化輸出</td><td>常見模組同時提供類比與數位輸出；若要看濃度變化，建議搭配 ADC。</td></tr></tbody></table><div class="note">選感測器時，可先問三件事：<strong>工作電壓是多少？輸出是數位還是類比？是否需要校正或預熱？</strong> 這三項通常就能判斷接線方式與程式寫法。</div></section>
+<section class="card"><h2>三、接線與實作前準備</h2><ul><li><strong>先關機再接線：</strong>避免在通電狀態下誤接 3.3V、5V 或 GND。</li><li><strong>確認 GPIO 腳位編號：</strong><code>gpiozero</code> 與多數 Python 範例通常使用 BCM 編號，例如 GPIO17、GPIO4。</li><li><strong>注意 Raspberry Pi GPIO 僅支援 3.3V：</strong>任何 5V 訊號都不應直接送入 GPIO。</li><li><strong>先做最小測試：</strong>先確認單一感測器可以穩定輸出，再整合 MQTT、資料庫或網頁。</li></ul><pre><code># 建議先更新套件
+sudo apt update
+sudo apt install -y python3-pip python3-gpiozero
+
+# 視感測器需求安裝額外套件
+pip3 install Adafruit_DHT</code></pre><div class="warning">若使用的是較新的 Raspberry Pi OS，某些舊版教學會使用不同的 DHT 函式庫名稱。安裝前先確認範例所對應的套件版本，避免「程式可執行但讀不到資料」的情況。</div></section>
+<section class="card"><h2>四、DHT11 / DHT22 範例</h2><p>DHT 類感測器適合做為第一個溫濕度實驗，因為輸出內容直觀，且能延伸到環境監測、溫室控制與室內舒適度分析。</p><h3>接線說明</h3><ul><li>VCC 接 3.3V 或依模組規格接電</li><li>GND 接地</li><li>DATA 接 GPIO4（本頁範例）</li><li>若是裸感測器而非模組板，通常需在 VCC 與 DATA 間加 4.7kΩ~10kΩ 上拉電阻</li></ul><h3>Python 範例</h3><pre><code>import Adafruit_DHT
+
+sensor = Adafruit_DHT.DHT11   # 若改用 DHT22，請改成 Adafruit_DHT.DHT22
 pin = 4
+
 humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
-print("Temp:", temperature)
-print("Humidity:", humidity)</code></pre><div class="warning">不同系統環境的 DHT 套件可能不同，教學前建議先確認實機可用版本。</div></section>
-<section class="card"><h2>四、PIR 人體感測範例</h2><pre><code>from gpiozero import MotionSensor
+
+if humidity is not None and temperature is not None:
+    print(f"Temp: {temperature:.1f}°C")
+    print(f"Humidity: {humidity:.1f}%")
+else:
+    print("讀取失敗，請檢查接線、供電與上拉電阻")</code></pre><h3>讀值特性說明</h3><ul><li>DHT11 精度較低，適合入門示範；DHT22 量測範圍與穩定性通常更好。</li><li>溫濕度不一定每次都能立即成功讀取，因此範例常用 <code>read_retry()</code> 連續嘗試。</li><li>若資料經常是 <code>None</code>，優先檢查供電是否穩定、腳位是否正確，以及 DATA 線是否過長。</li></ul><div class="note">可進一步把讀到的溫濕度資料每 5 秒寫入 CSV 或上傳 MQTT，讓後續的資料視覺化與 IoT 整合更容易進行。</div></section>
+<section class="card"><h2>五、PIR 人體感測範例</h2><p>PIR（Passive Infrared Sensor，被動式紅外線感測器）主要用來偵測人體或大型物體移動造成的紅外線變化。它不會量測距離，而是回傳「是否偵測到移動」的事件訊號。</p><h3>接線說明</h3><ul><li>VCC 接模組標示的工作電壓（常見模組可接 5V，請先看規格）</li><li>GND 接地</li><li>OUT 接 GPIO17（本頁範例）</li></ul><h3>Python 範例</h3><pre><code>from gpiozero import MotionSensor
 from signal import pause
+
 pir = MotionSensor(17)
+
 pir.when_motion = lambda: print("偵測到人體移動")
 pir.when_no_motion = lambda: print("沒有移動")
-pause()</code></pre></section>
-<section class="card"><h2>五、超音波感測器概念</h2><p>HC-SR04 常用來量測距離，但 Echo 端為 5V，不能直接接 Raspberry Pi GPIO，需分壓或使用保護電路。</p><div class="warning">這是上課一定要強調的點，不然很容易燒板。</div></section>
-<section class="card"><h2>六、感測資料應用</h2><ul><li>顯示在終端機</li><li>上傳到 MQTT Broker</li><li>顯示在 Node-RED 儀表板</li><li>寫入資料庫</li><li>透過 Flask / Django 顯示成網站</li></ul></section>
-<section class="card"><h2>七、教學建議</h2><ol><li>先從 GPIO 入門</li><li>選一個感測器實作</li><li>讓學生把資料印出來</li><li>再延伸到 MQTT 或 Web 顯示</li></ol></section><div class="footer">RaspberryPi_Sensors.html, Raspberry Pi 感測器整合教材</div></div></body></html>
+
+pause()</code></pre><h3>使用注意事項</h3><ul><li>PIR 上電後常需要 30 秒到 1 分鐘左右進行穩定化，剛開機時連續觸發不一定代表異常。</li><li>多數模組可調整靈敏度與延遲時間，若觸發過於頻繁，可先調整模組上的可變電阻。</li><li>適合用於走廊照明、入侵偵測與自動錄影啟動等事件驅動應用。</li></ul></section>
+<section class="card"><h2>六、超音波感測器概念</h2><p>HC-SR04 透過發射超音波脈衝並計算回波返回時間來估計距離，常用於避障、液位量測與簡易測距實驗。</p><h3>基本工作流程</h3><ol><li>Trig 腳送出短脈衝</li><li>模組發射超音波</li><li>Echo 腳回傳高電位時間</li><li>依時間差換算距離</li></ol><p>距離計算常見公式：</p><pre><code>距離 = (回波時間 × 音速) ÷ 2
+約可寫成：distance_cm = pulse_seconds * 17150</code></pre><div class="warning">HC-SR04 的 Echo 端通常輸出 5V，不能直接接 Raspberry Pi GPIO。實務上應使用分壓電阻、邏輯電平轉換器或保護電路後再接入。</div><div class="note">若量測值忽大忽小，常見原因包括：目標表面太軟、角度偏斜、環境噪音、供電不穩，或感測器與目標距離超出有效範圍。</div></section>
+<section class="card"><h2>七、感測資料應用流程</h2><p>感測器實驗完成後，可把資料逐步整合到完整 IoT 系統。建議依下列順序擴充：</p><ol><li><strong>本機輸出：</strong>先在終端機顯示資料，確認感測器本身正常。</li><li><strong>資料清理：</strong>加入單位、時間戳記、異常值檢查與簡單平均。</li><li><strong>網路傳輸：</strong>上傳到 MQTT Broker，讓其他程式可訂閱資料。</li><li><strong>視覺化：</strong>在 Node-RED Dashboard、網頁或 App 顯示即時狀態。</li><li><strong>長期保存：</strong>寫入 SQLite、MySQL 或雲端資料庫，進行歷史分析。</li></ol><table><thead><tr><th>應用方向</th><th>說明</th></tr></thead><tbody><tr><td>終端機顯示</td><td>最快完成的驗證方式，適合除錯。</td></tr><tr><td>MQTT Broker</td><td>適合多裝置、多感測器的發布/訂閱架構。</td></tr><tr><td>Node-RED 儀表板</td><td>可快速做出圖表、開關與警報流程。</td></tr><tr><td>資料庫</td><td>適合保存歷史資料，做統計分析或訓練模型。</td></tr><tr><td>Flask / Django 網站</td><td>可提供遠端查詢、登入權限與跨裝置瀏覽介面。</td></tr></tbody></table></section>
+<section class="card"><h2>八、實作建議與常見錯誤</h2><ol><li><strong>先完成單一感測器：</strong>不要一開始就同時接多種模組，較容易定位問題。</li><li><strong>接線拍照或畫圖：</strong>有助於比對 VCC、GND、GPIO 是否接反。</li><li><strong>先確認腳位與電壓：</strong>GPIO 接錯或把 5V 直接送入 GPIO，是最常見也最危險的錯誤。</li><li><strong>程式先求穩定再求整合：</strong>先把讀值做穩，再接 MQTT、資料庫或 Web 介面。</li><li><strong>保留量測紀錄：</strong>把測試輸出存成文字檔或 CSV，方便後續分析與除錯。</li></ol><table><thead><tr><th>常見問題</th><th>可能原因</th><th>處理方式</th></tr></thead><tbody><tr><td>DHT 讀不到資料</td><td>腳位錯誤、供電不穩、缺少上拉電阻、套件版本不符</td><td>重新確認 GPIO 編號、供電與安裝套件</td></tr><tr><td>PIR 一直觸發</td><td>剛上電尚未穩定、靈敏度過高、周遭熱源干擾</td><td>等待穩定後再測，調整模組旋鈕</td></tr><tr><td>超音波距離亂跳</td><td>Echo 電壓未保護、目標反射差、角度不正</td><td>加保護電路並更換量測目標與角度</td></tr><tr><td>程式可執行但數值異常</td><td>接錯 3.3V / 5V、模組規格不符、讀取間隔太短</td><td>查模組規格並放慢取樣速度</td></tr></tbody></table></section><div class="footer">RaspberryPi_Sensors.html, Raspberry Pi 感測器整合教材</div></div></body></html>
