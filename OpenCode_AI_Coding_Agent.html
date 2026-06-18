@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenCode 開源 AI Coding Agent 教材</title>
+  <style>
+    :root {
+      --bg: #f6f8fb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #0f766e;
+      --accent-soft: #ccfbf1;
+      --border: #dbe3ef;
+      --code-bg: #0f172a;
+      --code-text: #e5eefc;
+      --info: #1d4ed8;
+      --warn: #92400e;
+      --ok: #065f46;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.75;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 32px 20px 64px;
+    }
+    .hero {
+      background: linear-gradient(135deg, #0f766e, #0f172a);
+      color: #fff;
+      border-radius: 22px;
+      padding: 38px 32px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.18);
+      margin-bottom: 24px;
+    }
+    .hero h1 {
+      margin: 0 0 10px;
+      font-size: 2.1rem;
+    }
+    .hero p {
+      margin: 8px 0;
+      color: rgba(255,255,255,0.93);
+      max-width: 960px;
+    }
+    .pill-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .pill {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+      margin-bottom: 20px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+    h2, h3 { color: #111827; }
+    h2 {
+      margin-top: 0;
+      border-left: 5px solid var(--accent);
+      padding-left: 12px;
+    }
+    ul, ol { padding-left: 22px; }
+    li + li { margin-top: 6px; }
+    code {
+      background: #ecfeff;
+      color: #115e59;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: "JetBrains Mono", "Consolas", monospace;
+      font-size: 0.95em;
+    }
+    pre {
+      background: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px;
+      border-radius: 14px;
+      overflow-x: auto;
+      border: 1px solid #1e293b;
+    }
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.96rem;
+    }
+    th, td {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f0fdfa; }
+    .tag {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 700;
+    }
+    .info, .warning, .success, .note {
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-top: 14px;
+    }
+    .info {
+      background: #eff6ff;
+      color: var(--info);
+      border: 1px solid #bfdbfe;
+    }
+    .warning {
+      background: #fff7ed;
+      color: var(--warn);
+      border: 1px solid #fed7aa;
+    }
+    .success {
+      background: #ecfdf5;
+      color: var(--ok);
+      border: 1px solid #a7f3d0;
+    }
+    .note {
+      background: #f8fafc;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 10px;
+      text-decoration: none;
+      background: var(--accent);
+      color: white;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+    .footer {
+      margin-top: 38px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+    @media (max-width: 640px) {
+      .hero h1 { font-size: 1.75rem; }
+      .container { padding: 20px 14px 40px; }
+      .hero, .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <section class="hero">
+      <h1>OpenCode 開源 AI Coding Agent 教材</h1>
+      <p>OpenCode 是一套可在終端機、桌面程式與 IDE 中使用的開源 AI coding agent。它不只是聊天機器人，而是能直接閱讀專案、分析程式碼、產生修改建議、執行多步驟開發工作的工具。</p>
+      <p>對 IoT 與 Web 專題而言，OpenCode 很適合用來協助理解 Python、Flask、MQTT、GPIO、資料庫與前後端整合程式，但所有輸出都必須經過人工檢查與測試。</p>
+      <div class="pill-wrap">
+        <span class="pill">Open Source</span>
+        <span class="pill">Terminal / Desktop / IDE</span>
+        <span class="pill">可搭配 Claude、GPT、Gemini 等模型</span>
+        <span class="pill">適合程式解說、除錯、重構與原型開發</span>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>一、什麼是 OpenCode</h2>
+      <p>OpenCode 的定位是 <strong>AI 編碼代理</strong>。一般聊天式 AI 偏向回答問題；OpenCode 則更重視在程式專案中的實際工作流程，例如：</p>
+      <ul>
+        <li>讀取專案中的多個檔案後再回答問題。</li>
+        <li>依照需求提出修改方案，並直接產生程式碼。</li>
+        <li>協助進行 refactor、錯誤追查、測試補強與文件整理。</li>
+        <li>配合終端機與 Git 工作流程執行較完整的開發任務。</li>
+      </ul>
+      <div class="info">可把 OpenCode 想成「會看專案上下文的程式開發助手」，而不是只能單輪問答的聊天視窗。</div>
+    </section>
+
+    <section class="card">
+      <h2>二、OpenCode 的主要特色</h2>
+      <div class="grid">
+        <section class="card">
+          <span class="tag">多介面</span>
+          <h3>Terminal、桌面端、IDE</h3>
+          <p>可在終端機中互動，也可使用桌面應用程式或編輯器整合，適合不同開發習慣。</p>
+        </section>
+        <section class="card">
+          <span class="tag">模型彈性</span>
+          <h3>可接多家 LLM 供應商</h3>
+          <p>可搭配不同 provider / model，不必被單一服務綁定，便於比較成本、速度與品質。</p>
+        </section>
+        <section class="card">
+          <span class="tag">開源</span>
+          <h3>流程透明、易於擴充</h3>
+          <p>由於是開源工具，社群文件、擴充與整合方式較容易追蹤，適合教學與研究觀察。</p>
+        </section>
+        <section class="card">
+          <span class="tag">上下文工作</span>
+          <h3>以專案為單位操作</h3>
+          <p>能根據當前專案結構理解檔案關聯，比單純把片段程式碼貼到聊天視窗更完整。</p>
+        </section>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>三、安裝方式</h2>
+      <p>OpenCode 官方提供多種安裝方法，常見方式如下：</p>
+      <pre><code>curl -fsSL https://opencode.ai/install | bash
+
+npm install -g opencode-ai
+bun install -g opencode-ai
+pnpm install -g opencode-ai
+yarn global add opencode-ai
+
+brew install anomalyco/tap/opencode
+# 或
+brew install opencode</code></pre>
+      <div class="note">若使用 Windows，通常建議先準備 WSL 環境，再於 Linux 子系統中安裝與使用。</div>
+      <div class="warning">本次更新時，這台維護網站的電腦執行 <code>opencode --version</code> 顯示 <code>command not found</code>，表示若要在本機實作範例，需先完成安裝。</div>
+    </section>
+
+    <section class="card">
+      <h2>四、OpenRouter 設定方法</h2>
+      <p>如果想讓 OpenCode 透過 OpenRouter 使用 Claude、GPT、Gemini 或其他支援的模型，可以依照下列流程設定：</p>
+      <ol>
+        <li>前往 OpenRouter 控制台建立 API Key。</li>
+        <li>啟動 <code>opencode</code> 後，於 TUI 中執行 <code>/connect</code>。</li>
+        <li>搜尋並選擇 <code>OpenRouter</code>。</li>
+        <li>貼上剛建立的 API Key。</li>
+        <li>再執行 <code>/models</code> 選擇要使用的模型。</li>
+      </ol>
+      <pre><code>opencode
+/connect
+/models</code></pre>
+      <div class="info">依照 OpenCode 官方提供商文件，OpenRouter 預設已預先載入許多模型，因此通常只要完成 API Key 連接後，就可以直接在 <code>/models</code> 中挑選模型。</div>
+
+      <h3>1. 最基本的操作流程</h3>
+      <pre><code># 先啟動 OpenCode
+opencode
+
+# 在 OpenCode 介面中輸入
+/connect
+
+# 搜尋 OpenRouter，貼上 API Key 後再輸入
+/models</code></pre>
+
+      <h3>2. 指定 OpenRouter 模型</h3>
+      <p>如果已經完成連線，也可以直接在命令列指定 provider/model：</p>
+      <pre><code>opencode --model openrouter/anthropic/claude-sonnet-4
+opencode run "請解釋目前專案的 Flask 路由結構" --model openrouter/anthropic/claude-sonnet-4</code></pre>
+
+      <h3>3. 在設定檔中加入更多 OpenRouter 模型</h3>
+      <p>若預設列表中沒有想用的模型，可在 <code>opencode.json</code> 中擴充：</p>
+      <pre><code>{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "openrouter": {
+      "models": {
+        "somecoolnewmodel": {}
+      }
+    }
+  }
+}</code></pre>
+
+      <h3>4. 自訂模型選項</h3>
+      <p>OpenCode 官方文件也示範可在 OpenRouter 模型下指定更細的 provider 選項：</p>
+      <pre><code>{
+  "$schema": "https://opencode.ai/config.json",
+  "provider": {
+    "openrouter": {
+      "models": {
+        "moonshotai/kimi-k2": {
+          "options": {
+            "provider": {
+              "order": ["baseten"],
+              "allow_fallbacks": false
+            }
+          }
+        }
+      }
+    }
+  }
+}</code></pre>
+
+      <h3>5. 驗證是否設定成功</h3>
+      <ul>
+        <li>執行 <code>opencode</code> 後，確認 <code>/models</code> 中可看到 OpenRouter 模型。</li>
+        <li>若安裝了 CLI，可執行 <code>opencode auth list</code> 檢查是否已有 provider 憑證。</li>
+        <li>若能成功執行一個簡單任務，通常表示連線設定已完成。</li>
+      </ul>
+      <pre><code>opencode auth list
+opencode run "Respond with exactly: OPENROUTER_OK" --model openrouter/anthropic/claude-sonnet-4</code></pre>
+
+      <div class="warning">若出現 provider 驗證失敗、模型不存在、或權限不足，通常要檢查三件事：API Key 是否正確、OpenRouter 帳號是否可用該模型、以及 <code>provider/model</code> 名稱是否寫對。</div>
+    </section>
+
+    <section class="card">
+      <h2>五、Codex 設定外部 API（OpenAI 相容供應商）</h2>
+      <p>如果想讓 Codex CLI 連到外部 API，而不是只使用預設 OpenAI 端點，可以在 <code>~/.codex/config.toml</code> 中加入自訂 provider。依 OpenAI Codex 官方文件，這類供應商要以 <code>[model_providers]</code> 定義，並指定 <code>base_url</code>、<code>wire_api</code>、驗證方式與模型名稱。</p>
+      <div class="info">官方文件特別提醒：<code>model_provider</code>、<code>model_providers</code>、<code>base_url</code> 這類 provider 設定應放在使用者層級的 <code>~/.codex/config.toml</code>，不要只放在專案內的 <code>.codex/config.toml</code>。</div>
+
+      <h3>1. 基本設定步驟</h3>
+      <ol>
+        <li>先準備外部 API 供應商的 endpoint、可用模型名稱與 API Key。</li>
+        <li>在終端機設定環境變數，例如 <code>AZURE_OPENAI_API_KEY</code>。</li>
+        <li>編輯 <code>~/.codex/config.toml</code>，新增自訂 provider。</li>
+        <li>指定 <code>model_provider</code> 與 <code>model</code>。</li>
+        <li>重新啟動 <code>codex</code> 後測試是否可正常回應。</li>
+      </ol>
+
+      <h3>2. Azure / OpenAI 相容 API 範例</h3>
+      <p>以下是 OpenAI Codex 官方文件中的典型寫法，適合拿來連接 Azure OpenAI 或其他 OpenAI 相容端點：</p>
+      <pre><code># ~/.codex/config.toml
+model_provider = "azure"
+model = "gpt-5"
+
+[model_providers.azure]
+name = "Azure"
+base_url = "https://YOUR_PROJECT_NAME.openai.azure.com/openai"
+wire_api = "responses"
+query_params = { api-version = "2025-04-01-preview" }
+env_key = "AZURE_OPENAI_API_KEY"
+env_key_instructions = "Set AZURE_OPENAI_API_KEY in your environment"</code></pre>
+
+      <p>若供應商不是 Azure，但同樣提供 OpenAI 相容 API，也可以用類似方式調整：</p>
+      <pre><code># ~/.codex/config.toml
+model_provider = "myproxy"
+model = "gpt-5"
+
+[model_providers.myproxy]
+name = "My OpenAI-Compatible Provider"
+base_url = "https://api.example.com/v1"
+wire_api = "responses"
+env_key = "MY_LLM_API_KEY"
+env_key_instructions = "Set MY_LLM_API_KEY in your shell environment"</code></pre>
+
+      <h3>3. 環境變數設定範例</h3>
+      <pre><code># zsh / bash
+export AZURE_OPENAI_API_KEY="YOUR_KEY_HERE"
+
+# 若要永久生效，可加入 ~/.zshrc 後重新載入
+source ~/.zshrc</code></pre>
+      <div class="warning">不要把 API Key 直接硬寫進 <code>config.toml</code>。Codex 官方範例也是以 <code>env_key</code> 搭配環境變數管理金鑰。</div>
+
+      <h3>4. 另一種情況：透過代理但仍使用 OpenAI 驗證</h3>
+      <p>若外部端點其實是 OpenAI 帳號後面的代理層，官方文件建議改用 <code>requires_openai_auth = true</code>。這種模式下，Codex 會走 OpenAI 驗證流程，且會忽略 <code>env_key</code>。</p>
+      <pre><code>[model_providers.proxy]
+name = "OpenAI using LLM proxy"
+base_url = "https://proxy.example.com/v1"
+wire_api = "responses"
+requires_openai_auth = true</code></pre>
+
+      <h3>5. 驗證是否設定成功</h3>
+      <ul>
+        <li>重新啟動 <code>codex</code> 後，確認已使用新的 <code>model_provider</code> 與模型。</li>
+        <li>先執行簡單任務，確認外部端點可正常回應。</li>
+        <li>若失敗，優先檢查 <code>base_url</code>、模型名稱、API Key 環境變數與 query parameter 是否正確。</li>
+      </ul>
+      <pre><code>codex
+
+# 或用單次任務快速測試
+codex exec "Respond with exactly: CODEX_EXTERNAL_API_OK"</code></pre>
+
+      <div class="success">重點可以記成四件事：<strong>設定使用者層級 config</strong>、<strong>指定 model_provider</strong>、<strong>用 env_key 管理金鑰</strong>、<strong>確認外部端點支援 responses API</strong>。</div>
+    </section>
+
+    <section class="card">
+      <h2>六、使用前準備</h2>
+      <ol>
+        <li>準備一個現代終端機環境。</li>
+        <li>準備要使用的模型供應商 API 金鑰。</li>
+        <li>進入專案資料夾後再啟動 OpenCode，讓它能讀取目前專案結構。</li>
+        <li>若是團隊作業，建議搭配 Git 分支與 commit 紀錄。</li>
+      </ol>
+      <pre><code>cd /path/to/project
+opencode</code></pre>
+      <div class="info">第一次在專案中使用時，可建立專案規則與說明檔，例如需求摘要、程式規範、目錄用途與測試方式，讓 AI 代理更容易理解工作上下文。</div>
+    </section>
+
+    <section class="card">
+      <h2>七、兩種常見使用模式</h2>
+      <table>
+        <thead>
+          <tr><th>模式</th><th>指令</th><th>用途</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>TUI 互動模式</td>
+            <td><code>opencode</code></td>
+            <td>適合逐步對話、反覆追問、邊看結果邊修正需求。</td>
+          </tr>
+          <tr>
+            <td>CLI 單次任務</td>
+            <td><code>opencode run "你的任務"</code></td>
+            <td>適合快速執行單一明確工作，例如解釋函式、重構某段程式、檢查錯誤。</td>
+          </tr>
+        </tbody>
+      </table>
+      <pre><code>opencode
+opencode run "Explain how closures work in JavaScript"</code></pre>
+      <div class="success">如果任務範圍明確，<code>run</code> 模式通常更容易重現與記錄；若需求會持續修正，TUI 模式更方便。</div>
+    </section>
+
+    <section class="card">
+      <h2>八、實用指令整理</h2>
+      <table>
+        <thead>
+          <tr><th>指令</th><th>說明</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>opencode</code></td><td>啟動終端機互動介面。</td></tr>
+          <tr><td><code>opencode [project]</code></td><td>直接在指定專案路徑開啟。</td></tr>
+          <tr><td><code>opencode run "..."</code></td><td>執行單次任務後結束。</td></tr>
+          <tr><td><code>opencode -c</code></td><td>延續上一個 session。</td></tr>
+          <tr><td><code>opencode -s &lt;session_id&gt;</code></td><td>繼續特定 session。</td></tr>
+          <tr><td><code>opencode --model provider/model</code></td><td>指定要使用的模型。</td></tr>
+          <tr><td><code>opencode session list</code></td><td>列出既有工作階段。</td></tr>
+          <tr><td><code>opencode stats</code></td><td>查看使用量或成本統計。</td></tr>
+        </tbody>
+      </table>
+      <pre><code>opencode run "請解釋 app.py 中 MQTT callback 的執行流程"
+opencode run "重構這個 Python 函式，保留功能但提升可讀性"
+opencode --model openrouter/anthropic/claude-sonnet-4
+opencode session list
+opencode stats</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>九、在 IoT / Web 課程中的應用情境</h2>
+      <div class="grid">
+        <section class="card">
+          <span class="tag">程式理解</span>
+          <h3>閱讀既有專題</h3>
+          <p>請 OpenCode 解釋 Raspberry Pi GPIO、Flask route、MQTT publisher/subscriber 或 SQL 查詢流程。</p>
+        </section>
+        <section class="card">
+          <span class="tag">除錯</span>
+          <h3>分析錯誤訊息</h3>
+          <p>可把 Traceback、伺服器 log 或錯誤輸出交給 OpenCode，請它協助定位問題來源與修正方向。</p>
+        </section>
+        <section class="card">
+          <span class="tag">原型開發</span>
+          <h3>快速建立初版功能</h3>
+          <p>例如建立 Flask API、感測資料上傳端點、Node-RED 對接流程或資料庫 CRUD 範例。</p>
+        </section>
+        <section class="card">
+          <span class="tag">重構與整理</span>
+          <h3>改善可讀性</h3>
+          <p>協助把太長的函式拆分、補上註解、整理目錄與 README，使專題更容易維護。</p>
+        </section>
+      </div>
+      <pre><code>opencode run "閱讀目前專案，說明 sensor.py、app.py 與 templates/index.html 的關係"
+
+opencode run "幫我把這個 Flask + MQTT 專案整理成適合期末專題展示的結構"
+
+opencode run "分析為什麼 ESP32 送到 Flask API 的 JSON 會出現 400 Bad Request"</code></pre>
+    </section>
+
+    <section class="card">
+      <h2>十、與一般聊天式 AI 的差異</h2>
+      <table>
+        <thead>
+          <tr><th>面向</th><th>一般聊天式 AI</th><th>OpenCode</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>主要介面</td><td>瀏覽器聊天視窗</td><td>終端機、桌面端、IDE</td></tr>
+          <tr><td>上下文來源</td><td>以貼上的內容為主</td><td>可直接在專案目錄中工作</td></tr>
+          <tr><td>工作形式</td><td>偏向問答</td><td>偏向開發任務與程式流程</td></tr>
+          <tr><td>適合情境</td><td>概念說明、快速提問</td><td>專案理解、改碼、除錯、重構</td></tr>
+          <tr><td>風險</td><td>容易脫離實際專案上下文</td><td>若未審查輸出，可能直接把錯誤帶入專案</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="card">
+      <h2>十一、建議使用流程</h2>
+      <ol>
+        <li>先自己理解需求，再把需求寫成明確任務。</li>
+        <li>在專案根目錄啟動 OpenCode。</li>
+        <li>先要求它「解釋現況」，再要求它「提出修改方案」。</li>
+        <li>修改完成後，人工檢查 diff、重新執行測試或手動驗證。</li>
+        <li>重要專題一定要保留 Git commit 紀錄，避免 AI 產生的錯誤覆蓋正確版本。</li>
+      </ol>
+      <div class="success">一個實用習慣是：先問 OpenCode「你打算改哪些檔案、原因是什麼」，確認方向正確後，再讓它實作。</div>
+    </section>
+
+    <section class="card">
+      <h2>十二、風險與注意事項</h2>
+      <ul>
+        <li>AI 產生的程式碼可能可以執行，但不一定符合需求、效能或安全性。</li>
+        <li>不可直接把 API 金鑰、密碼、token 等敏感資訊交給不可信任的公開環境。</li>
+        <li>對硬體控制、資料刪除、資料庫寫入類功能，必須先在安全範圍內測試。</li>
+        <li>不要因為 AI 能寫出程式，就跳過基礎語法、資料流與錯誤處理的理解。</li>
+        <li>若終端機出現 <code>command not found: opencode</code>，通常表示尚未安裝或 PATH 未設定正確。</li>
+      </ul>
+      <div class="warning">在課程作業或專題中使用 AI 工具時，建議清楚標示哪些部分由自己設計、哪些部分使用 AI 協助產生，再由自己驗證與修改。</div>
+    </section>
+
+    <section class="card">
+      <h2>十三、課堂練習建議</h2>
+      <ol>
+        <li>請 OpenCode 解釋一個現有 Flask 專案的路由流程。</li>
+        <li>請 OpenCode 為 Pico W 或 ESP32 上傳感測資料的 API 生成 JSON 格式範例。</li>
+        <li>請 OpenCode 協助把單一 Python 腳本拆成 <code>main.py</code>、<code>utils.py</code>、<code>config.py</code>。</li>
+        <li>請 OpenCode 分析一段 MQTT 收不到資料的除錯案例。</li>
+        <li>比較「自己撰寫版本」與「AI 改寫版本」的可讀性與可維護性。</li>
+      </ol>
+    </section>
+
+    <section class="card">
+      <h2>十四、延伸閱讀</h2>
+      <ul>
+        <li>OpenCode 官方網站：<a href="https://opencode.ai" target="_blank" rel="noopener">https://opencode.ai</a></li>
+        <li>OpenCode 官方文件：<a href="https://opencode.ai/docs" target="_blank" rel="noopener">https://opencode.ai/docs</a></li>
+        <li>OpenAI Codex 文件：<a href="https://developers.openai.com/codex" target="_blank" rel="noopener">https://developers.openai.com/codex</a></li>
+        <li>Codex Authentication：<a href="https://developers.openai.com/codex/auth" target="_blank" rel="noopener">https://developers.openai.com/codex/auth</a></li>
+        <li>Codex Sample Configuration：<a href="https://developers.openai.com/codex/config-sample" target="_blank" rel="noopener">https://developers.openai.com/codex/config-sample</a></li>
+        <li>建議搭配 Git、Python 虛擬環境、測試流程一起使用。</li>
+      </ul>
+      <a class="btn" href="index.html">回到教材首頁</a>
+    </section>
+
+    <div class="footer">
+      OpenCode_AI_Coding_Agent.html — OpenCode 開源 AI Coding Agent 詳細介紹教材
+    </div>
+  </div>
+</body>
+</html>
